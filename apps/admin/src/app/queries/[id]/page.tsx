@@ -30,16 +30,23 @@ export default async function QueryDetailPage({ params }: Props) {
   if (!query) notFound();
 
   return (
-    <AdminShell title="Query" userLabel={sessionLabel(user)}>
+    <AdminShell
+      title={query.subject}
+      userLabel={sessionLabel(user)}
+      backHref="/queries"
+      backLabel="Back to queries"
+      breadcrumbs={[
+        { label: "Overview", href: "/" },
+        { label: "Queries", href: "/queries" },
+        { label: query.subject },
+      ]}
+    >
       <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
         <div className="space-y-6 border border-line bg-panel p-5 md:p-6">
           <div>
             <p className="text-[11px] tracking-[0.12em] uppercase text-mute">
               {query.topic} · {query.status.replaceAll("_", " ")}
             </p>
-            <h2 className="mt-2 font-display text-2xl font-bold tracking-tight">
-              {query.subject}
-            </h2>
             <p className="mt-2 text-sm text-mute">
               {new Date(query.createdAt).toLocaleString("en-IN")}
             </p>

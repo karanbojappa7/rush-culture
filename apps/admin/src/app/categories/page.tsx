@@ -32,7 +32,14 @@ export default async function CategoriesPage({ searchParams }: Props) {
   const data = categoriesRes.data ?? emptyPage<Category>();
 
   return (
-    <AdminShell title="Categories" userLabel={sessionLabel(user)}>
+    <AdminShell
+      title="Categories"
+      userLabel={sessionLabel(user)}
+      breadcrumbs={[
+        { label: "Overview", href: "/" },
+        { label: "Categories" },
+      ]}
+    >
       <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
         <div>
           <ListToolbar

@@ -57,6 +57,13 @@ export class ProductRepo extends BaseRepo<
     });
   }
 
+  async findBySlugAny(slug: string) {
+    return this.prisma.product.findFirst({
+      where: { slug },
+      select: { id: true, slug: true, isDeleted: true },
+    });
+  }
+
   async createWithDetails(data: Prisma.ProductCreateInput) {
     return this.prisma.product.create({ data, include: productInclude });
   }

@@ -45,7 +45,14 @@ export default async function QueriesPage({ searchParams }: Props) {
   ];
 
   return (
-    <AdminShell title="Customer queries" userLabel={sessionLabel(user)}>
+    <AdminShell
+      title="Customer queries"
+      userLabel={sessionLabel(user)}
+      breadcrumbs={[
+        { label: "Overview", href: "/" },
+        { label: "Queries" },
+      ]}
+    >
       <ListToolbar
         total={data.total}
         noun="queries"

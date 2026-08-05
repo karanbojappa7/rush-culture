@@ -47,7 +47,14 @@ export default async function OrdersPage({ searchParams }: Props) {
   const data = res.data ?? emptyPage<Order>(10);
 
   return (
-    <AdminShell title="Orders" userLabel={sessionLabel(user)}>
+    <AdminShell
+      title="Orders"
+      userLabel={sessionLabel(user)}
+      breadcrumbs={[
+        { label: "Overview", href: "/" },
+        { label: "Orders" },
+      ]}
+    >
       <ListToolbar
         total={data.total}
         noun="orders"

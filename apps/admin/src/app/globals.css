@@ -33,6 +33,20 @@ body {
   animation: admin-fade 280ms ease-out;
 }
 
+.chart-bar {
+  transform-origin: left center;
+  animation: chart-grow-x 520ms ease-out both;
+}
+
+.chart-col {
+  transform-origin: bottom;
+  animation: chart-grow-y 520ms ease-out both;
+}
+
+.chart-arc {
+  animation: chart-fade 640ms ease-out both;
+}
+
 @keyframes admin-fade {
   from {
     opacity: 0;
@@ -44,8 +58,42 @@ body {
   }
 }
 
+@keyframes chart-grow-x {
+  from {
+    transform: scaleX(0);
+    opacity: 0.4;
+  }
+  to {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+@keyframes chart-grow-y {
+  from {
+    transform: scaleY(0);
+    opacity: 0.4;
+  }
+  to {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+@keyframes chart-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .admin-main {
+  .admin-main,
+  .chart-bar,
+  .chart-col,
+  .chart-arc {
     animation: none;
   }
 }

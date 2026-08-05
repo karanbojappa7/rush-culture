@@ -42,7 +42,17 @@ export default async function EditProductPage({ params }: Props) {
   if (!product) notFound();
 
   return (
-    <AdminShell title="Edit product" userLabel={sessionLabel(user)}>
+    <AdminShell
+      title="Edit product"
+      userLabel={sessionLabel(user)}
+      backHref="/products"
+      backLabel="Back to products"
+      breadcrumbs={[
+        { label: "Overview", href: "/" },
+        { label: "Products", href: "/products" },
+        { label: product.name },
+      ]}
+    >
       <ProductForm
         productId={product.id}
         categories={categoriesRes.data?.items ?? []}

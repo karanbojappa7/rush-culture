@@ -1,6 +1,6 @@
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { ProductBuyBox } from "@/components/product-buy-box";
+import { ProductImageGallery } from "@/components/product-image-gallery";
 import { fetchProductBySlug, fetchProducts } from "@/lib/catalog";
 
 type Props = {
@@ -30,24 +30,10 @@ export default async function ProductPage({ params }: Props) {
   return (
     <div className="pt-20 md:pt-24">
       <div className="mx-auto grid max-w-[1400px] gap-10 px-5 py-10 md:grid-cols-2 md:gap-14 md:px-8 md:py-16">
-        <div className="space-y-3">
-          {product.images.map((src, index) => (
-            <div
-              key={src}
-              className="relative aspect-[3/4] overflow-hidden bg-mist"
-            >
-              <Image
-                src={src}
-                alt={`${product.name} ${index + 1}`}
-                fill
-                priority={index === 0}
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 50vw"
-              />
-            </div>
-          ))}
+        <div className="relative z-20 min-w-0">
+          <ProductImageGallery images={product.images} alt={product.name} />
         </div>
-        <div className="md:sticky md:top-28 md:self-start">
+        <div className="relative z-10 md:sticky md:top-28 md:self-start">
           <ProductBuyBox product={product} />
         </div>
       </div>

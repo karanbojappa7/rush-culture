@@ -36,7 +36,14 @@ export default async function ProductsPage({ searchParams }: Props) {
   const data = productsRes.data ?? emptyPage<Product>();
 
   return (
-    <AdminShell title="Products" userLabel={sessionLabel(user)}>
+    <AdminShell
+      title="Products"
+      userLabel={sessionLabel(user)}
+      breadcrumbs={[
+        { label: "Overview", href: "/" },
+        { label: "Products" },
+      ]}
+    >
       <ListToolbar
         total={data.total}
         noun="products"

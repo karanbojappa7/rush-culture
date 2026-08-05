@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
   OnModuleInit,
@@ -118,9 +119,11 @@ export class ProductService extends BaseService implements OnModuleInit {
   async create(payload: CreateProductDto) {
     const { variants = [], images = [], categoryId, ...product } = payload;
     const stamp = utcNow();
+    const slug = resolveProductSlug(product.name, product.slug);
+    await this.ensureSlugAvailable(slug);
     return this.productRepo.createWithDetails({
       ...product,
-      slug: resolveProductSlug(product.name, product.slug),
+      slug,
       brand: product.brand ?? brand.name,
       ...(categoryId ? { category: { connect: { id: categoryId } } } : {}),
       variants: {
@@ -171,16 +174,21 @@ export class ProductService extends BaseService implements OnModuleInit {
 
   async update(payload: { id: string; data: UpdateProductDto }) {
     const existing = await this.findById({ id: payload.id });
+    const slug =
+      payload.data.slug || payload.data.name
+        ? resolveProductSlug(
+            payload.data.name ?? existing.name,
+            payload.data.slug ?? existing.slug,
+          )
+        : undefined;
+
+    if (slug && slug !== existing.slug) {
+      await this.ensureSlugAvailable(slug);
+    }
+
     const data = {
       ...payload.data,
-      ...(payload.data.slug || payload.data.name
-        ? {
-            slug: resolveProductSlug(
-              payload.data.name ?? existing.name,
-              payload.data.slug ?? existing.slug,
-            ),
-          }
-        : {}),
+      ...(slug ? { slug } : {}),
     };
     return this.productRepo.update(payload.id, data);
   }
@@ -331,5 +339,12 @@ export class ProductService extends BaseService implements OnModuleInit {
       })),
     });
     return this.findById({ id: payload.id });
+  }
+
+  private async ensureSlugAvailable(slug: string): Promise<void> {
+    const existing = await this.productRepo.findBySlugAny(slug);
+    if (existing) {
+      throw new ConflictException(`Product with slug ${slug} already exists`);
+    }
   }
 }

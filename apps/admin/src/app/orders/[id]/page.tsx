@@ -45,7 +45,17 @@ export default async function OrderDetailPage({ params }: Props) {
   const order = res.data;
 
   return (
-    <AdminShell title={order.orderNumber} userLabel={sessionLabel(user)}>
+    <AdminShell
+      title={order.orderNumber}
+      userLabel={sessionLabel(user)}
+      backHref="/orders"
+      backLabel="Back to orders"
+      breadcrumbs={[
+        { label: "Overview", href: "/" },
+        { label: "Orders", href: "/orders" },
+        { label: order.orderNumber },
+      ]}
+    >
       <div className="grid gap-6 lg:grid-cols-2">
         <section className="border border-line bg-panel p-5">
           <h2 className="font-display text-lg font-bold">Customer & shipping</h2>

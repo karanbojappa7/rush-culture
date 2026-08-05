@@ -13,7 +13,17 @@ export default async function NewProductPage() {
   ]);
 
   return (
-    <AdminShell title="New product" userLabel={sessionLabel(user)}>
+    <AdminShell
+      title="New product"
+      userLabel={sessionLabel(user)}
+      backHref="/products"
+      backLabel="Back to products"
+      breadcrumbs={[
+        { label: "Overview", href: "/" },
+        { label: "Products", href: "/products" },
+        { label: "New" },
+      ]}
+    >
       <ProductForm categories={categoriesRes.data?.items ?? []} />
     </AdminShell>
   );

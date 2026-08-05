@@ -5,6 +5,7 @@ import {
   DataTableCell,
   DataTableRow,
 } from "@/components/data-table";
+import { OverviewCharts } from "@/components/overview-charts";
 import { apiGet, formatInr } from "@/lib/api-server";
 import { emptyPage, type PageResult } from "@/lib/pagination";
 import { getSessionUser, sessionLabel } from "@/lib/session";
@@ -44,12 +45,40 @@ type CustomerQuery = {
   createdAt: string;
 };
 
+function groupPaymentStatus(orders: Order[]) {
+  const counts = new Map<string, number>();
+  for (const order of orders) {
+    const key = order.paymentStatus || "UNKNOWN";
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+  }
+  return Array.from(counts.entries())
+    .map(([label, value]) => ({
+      label: label.replaceAll("_", " "),
+      value,
+    }))
+    .sort((a, b) => b.value - a.value);
+}
+
+function recentRevenueBars(orders: Order[]) {
+  return [...orders]
+    .reverse()
+    .slice(-8)
+    .map((order) => ({
+      label: new Date(order.createdAt).toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+      }),
+      value: order.totalInPaise,
+      display: formatInr(order.totalInPaise),
+    }));
+}
+
 export default async function AdminHomePage() {
   const [user, summaryRes, ordersRes, querySummaryRes, queriesRes] =
     await Promise.all([
       getSessionUser(),
       apiGet<Summary>("/api/orders/summary"),
-      apiGet<PageResult<Order>>("/api/orders?page=1&limit=8"),
+      apiGet<PageResult<Order>>("/api/orders?page=1&limit=12"),
       apiGet<QuerySummary>("/api/customer-queries/summary"),
       apiGet<PageResult<CustomerQuery>>(
         "/api/customer-queries?page=1&limit=5&status=OPEN",
@@ -68,30 +97,83 @@ export default async function AdminHomePage() {
     closed: 0,
     total: 0,
   };
-  const recent = ordersRes.data?.items ?? emptyPage<Order>(8).items;
+  const recent = ordersRes.data?.items ?? emptyPage<Order>(12).items;
   const openQueries =
     queriesRes.data?.items ?? emptyPage<CustomerQuery>(5).items;
+  const revenueBars = recentRevenueBars(recent);
+  const revenueMax = Math.max(...revenueBars.map((bar) => bar.value), 0);
+  const activeQueries = querySummary.open + querySummary.inProgress;
 
   return (
-    <AdminShell title="Overview" userLabel={sessionLabel(user)}>
+    <AdminShell
+      title="Overview"
+      userLabel={sessionLabel(user)}
+      breadcrumbs={[{ label: "Overview" }]}
+    >
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Stat label="Orders" value={String(summary.orders)} href="/orders" />
-        <Stat label="Pending payment" value={String(summary.pending)} />
+        <Stat
+          label="Orders"
+          value={String(summary.orders)}
+          hint="All time"
+          href="/orders"
+        />
+        <Stat
+          label="Pending payment"
+          value={String(summary.pending)}
+          hint="Needs follow-up"
+          href="/orders"
+        />
         <Stat
           label="Revenue captured"
           value={formatInr(summary.revenueInPaise)}
+          hint="Gross captured"
         />
         <Stat
-          label="Open queries"
-          value={String(querySummary.open + querySummary.inProgress)}
+          label="Active queries"
+          value={String(activeQueries)}
+          hint={`${querySummary.open} open`}
           href="/queries?status=OPEN"
+        />
+      </div>
+
+      <div className="mt-8">
+        <OverviewCharts
+          querySlices={[
+            { key: "open", label: "Open", value: querySummary.open, color: "#141414" },
+            {
+              key: "inProgress",
+              label: "In progress",
+              value: querySummary.inProgress,
+              color: "#6a655c",
+            },
+            {
+              key: "resolved",
+              label: "Resolved",
+              value: querySummary.resolved,
+              color: "#9bb82e",
+            },
+            {
+              key: "closed",
+              label: "Closed",
+              value: querySummary.closed,
+              color: "#c8f542",
+            },
+          ]}
+          paymentBars={groupPaymentStatus(recent)}
+          revenueBars={revenueBars}
+          revenueMax={revenueMax}
+          ordersTotal={summary.orders}
+          pendingPayments={summary.pending}
         />
       </div>
 
       <div className="mt-10 grid gap-10 xl:grid-cols-2">
         <div>
           <div className="flex items-end justify-between gap-3">
-            <h2 className="font-display text-xl font-bold">Open queries</h2>
+            <div>
+              <h2 className="font-display text-xl font-bold">Open queries</h2>
+              <p className="mt-1 text-sm text-mute">Needs attention first</p>
+            </div>
             <Link
               href="/queries"
               className="text-[12px] font-semibold tracking-[0.1em] uppercase text-mute transition-colors hover:text-ink"
@@ -130,15 +212,14 @@ export default async function AdminHomePage() {
               ))}
             </DataTable>
           </div>
-          <p className="mt-3 text-sm text-mute">
-            {querySummary.open} open · {querySummary.inProgress} in progress ·{" "}
-            {querySummary.resolved} resolved
-          </p>
         </div>
 
         <div>
           <div className="flex items-end justify-between gap-3">
-            <h2 className="font-display text-xl font-bold">Recent orders</h2>
+            <div>
+              <h2 className="font-display text-xl font-bold">Recent orders</h2>
+              <p className="mt-1 text-sm text-mute">Latest checkout activity</p>
+            </div>
             <Link
               href="/orders"
               className="text-[12px] font-semibold tracking-[0.1em] uppercase text-mute transition-colors hover:text-ink"
@@ -157,7 +238,7 @@ export default async function AdminHomePage() {
               empty="No orders yet."
               isEmpty={recent.length === 0}
             >
-              {recent.map((order) => (
+              {recent.slice(0, 8).map((order) => (
                 <DataTableRow key={order.id}>
                   <DataTableCell className="font-medium">
                     <Link
@@ -190,10 +271,12 @@ export default async function AdminHomePage() {
 function Stat({
   label,
   value,
+  hint,
   href,
 }: {
   label: string;
   value: string;
+  hint?: string;
   href?: string;
 }) {
   const body = (
@@ -204,6 +287,7 @@ function Stat({
       <p className="mt-2 font-display text-3xl font-extrabold tracking-tight">
         {value}
       </p>
+      {hint ? <p className="mt-2 text-xs text-mute">{hint}</p> : null}
     </div>
   );
   if (!href) return body;

@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { brand } from "@linq/site-config";
 import { apiPost } from "@/lib/api";
+import { BackButton } from "@/components/back-button";
+import { Breadcrumbs, type Crumb } from "@/components/breadcrumbs";
 
 const nav = [
   { href: "/", label: "Overview" },
@@ -18,13 +20,20 @@ export function AdminShell({
   children,
   title,
   userLabel,
+  breadcrumbs,
+  backHref,
+  backLabel = "Back",
 }: {
   children: React.ReactNode;
   title: string;
   userLabel?: string;
+  breadcrumbs?: Crumb[];
+  backHref?: string;
+  backLabel?: string;
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const showBack = Boolean(backHref) || (breadcrumbs?.length ?? 0) > 1;
 
   async function logout() {
     await apiPost("/api/auth/logout");
@@ -36,12 +45,14 @@ export function AdminShell({
     <div className="admin-shell min-h-screen md:grid md:grid-cols-[232px_1fr]">
       <aside className="relative border-b border-white/10 bg-ink text-white md:sticky md:top-0 md:h-screen md:border-b-0 md:border-r md:border-white/10">
         <div className="px-5 py-6">
-          <p className="font-display text-2xl font-extrabold tracking-tight">
-            {brand.name}
-          </p>
-          <p className="mt-1 text-[11px] tracking-[0.16em] uppercase text-white/50">
-            {brand.adminLabel}
-          </p>
+          <Link href="/" className="block">
+            <p className="font-display text-2xl font-extrabold tracking-tight">
+              {brand.name}
+            </p>
+            <p className="mt-1 text-[11px] tracking-[0.16em] uppercase text-white/50">
+              {brand.adminLabel}
+            </p>
+          </Link>
           {userLabel ? (
             <p className="mt-3 truncate text-xs text-white/65">{userLabel}</p>
           ) : null}
@@ -79,6 +90,15 @@ export function AdminShell({
       </aside>
       <div className="admin-main px-5 py-8 md:px-10 md:py-10">
         <header className="border-b border-line pb-6">
+          {breadcrumbs ? <Breadcrumbs items={breadcrumbs} /> : null}
+          {showBack ? (
+            <div className="mb-3">
+              <BackButton
+                href={backHref ?? breadcrumbs?.[breadcrumbs.length - 2]?.href}
+                label={backLabel}
+              />
+            </div>
+          ) : null}
           <h1 className="font-display text-3xl font-extrabold tracking-tight md:text-4xl">
             {title}
           </h1>
