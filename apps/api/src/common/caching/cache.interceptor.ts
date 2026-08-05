@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { Observable, from, of } from 'rxjs';
-import { switchMap, tap } from 'rxjs/operators';
+import { switchMap } from 'rxjs/operators';
 import { WRITE_HTTP_METHODS } from '../constants/cache.constants';
 import { ResponseVm } from '../response/response.vm';
 import { CacheHandler } from './cache.handler';
@@ -17,6 +17,16 @@ import {
 import { CacheKeyBuilder } from './utils/cache-key.builder';
 import { CacheUtils } from './utils/cache.utils';
 
+type AuthedRequest = Request & { user?: { id?: string } };
+
+const WRITE_INVALIDATE_LINKS: Record<string, string[]> = {
+  access: ['role', 'user', 'auth'],
+  role: ['access', 'user', 'auth'],
+  user: ['access', 'role', 'auth'],
+  product: ['category'],
+  category: ['product'],
+};
+
 @Injectable()
 export class CacheInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
@@ -26,17 +36,32 @@ export class CacheInterceptor implements NestInterceptor {
     }
 
     const http = context.switchToHttp();
-    const req = http.getRequest<Request>();
+    const req = http.getRequest<AuthedRequest>();
     const method = (req.method || 'GET').toUpperCase();
     const requestPath = (req.originalUrl || req.url || req.path || '').split(
       '?',
     )[0];
-    if (
-      requestPath === '/api/cache' ||
-      requestPath.startsWith('/api/cache/')
-    ) {
+    const isWrite = WRITE_HTTP_METHODS.has(method);
+
+    if (isInfraPath(requestPath)) {
       return next.handle();
     }
+
+    if (isWrite && isAuthSessionWrite(requestPath)) {
+      return next.handle().pipe(
+        switchMap(async (body) => {
+          if (isSuccessResponse(body)) {
+            await CacheUtils.clearModuleCache('auth');
+          }
+          return body;
+        }),
+      );
+    }
+
+    if (requestPath === '/api/auth/login' || requestPath === '/api/auth/logout') {
+      return next.handle();
+    }
+
     const action = context.getHandler().name;
     const configService = CacheConfigService.getInstance();
     const resolved = configService.resolveByHttp({
@@ -48,18 +73,25 @@ export class CacheInterceptor implements NestInterceptor {
       resolved?.module ||
       configService.resolveModuleByPath(requestPath) ||
       'app';
-    const isWrite = WRITE_HTTP_METHODS.has(method);
 
     if (isWrite) {
       return next.handle().pipe(
-        tap((body) => {
-          if (!isSuccessResponse(body)) return;
-          void CacheUtils.clearModuleCache(moduleName);
+        switchMap(async (body) => {
+          if (!isSuccessResponse(body)) {
+            return body;
+          }
+          await invalidateModuleCaches(moduleName);
+          return body;
         }),
       );
     }
 
     if (resolved?.cache.enabled !== true) {
+      return next.handle();
+    }
+
+    const userId = resolveUserScopeId(moduleName, req);
+    if (moduleName === 'auth' && !userId) {
       return next.handle();
     }
 
@@ -72,6 +104,7 @@ export class CacheInterceptor implements NestInterceptor {
     const cacheKey = CacheKeyBuilder.build({
       module: moduleName,
       action: resolved.action || action,
+      userId,
       variant,
     });
     const ttl = resolved.cache.ttl || cache.getDefaultTtl();
@@ -83,14 +116,51 @@ export class CacheInterceptor implements NestInterceptor {
         }
 
         return next.handle().pipe(
-          tap((body) => {
-            if (!isSuccessResponse(body)) return;
-            void cache.set(cacheKey, body, ttl);
+          switchMap(async (body) => {
+            if (!isSuccessResponse(body)) {
+              return body;
+            }
+            await cache.set(cacheKey, body, ttl);
+            return body;
           }),
         );
       }),
     );
   }
+}
+
+function isInfraPath(requestPath: string): boolean {
+  return (
+    requestPath === '/api/cache' ||
+    requestPath.startsWith('/api/cache/') ||
+    requestPath === '/api/health' ||
+    requestPath.startsWith('/api/health/')
+  );
+}
+
+function isAuthSessionWrite(requestPath: string): boolean {
+  return (
+    requestPath === '/api/auth/login' || requestPath === '/api/auth/logout'
+  );
+}
+
+function resolveUserScopeId(
+  moduleName: string,
+  req: AuthedRequest,
+): string | undefined {
+  if (moduleName !== 'auth') return undefined;
+  const id = req.user?.id;
+  return id != null ? String(id) : undefined;
+}
+
+async function invalidateModuleCaches(moduleName: string): Promise<void> {
+  const modules = new Set<string>([moduleName]);
+  for (const linked of WRITE_INVALIDATE_LINKS[moduleName] || []) {
+    modules.add(linked);
+  }
+  await Promise.all(
+    [...modules].map((name) => CacheUtils.clearModuleCache(name)),
+  );
 }
 
 function isSuccessResponse(body: unknown): body is ResponseVm {

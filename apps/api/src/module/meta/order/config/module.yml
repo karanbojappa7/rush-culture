@@ -9,21 +9,38 @@ routes:
     path: /
     action: create
     auth: false
+    cache: false
   - method: GET
     path: /
     action: findAll
     auth: true
     roles: [STAFF, ADMIN]
+    cache: true
+    ttl: 60
   - method: GET
     path: /summary
     action: summary
     auth: true
     roles: [STAFF, ADMIN]
+    cache: true
+    ttl: 60
   - method: GET
     path: /:id
     action: findById
     auth: true
     roles: [STAFF, ADMIN]
+    cache: true
+    ttl: 60
+  - method: PATCH
+    path: /:id
+    action: update
+    auth: true
+    cache: false
+  - method: DELETE
+    path: /:id
+    action: softDelete
+    auth: true
+    cache: false
 
 security:
   encrypt: true

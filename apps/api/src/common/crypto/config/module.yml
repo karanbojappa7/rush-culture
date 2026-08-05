@@ -10,6 +10,7 @@ routes:
     action: publicKey
     auth: false
     skip_encryption: true
+    cache: false
 
 security:
   encrypt: true

@@ -33,7 +33,8 @@ export class RateLimitGuard implements CanActivate {
     if (
       requestPath === '/api/health' ||
       requestPath.startsWith('/api/health/') ||
-      requestPath === '/api/crypto/public-key'
+      requestPath === '/api/crypto/public-key' ||
+      requestPath === '/api/auth/me'
     ) {
       return true;
     }

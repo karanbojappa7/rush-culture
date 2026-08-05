@@ -1,0 +1,13 @@
+name: client-device
+version: 1.0.0
+enabled: true
+prefix: /api/client-devices
+description: Client device tracking and staff listing
+
+routes:
+  - method: GET
+    path: /
+    action: findAll
+    auth: true
+    cache: true
+    ttl: 60

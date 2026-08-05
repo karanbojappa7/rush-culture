@@ -1,0 +1,50 @@
+name: access
+version: 1.0.0
+enabled: true
+prefix: /api/access
+description: RBAC access dashboard and permission matrix
+
+routes:
+  - method: GET
+    path: /dashboard
+    action: dashboard
+    auth: true
+    cache: true
+    ttl: 60
+  - method: GET
+    path: /matrix
+    action: matrix
+    auth: true
+    cache: false
+  - method: PATCH
+    path: /matrix
+    action: setMatrix
+    auth: true
+    cache: false
+  - method: GET
+    path: /permissions
+    action: listPermissions
+    auth: true
+    cache: true
+    ttl: 120
+  - method: GET
+    path: /catalog
+    action: catalog
+    auth: true
+    cache: true
+    ttl: 300
+  - method: GET
+    path: /roles/:id/permissions
+    action: getRolePermissions
+    auth: true
+    cache: false
+  - method: PATCH
+    path: /roles/:id/permissions
+    action: setRolePermissions
+    auth: true
+    cache: false
+  - method: GET
+    path: /me/permissions
+    action: myPermissions
+    auth: true
+    cache: false

@@ -16,6 +16,10 @@ export function hasPermission(
   permission: string,
 ) {
   if (!user) return false;
-  if (user.roleCode === "SUPER_ADMIN") return true;
-  return (user.permissions ?? []).includes(permission);
+  const role = String(user.roleCode ?? "")
+    .trim()
+    .toUpperCase();
+  if (role === "SUPER_ADMIN") return true;
+  const list = Array.isArray(user.permissions) ? user.permissions : [];
+  return list.includes(permission);
 }

@@ -176,11 +176,12 @@ Location: `apps/api/src/common/caching`
 
 - Backend: **Redis** (`ioredis`); memory fallback if Redis init fails
 - Enable: `ENABLE_CACHING=true`, `CACHE_TYPE=redis`, `CACHE_HOST` / `CACHE_PORT` / `CACHE_TTL`
-- Per-route flag in `module.yml`: `cache: true|false` (+ optional `ttl`)
-- `CacheInterceptor`:
-  - Cacheable GETs → Redis hit/miss
-  - Successful writes (POST/PATCH/PUT/DELETE) → clear that module’s keys (`rc:{module}:*`)
-- Product + category GET routes are cache-enabled in YAML
+- Per-route flag in `module.yml`: `cache: true|false` (+ optional `ttl`); listed GETs without `cache` default to enabled
+- `CacheInterceptor` (global, Redis-backed — DB only on miss):
+  - Cacheable GETs → Redis get; miss → handler → Redis set → response
+  - Successful writes → clear module keys (`rc:{module}:*`) + linked modules (access↔role↔user, product↔category); next GET re-warms Redis
+  - Skips `/api/auth/*`, `/api/health/*`, `/api/cache/*`
+- Admin list/detail GETs cache-enabled: products, categories, orders, customers, customer-queries, reviews, users, roles, access (not `me/permissions`), client-devices
 
 ### Cache admin (`cache.flush`)
 

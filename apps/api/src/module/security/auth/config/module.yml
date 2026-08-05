@@ -5,8 +5,26 @@ prefix: /api/auth
 description: Staff authentication
 schema: security
 
+routes:
+  - method: POST
+    path: /login
+    action: login
+    auth: false
+    cache: false
+  - method: POST
+    path: /logout
+    action: logout
+    auth: false
+    cache: false
+  - method: GET
+    path: /me
+    action: me
+    auth: true
+    cache: true
+    ttl: 120
+
 security:
   encrypt: false
   rate_limit:
     window_ms: 60000
-    max: 20
+    max: 300

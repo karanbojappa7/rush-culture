@@ -1,9 +1,9 @@
-name: customer
+name: role
 version: 1.0.0
 enabled: true
-prefix: /api/customers
-description: Storefront customers in meta schema
-schema: meta
+prefix: /api/roles
+description: Staff and system roles
+schema: core
 
 routes:
   - method: POST
@@ -17,6 +17,12 @@ routes:
     auth: true
     cache: true
     ttl: 60
+  - method: GET
+    path: /code/:code
+    action: findByCode
+    auth: true
+    cache: true
+    ttl: 120
   - method: GET
     path: /:id
     action: findById
@@ -33,6 +39,3 @@ routes:
     action: softDelete
     auth: true
     cache: false
-
-security:
-  encrypt: true

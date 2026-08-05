@@ -15,8 +15,10 @@ import {
 
 type CacheService = {
   name: string;
+  prefix?: string;
   cache?: boolean;
   ttl?: number;
+  cachedActions?: string[];
 };
 
 type CacheStatus = {
@@ -35,7 +37,9 @@ export default async function CacheAdminPage() {
 
   const res = await apiGet<CacheStatus>("/api/cache");
   const status = res.data;
-  const services = status?.services ?? [];
+  const services = (status?.services ?? []).filter(
+    (service) => (service.cachedActions?.length ?? 0) > 0 || service.cache,
+  );
   const cacheOff = status?.enabled === false;
 
   return (
@@ -51,7 +55,8 @@ export default async function CacheAdminPage() {
     >
       <p className="max-w-2xl text-sm text-mute">
         Flush API response cache (Redis when enabled). Keys are rebuilt on the
-        next cacheable request. Requires permission{" "}
+        next cacheable GET. Writes clear the module (and linked modules) so the
+        next read re-warms Redis. Requires permission{" "}
         <span className="font-mono text-ink">cache.flush</span>.
       </p>
 
@@ -98,13 +103,14 @@ export default async function CacheAdminPage() {
           Module caches
         </h2>
         <p className="mt-1 text-sm text-mute">
-          Flush one service (e.g. product, category) when listed by the config
-          loader.
+          GET-only Redis entries per service. Flush one service after catalog or
+          data changes if you need an immediate rebuild.
         </p>
         <div className="mt-4">
           <DataTable
             columns={[
               { key: "name", header: "Service" },
+              { key: "actions", header: "Cached GETs" },
               { key: "cache", header: "Cache" },
               { key: "ttl", header: "TTL" },
               { key: "action", header: "" },
@@ -118,6 +124,16 @@ export default async function CacheAdminPage() {
                   <span className="font-mono text-xs font-semibold">
                     {service.name}
                   </span>
+                  {service.prefix ? (
+                    <span className="mt-0.5 block font-mono text-[10px] text-mute">
+                      {service.prefix}
+                    </span>
+                  ) : null}
+                </DataTableCell>
+                <DataTableCell mute>
+                  {(service.cachedActions ?? []).length > 0
+                    ? service.cachedActions!.join(", ")
+                    : "—"}
                 </DataTableCell>
                 <DataTableCell mute>
                   {service.cache === false ? "off" : "on"}

@@ -65,43 +65,36 @@ export class CacheConfigService {
         continue;
       }
 
+      let pathHit: ResolvedRouteCache | null = null;
+
       for (const route of module.routes || []) {
         if (route.method.toUpperCase() !== method) continue;
 
         const fullRoutePath = joinPaths(prefix, route.path);
         if (!pathMatches(fullRoutePath, requestPath)) continue;
 
+        const resolved: ResolvedRouteCache = {
+          module: module.name,
+          action: route.action,
+          route,
+          cache: resolveRouteCacheFlag(route, method),
+        };
+
         if (
           input.action &&
-          route.action !== input.action &&
-          route.action.toLowerCase() !== input.action.toLowerCase()
+          (route.action === input.action ||
+            route.action.toLowerCase() === input.action.toLowerCase())
         ) {
-          continue;
+          return resolved;
         }
 
-        return {
-          module: module.name,
-          action: route.action,
-          route,
-          cache:
-            normalizeRouteCache(route.cache, route.ttl) ?? { enabled: false },
-        };
+        if (!pathHit) {
+          pathHit = resolved;
+        }
       }
-    }
 
-    if (input.action) {
-      for (const module of this.modules) {
-        const route = (module.routes || []).find(
-          (item) => item.action === input.action,
-        );
-        if (!route) continue;
-        return {
-          module: module.name,
-          action: route.action,
-          route,
-          cache:
-            normalizeRouteCache(route.cache, route.ttl) ?? { enabled: false },
-        };
+      if (pathHit) {
+        return pathHit;
       }
     }
 
@@ -132,16 +125,29 @@ export class CacheConfigService {
   listModules(): Array<{
     name: string;
     prefix: string;
+    cache: boolean;
+    ttl?: number;
     cachedActions: string[];
   }> {
     this.ensureLoaded();
-    return this.modules.map((module) => ({
-      name: module.name,
-      prefix: module.prefix,
-      cachedActions: (module.routes || [])
-        .filter((route) => normalizeRouteCache(route.cache, route.ttl)?.enabled)
-        .map((route) => route.action),
-    }));
+    return this.modules
+      .map((module) => {
+        const cachedRoutes = (module.routes || []).filter((route) => {
+          const method = (route.method || 'GET').toUpperCase();
+          return resolveRouteCacheFlag(route, method).enabled;
+        });
+        const ttls = cachedRoutes
+          .map((route) => resolveRouteCacheFlag(route, 'GET').ttl)
+          .filter((ttl): ttl is number => typeof ttl === 'number');
+        return {
+          name: module.name,
+          prefix: module.prefix,
+          cache: cachedRoutes.length > 0,
+          ttl: ttls.length ? Math.min(...ttls) : undefined,
+          cachedActions: cachedRoutes.map((route) => route.action),
+        };
+      })
+      .filter((module) => module.cache || (module.prefix || '').length > 0);
   }
 
   private ensureLoaded(): void {
@@ -238,3 +244,19 @@ export function fingerprintRequest(parts: {
     .digest('hex')
     .slice(0, 16);
 }
+
+function resolveRouteCacheFlag(
+  route: ModuleRouteConfig,
+  method: string,
+): ModuleRouteCacheConfig {
+  if (method.toUpperCase() !== 'GET') {
+    return { enabled: false };
+  }
+  return (
+    normalizeRouteCache(route.cache, route.ttl) ?? {
+      enabled: true,
+      ...(route.ttl !== undefined ? { ttl: route.ttl } : {}),
+    }
+  );
+}
+

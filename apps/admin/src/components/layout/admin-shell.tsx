@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { brand } from "@linq/site-config";
@@ -20,6 +21,47 @@ const nav = [
   { href: "/access", label: "Access", permission: "access.dashboard" },
   { href: "/cache", label: "Cache", permission: "cache.flush" },
 ];
+
+const SESSION_KEY = "admin-session-v1";
+
+type StickySession = {
+  roleCode: string;
+  permissions: string[];
+  userLabel?: string;
+};
+
+function readStoredSession(): StickySession | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = sessionStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as StickySession;
+    if (!parsed?.roleCode) return null;
+    return {
+      roleCode: parsed.roleCode,
+      permissions: Array.isArray(parsed.permissions) ? parsed.permissions : [],
+      userLabel: parsed.userLabel,
+    };
+  } catch {
+    return null;
+  }
+}
+
+function writeStoredSession(session: StickySession) {
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
+  } catch {
+  }
+}
+
+function clearStoredSession() {
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.removeItem(SESSION_KEY);
+  } catch {
+  }
+}
 
 export function AdminShell({
   children,
@@ -43,11 +85,48 @@ export function AdminShell({
   const pathname = usePathname();
   const router = useRouter();
   const showBack = Boolean(backHref) || (breadcrumbs?.length ?? 0) > 1;
-  const items = nav.filter((item) =>
-    hasPermission({ roleCode: roleCode ?? "", permissions }, item.permission),
-  );
+
+  const [session, setSession] = useState<StickySession>(() => {
+    if (roleCode) {
+      const next: StickySession = {
+        roleCode,
+        permissions: Array.isArray(permissions) ? permissions : [],
+        userLabel,
+      };
+      writeStoredSession(next);
+      return next;
+    }
+    return (
+      readStoredSession() ?? {
+        roleCode: "",
+        permissions: [],
+        userLabel,
+      }
+    );
+  });
+
+  useEffect(() => {
+    if (roleCode) {
+      const next: StickySession = {
+        roleCode,
+        permissions: Array.isArray(permissions) ? permissions : [],
+        userLabel,
+      };
+      setSession(next);
+      writeStoredSession(next);
+      return;
+    }
+    const stored = readStoredSession();
+    if (stored) {
+      setSession(stored);
+    }
+  }, [roleCode, permissions, userLabel]);
+
+  const items = nav.filter((item) => hasPermission(session, item.permission));
+  const label = session.userLabel || userLabel;
 
   async function logout() {
+    clearStoredSession();
     await apiPost("/api/auth/logout");
     router.replace("/login");
     router.refresh();
@@ -55,8 +134,8 @@ export function AdminShell({
 
   return (
     <div className="admin-shell min-h-screen md:grid md:grid-cols-[232px_1fr]">
-      <aside className="relative border-b border-white/10 bg-ink text-white md:sticky md:top-0 md:h-screen md:border-b-0 md:border-r md:border-white/10">
-        <div className="px-5 py-6">
+      <aside className="flex flex-col border-b border-white/10 bg-ink text-white md:sticky md:top-0 md:h-screen md:border-b-0 md:border-r md:border-white/10">
+        <div className="shrink-0 px-5 py-6">
           <Link href="/" className="block">
             <p className="font-display text-2xl font-extrabold tracking-tight">
               {brand.name}
@@ -65,11 +144,11 @@ export function AdminShell({
               {brand.adminLabel}
             </p>
           </Link>
-          {userLabel ? (
-            <p className="mt-3 truncate text-xs text-white/65">{userLabel}</p>
+          {label ? (
+            <p className="mt-3 truncate text-xs text-white/65">{label}</p>
           ) : null}
         </div>
-        <nav className="flex gap-1 overflow-x-auto px-3 pb-4 md:flex-col md:pb-8">
+        <nav className="flex min-h-0 flex-1 gap-1 overflow-x-auto px-3 pb-4 md:flex-col md:overflow-y-auto md:pb-4">
           {items.map((item) => {
             const active =
               item.href === "/"
@@ -90,7 +169,7 @@ export function AdminShell({
             );
           })}
         </nav>
-        <div className="px-3 pb-6 md:absolute md:inset-x-0 md:bottom-0">
+        <div className="shrink-0 border-t border-white/10 px-3 py-4">
           <button
             type="button"
             onClick={logout}
