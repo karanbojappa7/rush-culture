@@ -33,20 +33,27 @@ type ClientDevice = {
 };
 
 type Props = {
-  searchParams: Promise<{ page?: string; q?: string; deviceType?: string }>;
+  searchParams: Promise<{
+    page?: string;
+    q?: string;
+    deviceType?: string;
+    from?: string;
+    to?: string;
+  }>;
 };
 
 export default async function DevicesAdminPage({ searchParams }: Props) {
-  const { page = "1", q, deviceType } = await searchParams;
+  const { page = "1", q, deviceType, from, to } = await searchParams;
   const user = await getSessionUser();
   if (!hasPermission(user, "devices.read")) {
     redirect("/");
   }
 
   const res = await apiGet<PageResult<ClientDevice>>(
-    `/api/client-devices${pageQuery({ page, limit: 20, q, deviceType })}`,
+    `/api/client-devices${pageQuery({ page, limit: 20, q, deviceType, from, to })}`,
   );
   const data = res.data ?? emptyPage<ClientDevice>();
+  const hasFilters = Boolean(q || deviceType || from || to);
 
   const filters = [
     { label: "All", value: undefined },
@@ -81,6 +88,8 @@ export default async function DevicesAdminPage({ searchParams }: Props) {
                   href={`/devices${pageQuery({
                     deviceType: filter.value,
                     q,
+                    from,
+                    to,
                   })}`}
                   className={`cursor-pointer px-3 py-1.5 text-[11px] font-semibold tracking-[0.1em] uppercase transition-colors ${
                     active
@@ -106,7 +115,7 @@ export default async function DevicesAdminPage({ searchParams }: Props) {
           { key: "blocked", header: "Blocked" },
         ]}
         empty={
-          q || deviceType
+          hasFilters
             ? "No devices match your filters."
             : "No device traffic logged yet."
         }
@@ -156,7 +165,7 @@ export default async function DevicesAdminPage({ searchParams }: Props) {
         totalPages={data.totalPages}
         total={data.total}
         basePath="/devices"
-        searchParams={{ q, deviceType }}
+        searchParams={{ q, deviceType, from, to }}
       />
     </AdminShell>
   );

@@ -1,4 +1,5 @@
 import { Prisma } from '@prisma/client';
+import { buildCreatedAtFilter } from '../../../../common/utility/date-range.utility';
 
 export type ProductFilters = {
   q?: string;
@@ -8,6 +9,8 @@ export type ProductFilters = {
   minPrice?: number;
   maxPrice?: number;
   isActive?: boolean;
+  from?: string;
+  to?: string;
 };
 
 export function buildProductWhere(filters: ProductFilters): Prisma.ProductWhereInput {
@@ -41,5 +44,6 @@ export function buildProductWhere(filters: ProductFilters): Prisma.ProductWhereI
         }
       : {}),
     ...(Object.keys(variantWhere).length > 1 ? { variants: { some: variantWhere } } : {}),
+    ...buildCreatedAtFilter(filters.from, filters.to),
   };
 }

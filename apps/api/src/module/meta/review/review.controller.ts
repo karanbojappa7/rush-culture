@@ -52,6 +52,8 @@ export class ReviewController extends BaseController {
     @Query('productId') productId?: string,
     @Query('status') status?: 'pending' | 'approved' | 'all',
     @Query('q') q?: string,
+    @Query('from') from?: string,
+    @Query('to') to?: string,
   ): Promise<ResponseVm> {
     return this.executeMethod(
       (data) => this.reviewService.findAllAdmin(data),
@@ -60,6 +62,8 @@ export class ReviewController extends BaseController {
         productId,
         status,
         q,
+        from,
+        to,
       },
       'Reviews fetched',
     );

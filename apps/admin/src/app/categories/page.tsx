@@ -1,5 +1,7 @@
+import Link from "next/link";
 import { AdminShell } from "@/components/layout/admin-shell";
 import { CategoryForm } from "@/components/categories/category-form";
+import { DeleteActionButton } from "@/components/ui/delete-action-button";
 import {
   DataTable,
   DataTableCell,
@@ -19,17 +21,39 @@ type Category = {
   imageUrl: string | null;
 };
 
-type Props = { searchParams: Promise<{ page?: string; q?: string }> };
+type Props = {
+  searchParams: Promise<{
+    page?: string;
+    q?: string;
+    edit?: string;
+    from?: string;
+    to?: string;
+  }>;
+};
 
 export default async function CategoriesPage({ searchParams }: Props) {
-  const { page = "1", q } = await searchParams;
+  const { page = "1", q, edit, from, to } = await searchParams;
   const [user, categoriesRes] = await Promise.all([
     getSessionUser(),
     apiGet<PageResult<Category>>(
-      `/api/categories${pageQuery({ page, limit: 20, q })}`,
+      `/api/categories${pageQuery({ page, limit: 20, q, from, to })}`,
     ),
   ]);
   const data = categoriesRes.data ?? emptyPage<Category>();
+  let editing: Category | null =
+    (edit && data.items.find((category) => category.id === edit)) || null;
+  if (edit && !editing) {
+    editing = (await apiGet<Category>(`/api/categories/${edit}`)).data ?? null;
+  }
+
+  const listQuery = new URLSearchParams();
+  if (q) listQuery.set("q", q);
+  if (from) listQuery.set("from", from);
+  if (to) listQuery.set("to", to);
+  if (page !== "1") listQuery.set("page", page);
+  const listQs = listQuery.toString();
+  const listHref = listQs ? `/categories?${listQs}` : "/categories";
+  const hasFilters = Boolean(q || from || to);
 
   return (
     <AdminShell
@@ -54,33 +78,58 @@ export default async function CategoriesPage({ searchParams }: Props) {
               { key: "name", header: "Name" },
               { key: "slug", header: "Slug" },
               { key: "description", header: "Description" },
+              { key: "actions", header: "" },
             ]}
             empty={
-              q ? "No categories match your search." : "No categories yet."
+              hasFilters
+                ? "No categories match your filters."
+                : "No categories yet."
             }
             isEmpty={data.items.length === 0}
           >
-            {data.items.map((category) => (
-              <DataTableRow key={category.id}>
-                <DataTableCell className="font-medium">
-                  {category.name}
-                </DataTableCell>
-                <DataTableCell mute>{category.slug}</DataTableCell>
-                <DataTableCell mute>
-                  {category.description ?? "—"}
-                </DataTableCell>
-              </DataTableRow>
-            ))}
+            {data.items.map((category) => {
+              const editParams = new URLSearchParams();
+              if (q) editParams.set("q", q);
+              if (from) editParams.set("from", from);
+              if (to) editParams.set("to", to);
+              if (page !== "1") editParams.set("page", page);
+              editParams.set("edit", category.id);
+              return (
+                <DataTableRow key={category.id}>
+                  <DataTableCell className="font-medium">
+                    {category.name}
+                  </DataTableCell>
+                  <DataTableCell mute>{category.slug}</DataTableCell>
+                  <DataTableCell mute>
+                    {category.description ?? "—"}
+                  </DataTableCell>
+                  <DataTableCell align="right">
+                    <div className="flex items-center justify-end gap-3">
+                      <Link
+                        href={`/categories?${editParams.toString()}`}
+                        className="cursor-pointer text-[11px] font-semibold tracking-[0.1em] uppercase hover:underline"
+                      >
+                        Edit
+                      </Link>
+                      <DeleteActionButton
+                        href={`/api/categories/${category.id}`}
+                        confirmLabel={`Delete category “${category.name}”?`}
+                      />
+                    </div>
+                  </DataTableCell>
+                </DataTableRow>
+              );
+            })}
           </DataTable>
           <PaginationNav
             page={data.page}
             totalPages={data.totalPages}
             total={data.total}
             basePath="/categories"
-            searchParams={{ q }}
+            searchParams={{ q, from, to }}
           />
         </div>
-        <CategoryForm />
+        <CategoryForm category={editing} cancelHref={listHref} />
       </div>
     </AdminShell>
   );

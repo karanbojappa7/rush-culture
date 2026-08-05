@@ -11,6 +11,7 @@ import {
   toPageResult,
 } from '../../../common/pagination/pagination.utility';
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { buildCreatedAtFilter } from '../../../common/utility/date-range.utility';
 import { buildContainsOr } from '../../../common/utility/search.utility';
 
 @Injectable()
@@ -33,6 +34,8 @@ export class CustomerQueryRepo extends BaseRepo<
       status?: CustomerQueryStatus;
       topic?: CustomerQueryTopic;
       q?: string;
+      from?: string;
+      to?: string;
     } = {},
   ) {
     const where = this.notDeletedWhere({
@@ -45,6 +48,7 @@ export class CustomerQueryRepo extends BaseRepo<
         'orderNumber',
         'message',
       ] as const),
+      ...buildCreatedAtFilter(filters.from, filters.to),
     });
     const [items, total] = await Promise.all([
       this.prisma.customerQuery.findMany({

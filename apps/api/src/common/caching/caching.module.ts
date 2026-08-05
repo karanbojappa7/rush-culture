@@ -1,5 +1,4 @@
 import { Global, Module, OnModuleInit } from '@nestjs/common';
-import { APP_INTERCEPTOR } from '@nestjs/core';
 import { AuthModule } from '../../module/security/auth/auth.module';
 import { CacheAdminService } from './cache-admin.service';
 import { CacheConfigService } from './cache-config.service';
@@ -11,14 +10,8 @@ import { CacheInterceptor } from './cache.interceptor';
 @Module({
   imports: [AuthModule],
   controllers: [CacheController],
-  providers: [
-    CacheAdminService,
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: CacheInterceptor,
-    },
-  ],
-  exports: [CacheAdminService],
+  providers: [CacheAdminService, CacheInterceptor],
+  exports: [CacheAdminService, CacheInterceptor],
 })
 export class CachingModule implements OnModuleInit {
   onModuleInit() {

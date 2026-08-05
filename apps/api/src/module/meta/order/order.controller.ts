@@ -32,21 +32,40 @@ export class OrderController extends BaseController {
     @Query('page') page?: string,
     @Query('limit') limit?: string,
     @Query('q') q?: string,
+    @Query('from') from?: string,
+    @Query('to') to?: string,
   ): Promise<ResponseVm> {
     return this.executeMethod(
       (data) => this.orderService.findAll(data),
-      { ...parsePageQuery(page, limit), q },
+      { ...parsePageQuery(page, limit), q, from, to },
       'Orders fetched',
     );
   }
 
   @Get('summary')
   @StaffAuth()
-  summary(): Promise<ResponseVm> {
+  summary(
+    @Query('from') from?: string,
+    @Query('to') to?: string,
+  ): Promise<ResponseVm> {
     return this.executeMethod(
-      (_data: Record<string, never>) => this.orderService.summary(),
-      {},
+      (data) => this.orderService.summary(data),
+      { from, to },
       'Summary fetched',
+    );
+  }
+
+  @Get('export')
+  @StaffAuth()
+  export(
+    @Query('q') q?: string,
+    @Query('from') from?: string,
+    @Query('to') to?: string,
+  ): Promise<ResponseVm> {
+    return this.executeMethod(
+      (data) => this.orderService.exportAll(data),
+      { q, from, to },
+      'Orders export ready',
     );
   }
 

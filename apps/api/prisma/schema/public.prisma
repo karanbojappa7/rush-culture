@@ -1,0 +1,39 @@
+enum EmailLogStatus {
+  PENDING
+  SENT
+  FAILED
+  SKIPPED
+
+  @@schema("public")
+}
+
+model EmailLog {
+  id                String         @id @default(cuid())
+  toEmail           String         @map("to_email")
+  toName            String?        @map("to_name")
+  fromEmail         String         @map("from_email")
+  subject           String
+  templateKey       String         @map("template_key")
+  status            EmailLogStatus @default(PENDING)
+  providerMessageId String?        @map("provider_message_id")
+  errorMessage      String?        @map("error_message") @db.Text
+  relatedType       String?        @map("related_type")
+  relatedId         String?        @map("related_id")
+  meta              Json?
+  htmlBody          String?        @map("html_body") @db.Text
+  textBody          String?        @map("text_body") @db.Text
+  sentAt            DateTime?      @map("sent_at") @db.Timestamptz(3)
+
+  createdAt DateTime @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt DateTime @updatedAt @db.Timestamptz(3) @map("updated_at")
+  isDeleted Boolean  @default(false) @map("is_deleted")
+
+  @@index([toEmail])
+  @@index([status])
+  @@index([templateKey])
+  @@index([relatedType, relatedId])
+  @@index([createdAt])
+  @@index([isDeleted])
+  @@map("email_log")
+  @@schema("public")
+}

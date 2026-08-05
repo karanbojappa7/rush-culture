@@ -5,6 +5,7 @@ import {
   PageQuery,
   PageResult,
 } from '../../../common/pagination/pagination.utility';
+import { buildCreatedAtFilter } from '../../../common/utility/date-range.utility';
 import { buildContainsOr } from '../../../common/utility/search.utility';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
@@ -58,11 +59,14 @@ export class CustomerService extends BaseService {
   }
 
   async findAll(
-    pageQuery: PageQuery & { q?: string },
+    pageQuery: PageQuery & { q?: string; from?: string; to?: string },
   ): Promise<PageResult<Customer>> {
-    const { q, ...page } = pageQuery;
+    const { q, from, to, ...page } = pageQuery;
     return this.customerRepo.findPage(page, {
-      where: buildContainsOr(q, ['email', 'name', 'phoneNumber'] as const),
+      where: {
+        ...buildContainsOr(q, ['email', 'name', 'phoneNumber'] as const),
+        ...buildCreatedAtFilter(from, to),
+      },
       orderBy: { createdAt: 'desc' },
     });
   }

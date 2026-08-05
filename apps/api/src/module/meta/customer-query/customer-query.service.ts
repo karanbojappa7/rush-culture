@@ -52,13 +52,17 @@ export class CustomerQueryService extends BaseService {
       status?: CustomerQueryStatus;
       topic?: CustomerQueryTopic;
       q?: string;
+      from?: string;
+      to?: string;
     },
   ): Promise<PageResult<CustomerQuery>> {
-    const { status, topic, q, ...pageQuery } = payload;
+    const { status, topic, q, from, to, ...pageQuery } = payload;
     return this.customerQueryRepo.findPageFiltered(pageQuery, {
       status,
       topic,
       q,
+      from,
+      to,
     });
   }
 

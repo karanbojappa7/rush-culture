@@ -9,6 +9,7 @@ import {
   PageQuery,
   PageResult,
 } from '../../../common/pagination/pagination.utility';
+import { buildCreatedAtFilter } from '../../../common/utility/date-range.utility';
 import { buildContainsOr } from '../../../common/utility/search.utility';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
@@ -36,11 +37,14 @@ export class CategoryService extends BaseService {
   }
 
   async findAll(
-    pageQuery: PageQuery & { q?: string },
+    pageQuery: PageQuery & { q?: string; from?: string; to?: string },
   ): Promise<PageResult<Category>> {
-    const { q, ...page } = pageQuery;
+    const { q, from, to, ...page } = pageQuery;
     return this.categoryRepo.findPage(page, {
-      where: buildContainsOr(q, ['name', 'slug', 'description'] as const),
+      where: {
+        ...buildContainsOr(q, ['name', 'slug', 'description'] as const),
+        ...buildCreatedAtFilter(from, to),
+      },
       orderBy: { createdAt: 'desc' },
     });
   }

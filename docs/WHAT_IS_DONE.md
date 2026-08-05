@@ -31,6 +31,7 @@ Workspaces: npm (`apps/*`, `packages/*`).
 
 | Schema | Owns |
 |---|---|
+| `public` | EmailLog (outbound mail tracking) |
 | `master` | Category, Product, ProductVariant, ProductImage |
 | `core` | Role, Permission, RolePermission, UserType, User (staff), AppConfig, Discount |
 | `security` | Account, Session, VerificationToken, ClientDevice |
@@ -55,7 +56,9 @@ Controller → executeMethod → Service → Repo (Prisma) → Postgres
 - Modules under `apps/api/src/module/{master|core|meta|security}/`
 - Module config: each domain has `config/module.yml`
 - No comments in application TS/TSX/JS
-- Optional request encryption (`ENABLE_ENCRYPTION`) via crypto middleware/interceptor
+- Optional hybrid API encryption (`ENABLE_ENCRYPTION=true`) via RSA-OAEP session key + AES-256-GCM body (public key at `GET /api/crypto/public-key`; clients use `@linq/secure-api`)
+- Admin session cookie `rc_admin_token` is **sealed** (AES-GCM), not a raw JWT — DevTools no longer expose JWT claims; AuthGuard unseals then verifies JWT
+- Redis cache values are **sealed at rest** (AES-GCM); keys remain namespaced `rc:…` but payloads are not plaintext JSON
 
 ### Modules & prefixes
 
@@ -67,7 +70,7 @@ Controller → executeMethod → Service → Repo (Prisma) → Postgres
 | Categories | `/api/categories` | public reads |
 | Products | `/api/products` | stock-check, variants/images patch |
 | Customers / Addresses | `/api/customers`, `/api/addresses` | meta |
-| Carts / Orders / Reviews | `/api/carts` etc. | meta; reviews: guest POST (email), approved GET, staff approve |
+| Carts / Orders / Reviews | `/api/carts` etc. | meta; reviews: guest POST (email), approved GET, staff approve; **order create sends confirmation email** + `public.email_log` |
 | Customer queries | `/api/customer-queries` | public POST; staff list/update |
 | App configs / Discounts | `/api/app-configs` etc. | core |
 | Client devices | `/api/client-devices` | `devices.read` (Super Admin by default) |
@@ -177,11 +180,14 @@ Location: `apps/api/src/common/caching`
 - Backend: **Redis** (`ioredis`); memory fallback if Redis init fails
 - Enable: `ENABLE_CACHING=true`, `CACHE_TYPE=redis`, `CACHE_HOST` / `CACHE_PORT` / `CACHE_TTL`
 - Per-route flag in `module.yml`: `cache: true|false` (+ optional `ttl`); listed GETs without `cache` default to enabled
-- `CacheInterceptor` (global, Redis-backed — DB only on miss):
+- `CacheInterceptor` + `EncryptInterceptor` registered in `AppModule` as `APP_INTERCEPTOR` (cache outer / encrypt inner pipe order in Nest is first-registered-first; AppModule registers encrypt then cache so **encrypt wraps hits and misses on the wire**)
+- Cache stores **plain** `ResponseVm` only (never the AES transport envelope); Redis values are sealed at rest (`rc1.…` via `token-seal`)
+- `CacheInterceptor` (Redis-backed — DB only on miss):
   - Cacheable GETs → Redis get; miss → handler → Redis set → response
+  - If a body arrives already encrypted, decrypt with `req.encSessionKey` before store
   - Successful writes → clear module keys (`rc:{module}:*`) + linked modules (access↔role↔user, product↔category); next GET re-warms Redis
-  - Skips `/api/auth/*`, `/api/health/*`, `/api/cache/*`
-- Admin list/detail GETs cache-enabled: products, categories, orders, customers, customer-queries, reviews, users, roles, access (not `me/permissions`), client-devices
+  - Skips `/api/cache/*`, `/api/health/*`; clears auth cache on login/logout
+- Admin list/detail GETs cache-enabled: products, categories, orders, customers, customer-queries, reviews, users, roles, access, auth `/me`, client-devices
 
 ### Cache admin (`cache.flush`)
 
@@ -204,6 +210,20 @@ Location: `apps/api/src/common/caching`
 | `GET` | `/api/health/live` | Process liveness |
 
 Overall `status`: `ok` | `degraded` | `error` (HTTP **503** if Postgres down).
+
+---
+
+## Transactional email (SMTP)
+
+Location: `apps/api/src/common/email`
+
+- `ENABLE_EMAIL=true` + `SMTP_HOST` (optional user/pass, port 587)
+- Branded HTML layout + order confirmation template (`@linq/site-config` brand/copy/money)
+- On checkout `POST /api/orders` success → customer confirmation email
+- Every attempt stored in `public.email_log` (`PENDING` / `SENT` / `FAILED` / `SKIPPED`) with HTML/text, error, related order id
+- Missing SMTP does **not** fail checkout; row is logged as `SKIPPED`
+
+Env: `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`, `SMTP_FROM_NAME`, `ENABLE_EMAIL`
 
 ---
 

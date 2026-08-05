@@ -53,6 +53,8 @@ export class ReviewService extends BaseService {
     approvedOnly?: boolean;
     approved?: boolean;
     q?: string;
+    from?: string;
+    to?: string;
   }) {
     const {
       productId,
@@ -62,13 +64,15 @@ export class ReviewService extends BaseService {
       approvedOnly = true,
       approved,
       q,
+      from,
+      to,
     } = payload;
     return this.reviewRepo.findPageByProductId(
       { page, limit, skip },
       productId,
       approvedOnly
-        ? { approvedOnly: true, q }
-        : { approved, q },
+        ? { approvedOnly: true, q, from, to }
+        : { approved, q, from, to },
     );
   }
 
@@ -79,6 +83,8 @@ export class ReviewService extends BaseService {
     skip: number;
     status?: 'pending' | 'approved' | 'all';
     q?: string;
+    from?: string;
+    to?: string;
   }) {
     const status = payload.status ?? 'pending';
     const approved =
@@ -88,6 +94,8 @@ export class ReviewService extends BaseService {
       approvedOnly: false,
       approved,
       q: payload.q,
+      from: payload.from,
+      to: payload.to,
     });
   }
 

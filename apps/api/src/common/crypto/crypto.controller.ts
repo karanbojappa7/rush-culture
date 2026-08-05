@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Header } from '@nestjs/common';
 import { CryptoService } from './crypto.service';
 import { ResponseBuilder } from '../response/response.builder';
 
@@ -10,6 +10,7 @@ export class CryptoController {
   ) {}
 
   @Get('public-key')
+  @Header('Cache-Control', 'public, max-age=86400')
   publicKey() {
     if (!this.crypto.enabled) {
       return this.responseBuilder.success('Encryption disabled', {

@@ -1,7 +1,11 @@
 import { Module } from '@nestjs/common';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { CachingModule } from './common/caching/caching.module';
+import { CacheInterceptor } from './common/caching/cache.interceptor';
 import { CryptoModule } from './common/crypto/crypto.module';
+import { EncryptInterceptor } from './common/crypto/encrypt.interceptor';
 import { DeviceModule } from './common/device/device.module';
+import { EmailModule } from './common/email/email.module';
 import { HealthModule } from './common/health/health.module';
 import { PrismaModule } from './common/prisma/prisma.module';
 import { RateLimitModule } from './common/rate-limit/rate-limit.module';
@@ -21,9 +25,10 @@ import { ReviewModule } from './module/meta/review/review.module';
 
 @Module({
   imports: [
-    CachingModule,
     CryptoModule,
+    CachingModule,
     DeviceModule,
+    EmailModule,
     RateLimitModule,
     HealthModule,
     PrismaModule,
@@ -40,6 +45,16 @@ import { ReviewModule } from './module/meta/review/review.module';
     OrderModule,
     CartModule,
     ReviewModule,
+  ],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: EncryptInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: CacheInterceptor,
+    },
   ],
 })
 export class AppModule {}

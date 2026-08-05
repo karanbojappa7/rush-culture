@@ -6,6 +6,7 @@ import {
   toPageResult,
 } from '../../../common/pagination/pagination.utility';
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { buildCreatedAtFilter } from '../../../common/utility/date-range.utility';
 
 @Injectable()
 export class ReviewRepo extends BaseRepo<
@@ -34,6 +35,8 @@ export class ReviewRepo extends BaseRepo<
       approvedOnly?: boolean;
       approved?: boolean;
       q?: string;
+      from?: string;
+      to?: string;
     } = {},
   ) {
     const search = options.q?.trim();
@@ -55,6 +58,7 @@ export class ReviewRepo extends BaseRepo<
             ],
           }
         : {}),
+      ...buildCreatedAtFilter(options.from, options.to),
     });
     const [items, total] = await Promise.all([
       this.prisma.review.findMany({

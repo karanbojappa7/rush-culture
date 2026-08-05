@@ -9,6 +9,7 @@ type Props = {
   placeholder?: string;
   className?: string;
   delayMs?: number;
+  label?: string;
 };
 
 export function DebouncedSearch({
@@ -16,6 +17,7 @@ export function DebouncedSearch({
   placeholder = "Search…",
   className = "",
   delayMs = 350,
+  label = "Search",
 }: Props) {
   const router = useRouter();
   const pathname = usePathname();
@@ -42,15 +44,17 @@ export function DebouncedSearch({
   }, [debounced, urlValue, param, pathname, router, searchParams]);
 
   return (
-    <label className={`relative block min-w-0 flex-1 ${className}`}>
-      <span className="sr-only">{placeholder}</span>
+    <label className={`block min-w-0 ${className}`}>
+      <span className="mb-1 block text-[11px] font-medium tracking-[0.12em] uppercase text-mute">
+        {label}
+      </span>
       <input
         type="search"
         value={value}
         onChange={(event) => setValue(event.target.value)}
         placeholder={placeholder}
         autoComplete="off"
-        className={`w-full border border-line bg-panel px-3.5 py-2.5 text-sm outline-none transition-[border-color,box-shadow] placeholder:text-mute/70 focus:border-ink focus:shadow-[0_0_0_3px_rgba(20,20,20,0.06)] ${
+        className={`h-10 w-full border border-line bg-panel px-3 text-sm outline-none transition-[border-color,box-shadow] placeholder:text-mute/70 focus:border-ink focus:shadow-[0_0_0_3px_rgba(20,20,20,0.06)] ${
           pending ? "opacity-80" : ""
         }`}
       />

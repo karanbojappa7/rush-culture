@@ -25,6 +25,12 @@ routes:
     cache: true
     ttl: 300
   - method: GET
+    path: /export
+    action: export
+    auth: true
+    roles: [STAFF, ADMIN]
+    cache: false
+  - method: GET
     path: /:id
     action: findById
     auth: true

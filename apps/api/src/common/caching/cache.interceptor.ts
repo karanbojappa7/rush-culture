@@ -3,11 +3,14 @@ import {
   ExecutionContext,
   Injectable,
   NestInterceptor,
+  Optional,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { Observable, from, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { WRITE_HTTP_METHODS } from '../constants/cache.constants';
+import { CryptoService } from '../crypto/crypto.service';
+import { isEncryptedResponseBody } from '../crypto/crypto.types';
 import { ResponseVm } from '../response/response.vm';
 import { CacheHandler } from './cache.handler';
 import {
@@ -17,7 +20,10 @@ import {
 import { CacheKeyBuilder } from './utils/cache-key.builder';
 import { CacheUtils } from './utils/cache.utils';
 
-type AuthedRequest = Request & { user?: { id?: string } };
+type AuthedRequest = Request & {
+  user?: { id?: string };
+  encSessionKey?: Buffer;
+};
 
 const WRITE_INVALIDATE_LINKS: Record<string, string[]> = {
   access: ['role', 'user', 'auth'],
@@ -29,6 +35,8 @@ const WRITE_INVALIDATE_LINKS: Record<string, string[]> = {
 
 @Injectable()
 export class CacheInterceptor implements NestInterceptor {
+  constructor(@Optional() private readonly crypto?: CryptoService) {}
+
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     const cache = CacheHandler.getInstance();
     if (!cache.isEnabled()) {
@@ -50,7 +58,7 @@ export class CacheInterceptor implements NestInterceptor {
     if (isWrite && isAuthSessionWrite(requestPath)) {
       return next.handle().pipe(
         switchMap(async (body) => {
-          if (isSuccessResponse(body)) {
+          if (this.asSuccessVm(body, req)) {
             await CacheUtils.clearModuleCache('auth');
           }
           return body;
@@ -77,7 +85,7 @@ export class CacheInterceptor implements NestInterceptor {
     if (isWrite) {
       return next.handle().pipe(
         switchMap(async (body) => {
-          if (!isSuccessResponse(body)) {
+          if (!this.asSuccessVm(body, req)) {
             return body;
           }
           await invalidateModuleCaches(moduleName);
@@ -111,21 +119,41 @@ export class CacheInterceptor implements NestInterceptor {
 
     return from(cache.get<ResponseVm>(cacheKey)).pipe(
       switchMap((cached) => {
-        if (cached) {
+        if (cached && isSuccessResponse(cached)) {
           return of(cached);
         }
 
         return next.handle().pipe(
           switchMap(async (body) => {
-            if (!isSuccessResponse(body)) {
-              return body;
+            const plain = this.asSuccessVm(body, req);
+            if (plain) {
+              await cache.set(cacheKey, plain, ttl);
             }
-            await cache.set(cacheKey, body, ttl);
             return body;
           }),
         );
       }),
     );
+  }
+
+  private asSuccessVm(
+    body: unknown,
+    req: AuthedRequest,
+  ): ResponseVm | null {
+    if (isSuccessResponse(body)) return body;
+    if (
+      !this.crypto?.enabled ||
+      !req.encSessionKey ||
+      !isEncryptedResponseBody(body)
+    ) {
+      return null;
+    }
+    try {
+      const plain = this.crypto.decryptJson(body, req.encSessionKey);
+      return isSuccessResponse(plain) ? plain : null;
+    } catch {
+      return null;
+    }
   }
 }
 

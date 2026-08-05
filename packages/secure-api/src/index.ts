@@ -25,6 +25,17 @@ type PublicKeyPayload = {
   publicKey?: string;
 };
 
+type CryptoMode =
+  | { enabled: false }
+  | { enabled: true; publicKey: CryptoKey };
+
+type AesSession = {
+  aesKey: CryptoKey;
+  ek: string;
+};
+
+const publicKeyCache = new Map<string, Promise<CryptoMode>>();
+
 function b64ToBytes(b64: string) {
   const bin = atob(b64);
   const bytes = new Uint8Array(bin.length);
@@ -113,6 +124,48 @@ function isEncryptedResponse(body: unknown): body is EncryptedResponse {
   );
 }
 
+async function loadCryptoMode(baseUrl: string): Promise<CryptoMode> {
+  try {
+    const res = await fetch(`${baseUrl}/api/crypto/public-key`, {
+      cache: "force-cache",
+    });
+    if (!res.ok) return { enabled: false };
+    const json = (await res.json()) as ApiResponse<PublicKeyPayload>;
+    const payload = json.data;
+    if (!payload?.enabled || !payload.publicKey) {
+      return { enabled: false };
+    }
+    return {
+      enabled: true,
+      publicKey: await importPublicKey(payload.publicKey),
+    };
+  } catch {
+    return { enabled: false };
+  }
+}
+
+function resolveCryptoMode(baseUrl: string): Promise<CryptoMode> {
+  let pending = publicKeyCache.get(baseUrl);
+  if (!pending) {
+    pending = loadCryptoMode(baseUrl).then((mode) => {
+      if (!mode.enabled) {
+        publicKeyCache.delete(baseUrl);
+      }
+      return mode;
+    });
+    publicKeyCache.set(baseUrl, pending);
+  }
+  return pending;
+}
+
+export function clearSecureApiPublicKeyCache(baseUrl?: string) {
+  if (baseUrl) {
+    publicKeyCache.delete(baseUrl);
+    return;
+  }
+  publicKeyCache.clear();
+}
+
 export function resolveApiBaseUrl(fallback = "http://localhost:4000") {
   if (typeof window === "undefined") {
     return (
@@ -128,36 +181,16 @@ export function createSecureApi(
   baseUrl: string,
   options: SecureApiOptions = {},
 ) {
-  let cached:
-    | { enabled: false }
-    | { enabled: true; publicKey: CryptoKey }
-    | null = null;
+  let session: AesSession | null = null;
 
-  async function resolveCrypto() {
-    if (cached) return cached;
-    try {
-      const res = await fetch(`${baseUrl}/api/crypto/public-key`, {
-        cache: "no-store",
-      });
-      if (!res.ok) {
-        cached = { enabled: false };
-        return cached;
-      }
-      const json = (await res.json()) as ApiResponse<PublicKeyPayload>;
-      const payload = json.data;
-      if (!payload?.enabled || !payload.publicKey) {
-        cached = { enabled: false };
-        return cached;
-      }
-      cached = {
-        enabled: true,
-        publicKey: await importPublicKey(payload.publicKey),
-      };
-      return cached;
-    } catch {
-      cached = { enabled: false };
-      return cached;
-    }
+  async function resolveSession(
+    publicKey: CryptoKey,
+  ): Promise<AesSession> {
+    if (session) return session;
+    const aesKey = await createAesKey();
+    const ek = await wrapAesKey(publicKey, aesKey);
+    session = { aesKey, ek };
+    return session;
   }
 
   async function request<T>(
@@ -165,7 +198,7 @@ export function createSecureApi(
     init?: RequestInit & { json?: unknown },
   ): Promise<ApiResponse<T>> {
     try {
-      const mode = await resolveCrypto();
+      const mode = await resolveCryptoMode(baseUrl);
       const headers = new Headers(init?.headers);
       if (options.headers) {
         new Headers(options.headers).forEach((value, key) => {
@@ -194,8 +227,7 @@ export function createSecureApi(
         return res.json() as Promise<ApiResponse<T>>;
       }
 
-      const aesKey = await createAesKey();
-      const ek = await wrapAesKey(mode.publicKey, aesKey);
+      const { aesKey, ek } = await resolveSession(mode.publicKey);
       headers.set(ENCRYPTION_HEADER, ek);
 
       if (init?.json !== undefined) {
@@ -236,7 +268,8 @@ export function createSecureApi(
       request<T>(path, { method: "PATCH", json }),
     delete: <T>(path: string) => request<T>(path, { method: "DELETE" }),
     clearCache: () => {
-      cached = null;
+      session = null;
+      clearSecureApiPublicKeyCache(baseUrl);
     },
   };
 }

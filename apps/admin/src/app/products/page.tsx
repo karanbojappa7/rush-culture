@@ -23,17 +23,25 @@ type Product = {
   }>;
 };
 
-type Props = { searchParams: Promise<{ page?: string; q?: string }> };
+type Props = {
+  searchParams: Promise<{
+    page?: string;
+    q?: string;
+    from?: string;
+    to?: string;
+  }>;
+};
 
 export default async function ProductsPage({ searchParams }: Props) {
-  const { page = "1", q } = await searchParams;
+  const { page = "1", q, from, to } = await searchParams;
   const [user, productsRes] = await Promise.all([
     getSessionUser(),
     apiGet<PageResult<Product>>(
-      `/api/products${pageQuery({ page, limit: 20, q })}`,
+      `/api/products${pageQuery({ page, limit: 20, q, from, to })}`,
     ),
   ]);
   const data = productsRes.data ?? emptyPage<Product>();
+  const hasFilters = Boolean(q || from || to);
 
   return (
     <AdminShell
@@ -68,11 +76,15 @@ export default async function ProductsPage({ searchParams }: Props) {
           { key: "stock", header: "Stock" },
           { key: "actions", header: "" },
         ]}
-        empty={q ? "No products match your search." : "No products yet."}
+        empty={
+          hasFilters
+            ? "No products match your filters."
+            : "No products yet."
+        }
         isEmpty={data.items.length === 0}
       >
         {data.items.map((product) => {
-          const from = Math.min(
+          const priceFrom = Math.min(
             ...product.variants.map((v) => v.priceInPaise),
             Number.POSITIVE_INFINITY,
           );
@@ -90,7 +102,7 @@ export default async function ProductsPage({ searchParams }: Props) {
               </DataTableCell>
               <DataTableCell>{product.variants.length}</DataTableCell>
               <DataTableCell>
-                {Number.isFinite(from) ? formatInr(from) : "—"}
+                {Number.isFinite(priceFrom) ? formatInr(priceFrom) : "—"}
               </DataTableCell>
               <DataTableCell>{stock}</DataTableCell>
               <DataTableCell align="right">
@@ -110,7 +122,7 @@ export default async function ProductsPage({ searchParams }: Props) {
         totalPages={data.totalPages}
         total={data.total}
         basePath="/products"
-        searchParams={{ q }}
+        searchParams={{ q, from, to }}
       />
     </AdminShell>
   );

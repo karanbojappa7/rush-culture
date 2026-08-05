@@ -48,6 +48,8 @@ export class ProductController extends BaseController {
     @Query('minPrice') minPrice?: string,
     @Query('maxPrice') maxPrice?: string,
     @Query('isActive') isActive?: string,
+    @Query('from') from?: string,
+    @Query('to') to?: string,
   ): Promise<ResponseVm> {
     const pageQuery = parsePageQuery(page, limit);
     return this.executeMethod(
@@ -61,6 +63,8 @@ export class ProductController extends BaseController {
         minPrice: minPrice ? Number(minPrice) : undefined,
         maxPrice: maxPrice ? Number(maxPrice) : undefined,
         isActive: isActive === undefined ? undefined : isActive === 'true',
+        from,
+        to,
       },
       'Products fetched',
     );

@@ -30,7 +30,13 @@ export type HealthReport = {
   };
 };
 
-const REQUIRED_SCHEMAS = ['master', 'core', 'meta', 'security'] as const;
+const REQUIRED_SCHEMAS = [
+  'public',
+  'master',
+  'core',
+  'meta',
+  'security',
+] as const;
 
 @Injectable()
 export class HealthService {

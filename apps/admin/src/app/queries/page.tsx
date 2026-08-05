@@ -23,18 +23,25 @@ type CustomerQuery = {
 };
 
 type Props = {
-  searchParams: Promise<{ page?: string; status?: string; q?: string }>;
+  searchParams: Promise<{
+    page?: string;
+    status?: string;
+    q?: string;
+    from?: string;
+    to?: string;
+  }>;
 };
 
 export default async function QueriesPage({ searchParams }: Props) {
-  const { page = "1", status, q } = await searchParams;
+  const { page = "1", status, q, from, to } = await searchParams;
   const [user, res] = await Promise.all([
     getSessionUser(),
     apiGet<PageResult<CustomerQuery>>(
-      `/api/customer-queries${pageQuery({ page, limit: 20, status, q })}`,
+      `/api/customer-queries${pageQuery({ page, limit: 20, status, q, from, to })}`,
     ),
   ]);
   const data = res.data ?? emptyPage<CustomerQuery>();
+  const hasFilters = Boolean(q || status || from || to);
 
   const filters = [
     { label: "All", value: undefined },
@@ -66,6 +73,8 @@ export default async function QueriesPage({ searchParams }: Props) {
               const href = pageQuery({
                 status: filter.value,
                 q,
+                from,
+                to,
               });
               return (
                 <Link
@@ -94,7 +103,9 @@ export default async function QueriesPage({ searchParams }: Props) {
           { key: "when", header: "When" },
           { key: "actions", header: "" },
         ]}
-        empty={q || status ? "No queries match your filters." : "No queries yet."}
+        empty={
+          hasFilters ? "No queries match your filters." : "No queries yet."
+        }
         isEmpty={data.items.length === 0}
       >
         {data.items.map((query) => (
@@ -136,7 +147,7 @@ export default async function QueriesPage({ searchParams }: Props) {
         totalPages={data.totalPages}
         total={data.total}
         basePath="/queries"
-        searchParams={{ status, q }}
+        searchParams={{ status, q, from, to }}
       />
     </AdminShell>
   );

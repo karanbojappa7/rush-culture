@@ -3,7 +3,6 @@ export const ENCRYPTION_SKIP_PATHS = [
   '/api/crypto/public-key',
   '/api/health',
   '/api/health/live',
-  '/api/cache',
 ];
 
 export type EncryptedEnvelope = {
@@ -27,6 +26,19 @@ export function isEncryptedEnvelope(body: unknown): body is EncryptedEnvelope {
   return (
     b.enc === true &&
     typeof b.ek === 'string' &&
+    typeof b.iv === 'string' &&
+    typeof b.tag === 'string' &&
+    typeof b.data === 'string'
+  );
+}
+
+export function isEncryptedResponseBody(
+  body: unknown,
+): body is EncryptedResponse {
+  if (!body || typeof body !== 'object') return false;
+  const b = body as Record<string, unknown>;
+  return (
+    b.enc === true &&
     typeof b.iv === 'string' &&
     typeof b.tag === 'string' &&
     typeof b.data === 'string'

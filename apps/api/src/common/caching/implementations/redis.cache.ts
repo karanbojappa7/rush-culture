@@ -1,4 +1,8 @@
 import Redis from 'ioredis';
+import {
+  openCachePayload,
+  sealCachePayload,
+} from '../../crypto/token-seal';
 import { ICache } from '../cache.interface';
 import {
   createCacheRedisClient,
@@ -47,7 +51,9 @@ export class RedisCache implements ICache {
     try {
       const value = await this.client.get(key);
       if (!value) return null;
-      return JSON.parse(value) as T;
+      const plain = openCachePayload(value);
+      if (!plain) return null;
+      return JSON.parse(plain) as T;
     } catch {
       return null;
     }
@@ -55,11 +61,11 @@ export class RedisCache implements ICache {
 
   async set<T = unknown>(key: string, value: T, ttl?: number): Promise<void> {
     try {
-      const serialized = JSON.stringify(value);
+      const sealed = sealCachePayload(JSON.stringify(value));
       if (ttl) {
-        await this.client.setex(key, ttl, serialized);
+        await this.client.setex(key, ttl, sealed);
       } else {
-        await this.client.set(key, serialized);
+        await this.client.set(key, sealed);
       }
     } catch {
     }
@@ -124,7 +130,9 @@ export class RedisCache implements ICache {
         const value = values[index];
         if (!value) return;
         try {
-          result.set(key, JSON.parse(value) as T);
+          const plain = openCachePayload(value);
+          if (!plain) return;
+          result.set(key, JSON.parse(plain) as T);
         } catch {
         }
       });
@@ -142,11 +150,11 @@ export class RedisCache implements ICache {
       if (entries.size === 0) return;
       const pipeline = this.client.pipeline();
       for (const [key, value] of entries) {
-        const serialized = JSON.stringify(value);
+        const sealed = sealCachePayload(JSON.stringify(value));
         if (ttl) {
-          pipeline.setex(key, ttl, serialized);
+          pipeline.setex(key, ttl, sealed);
         } else {
-          pipeline.set(key, serialized);
+          pipeline.set(key, sealed);
         }
       }
       await pipeline.exec();

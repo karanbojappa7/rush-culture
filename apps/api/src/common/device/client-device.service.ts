@@ -5,6 +5,7 @@ import {
   toPageResult,
 } from '../pagination/pagination.utility';
 import { PrismaService } from '../prisma/prisma.service';
+import { buildCreatedAtFilter } from '../utility/date-range.utility';
 import { buildContainsOr } from '../utility/search.utility';
 
 const DEBOUNCE_MS = 5 * 60 * 1000;
@@ -47,7 +48,12 @@ export class ClientDeviceService {
 
   async findPage(
     pageQuery: PageQuery,
-    filters: { q?: string; deviceType?: DeviceType } = {},
+    filters: {
+      q?: string;
+      deviceType?: DeviceType;
+      from?: string;
+      to?: string;
+    } = {},
   ) {
     const where: Prisma.ClientDeviceWhereInput = {
       isDeleted: false,
@@ -60,6 +66,7 @@ export class ClientDeviceService {
         'path',
         'fingerprint',
       ] as const),
+      ...buildCreatedAtFilter(filters.from, filters.to),
     };
     const [items, total] = await Promise.all([
       this.prisma.clientDevice.findMany({

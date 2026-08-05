@@ -1,1 +1,1 @@
-export { CategoryForm } from "./category-form";
+export { CategoryForm, type CategoryFormValue } from "./category-form";

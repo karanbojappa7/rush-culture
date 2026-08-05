@@ -6,7 +6,10 @@ import {
 } from '@nestjs/common';
 import { Observable, map } from 'rxjs';
 import { CryptoService } from './crypto.service';
-import { ENCRYPTION_SKIP_PATHS } from './crypto.types';
+import {
+  ENCRYPTION_SKIP_PATHS,
+  isEncryptedResponseBody,
+} from './crypto.types';
 import { RequestWithSession } from './decrypt.middleware';
 
 @Injectable()
@@ -36,7 +39,7 @@ export class EncryptInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map((data) => {
         const key = req.encSessionKey;
-        if (!key) return data;
+        if (!key || isEncryptedResponseBody(data)) return data;
         return this.crypto.encryptJson(data, key);
       }),
     );

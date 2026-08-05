@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { BaseController } from '../../../common/base/base.controller';
+import { sealToken } from '../../../common/crypto/token-seal';
 import { ResponseBuilder } from '../../../common/response/response.builder';
 import { ResponseVm } from '../../../common/response/response.vm';
 import { AuthService } from './auth.service';
@@ -32,7 +33,7 @@ export class AuthController extends BaseController {
     return this.executeMethod(
       async (data) => {
         const result = await this.authService.login(data);
-        res.cookie(AUTH_COOKIE, result.token, {
+        res.cookie(AUTH_COOKIE, sealToken(result.token), {
           httpOnly: true,
           sameSite: 'lax',
           secure: process.env.NODE_ENV === 'production',

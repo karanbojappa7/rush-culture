@@ -18,17 +18,25 @@ type Customer = {
   createdAt: string;
 };
 
-type Props = { searchParams: Promise<{ page?: string; q?: string }> };
+type Props = {
+  searchParams: Promise<{
+    page?: string;
+    q?: string;
+    from?: string;
+    to?: string;
+  }>;
+};
 
 export default async function CustomersPage({ searchParams }: Props) {
-  const { page = "1", q } = await searchParams;
+  const { page = "1", q, from, to } = await searchParams;
   const [user, customersRes] = await Promise.all([
     getSessionUser(),
     apiGet<PageResult<Customer>>(
-      `/api/customers${pageQuery({ page, limit: 20, q })}`,
+      `/api/customers${pageQuery({ page, limit: 20, q, from, to })}`,
     ),
   ]);
   const data = customersRes.data ?? emptyPage<Customer>();
+  const hasFilters = Boolean(q || from || to);
 
   return (
     <AdminShell
@@ -53,7 +61,11 @@ export default async function CustomersPage({ searchParams }: Props) {
           { key: "phone", header: "Phone" },
           { key: "joined", header: "Joined" },
         ]}
-        empty={q ? "No customers match your search." : "No customers yet."}
+        empty={
+          hasFilters
+            ? "No customers match your filters."
+            : "No customers yet."
+        }
         isEmpty={data.items.length === 0}
       >
         {data.items.map((customer) => (
@@ -74,7 +86,7 @@ export default async function CustomersPage({ searchParams }: Props) {
         totalPages={data.totalPages}
         total={data.total}
         basePath="/customers"
-        searchParams={{ q }}
+        searchParams={{ q, from, to }}
       />
     </AdminShell>
   );

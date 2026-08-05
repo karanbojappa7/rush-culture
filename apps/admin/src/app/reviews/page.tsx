@@ -25,15 +25,21 @@ type Review = {
 };
 
 type Props = {
-  searchParams: Promise<{ page?: string; status?: string; q?: string }>;
+  searchParams: Promise<{
+    page?: string;
+    status?: string;
+    q?: string;
+    from?: string;
+    to?: string;
+  }>;
 };
 
 export default async function ReviewsAdminPage({ searchParams }: Props) {
-  const { page = "1", status = "pending", q } = await searchParams;
+  const { page = "1", status = "pending", q, from, to } = await searchParams;
   const [user, res] = await Promise.all([
     getSessionUser(),
     apiGet<PageResult<Review>>(
-      `/api/reviews/admin${pageQuery({ page, limit: 20, status, q })}`,
+      `/api/reviews/admin${pageQuery({ page, limit: 20, status, q, from, to })}`,
     ),
   ]);
   const data = res.data ?? emptyPage<Review>();
@@ -66,7 +72,7 @@ export default async function ReviewsAdminPage({ searchParams }: Props) {
               return (
                 <Link
                   key={filter.label}
-                  href={`/reviews${pageQuery({ status: filter.value, q })}`}
+                  href={`/reviews${pageQuery({ status: filter.value, q, from, to })}`}
                   className={`cursor-pointer px-3 py-1.5 text-[11px] font-semibold tracking-[0.1em] uppercase transition-colors ${
                     active
                       ? "bg-ink text-white"
@@ -148,7 +154,7 @@ export default async function ReviewsAdminPage({ searchParams }: Props) {
         totalPages={data.totalPages}
         total={data.total}
         basePath="/reviews"
-        searchParams={{ status, q }}
+        searchParams={{ status, q, from, to }}
       />
     </AdminShell>
   );

@@ -57,6 +57,8 @@ export class CustomerQueryController extends BaseController {
     @Query('status') status?: CustomerQueryStatus,
     @Query('topic') topic?: CustomerQueryTopic,
     @Query('q') q?: string,
+    @Query('from') from?: string,
+    @Query('to') to?: string,
   ): Promise<ResponseVm> {
     return this.executeMethod(
       (data) => this.customerQueryService.findAll(data),
@@ -65,6 +67,8 @@ export class CustomerQueryController extends BaseController {
         status,
         topic,
         q,
+        from,
+        to,
       },
       'Queries fetched',
     );

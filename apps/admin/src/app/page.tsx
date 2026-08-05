@@ -1,19 +1,23 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { AdminShell } from "@/components/layout/admin-shell";
 import {
   DataTable,
   DataTableCell,
   DataTableRow,
 } from "@/components/ui/data-table";
+import { DateRangeFilter } from "@/components/ui/date-range-filter";
 import { OverviewCharts } from "@/components/overview/overview-charts";
 import { apiGet, formatInr } from "@/lib/api-server";
-import { emptyPage, type PageResult } from "@/lib/pagination";
+import { emptyPage, pageQuery, type PageResult } from "@/lib/pagination";
 import { getSessionUser, sessionLabel } from "@/lib/session";
 
 type Summary = {
   orders: number;
   pending: number;
   revenueInPaise: number;
+  from?: string | null;
+  to?: string | null;
 };
 
 type QuerySummary = {
@@ -45,6 +49,10 @@ type CustomerQuery = {
   createdAt: string;
 };
 
+type Props = {
+  searchParams: Promise<{ from?: string; to?: string }>;
+};
+
 function groupPaymentStatus(orders: Order[]) {
   const counts = new Map<string, number>();
   for (const order of orders) {
@@ -73,15 +81,26 @@ function recentRevenueBars(orders: Order[]) {
     }));
 }
 
-export default async function AdminHomePage() {
+function rangeHint(from?: string, to?: string) {
+  if (!from && !to) return "All time";
+  if (from && to) return `${from} → ${to}`;
+  if (from) return `From ${from}`;
+  return `Until ${to}`;
+}
+
+export default async function AdminHomePage({ searchParams }: Props) {
+  const { from, to } = await searchParams;
+  const filterQs = pageQuery({ from, to });
+  const ordersListQs = pageQuery({ page: 1, limit: 12, from, to });
+
   const [user, summaryRes, ordersRes, querySummaryRes, queriesRes] =
     await Promise.all([
       getSessionUser(),
-      apiGet<Summary>("/api/orders/summary"),
-      apiGet<PageResult<Order>>("/api/orders?page=1&limit=12"),
+      apiGet<Summary>(`/api/orders/summary${filterQs}`),
+      apiGet<PageResult<Order>>(`/api/orders${ordersListQs}`),
       apiGet<QuerySummary>("/api/customer-queries/summary"),
       apiGet<PageResult<CustomerQuery>>(
-        "/api/customer-queries?page=1&limit=5&status=OPEN",
+        `/api/customer-queries${pageQuery({ page: 1, limit: 5, status: "OPEN", from, to })}`,
       ),
     ]);
 
@@ -103,6 +122,8 @@ export default async function AdminHomePage() {
   const revenueBars = recentRevenueBars(recent);
   const revenueMax = Math.max(...revenueBars.map((bar) => bar.value), 0);
   const activeQueries = querySummary.open + querySummary.inProgress;
+  const period = rangeHint(from, to);
+  const ordersHref = `/orders${filterQs}`;
 
   return (
     <AdminShell
@@ -112,23 +133,39 @@ export default async function AdminHomePage() {
       permissions={user?.permissions}
       breadcrumbs={[{ label: "Overview" }]}
     >
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-[11px] font-medium tracking-[0.14em] uppercase text-mute">
+            Period
+          </p>
+          <p className="mt-1 text-sm text-mute">{period}</p>
+        </div>
+        <Suspense
+          fallback={
+            <div className="h-[58px] w-[280px] animate-pulse border border-line bg-panel" />
+          }
+        >
+          <DateRangeFilter />
+        </Suspense>
+      </div>
+
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Stat
           label="Orders"
           value={String(summary.orders)}
-          hint="All time"
-          href="/orders"
+          hint={period}
+          href={ordersHref}
         />
         <Stat
           label="Pending payment"
           value={String(summary.pending)}
           hint="Needs follow-up"
-          href="/orders"
+          href={ordersHref}
         />
         <Stat
           label="Revenue captured"
           value={formatInr(summary.revenueInPaise)}
-          hint="Gross captured"
+          hint={period}
         />
         <Stat
           label="Active queries"
@@ -223,7 +260,7 @@ export default async function AdminHomePage() {
               <p className="mt-1 text-sm text-mute">Latest checkout activity</p>
             </div>
             <Link
-              href="/orders"
+              href={ordersHref}
               className="text-[12px] font-semibold tracking-[0.1em] uppercase text-mute transition-colors hover:text-ink"
             >
               View all

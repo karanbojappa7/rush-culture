@@ -23,15 +23,22 @@ export class ClientDeviceController extends BaseController {
     @Query('limit') limit?: string,
     @Query('q') q?: string,
     @Query('deviceType') deviceType?: DeviceType,
+    @Query('from') from?: string,
+    @Query('to') to?: string,
   ): Promise<ResponseVm> {
     const pageQuery = parsePageQuery(page, limit);
     return this.executeMethod(
       (data) =>
         this.clientDeviceService.findPage(
           { page: data.page, limit: data.limit, skip: data.skip },
-          { q: data.q, deviceType: data.deviceType },
+          {
+            q: data.q,
+            deviceType: data.deviceType,
+            from: data.from,
+            to: data.to,
+          },
         ),
-      { ...pageQuery, q, deviceType },
+      { ...pageQuery, q, deviceType, from, to },
       'Devices fetched',
     );
   }

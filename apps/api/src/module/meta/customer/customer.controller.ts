@@ -50,10 +50,12 @@ export class CustomerController extends BaseController {
     @Query('page') page?: string,
     @Query('limit') limit?: string,
     @Query('q') q?: string,
+    @Query('from') from?: string,
+    @Query('to') to?: string,
   ): Promise<ResponseVm> {
     return this.executeMethod(
       (data) => this.customerService.findAll(data),
-      { ...parsePageQuery(page, limit), q },
+      { ...parsePageQuery(page, limit), q, from, to },
       'Customers fetched',
     );
   }

@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { AdminShell } from "@/components/layout/admin-shell";
+import { ExportMenu } from "@/components/ui/export-menu";
 import { ListToolbar } from "@/components/ui/list-toolbar";
 import { PaginationNav } from "@/components/ui/pagination-nav";
 import { apiGet, formatInr } from "@/lib/api-server";
@@ -34,17 +36,25 @@ type Order = {
   items: OrderItem[];
 };
 
-type Props = { searchParams: Promise<{ page?: string; q?: string }> };
+type Props = {
+  searchParams: Promise<{
+    page?: string;
+    q?: string;
+    from?: string;
+    to?: string;
+  }>;
+};
 
 export default async function OrdersPage({ searchParams }: Props) {
-  const { page = "1", q } = await searchParams;
+  const { page = "1", q, from, to } = await searchParams;
   const [user, res] = await Promise.all([
     getSessionUser(),
     apiGet<PageResult<Order>>(
-      `/api/orders${pageQuery({ page, limit: 10, q })}`,
+      `/api/orders${pageQuery({ page, limit: 10, q, from, to })}`,
     ),
   ]);
   const data = res.data ?? emptyPage<Order>(10);
+  const hasFilters = Boolean(q || from || to);
 
   return (
     <AdminShell
@@ -61,11 +71,22 @@ export default async function OrdersPage({ searchParams }: Props) {
         total={data.total}
         noun="orders"
         placeholder="Search order #, customer, phone…"
+        actions={
+          <Suspense fallback={null}>
+            <ExportMenu
+              endpoint="/api/orders/export"
+              fileBaseName="orders"
+              filters={{ q, from, to }}
+            />
+          </Suspense>
+        }
       />
       <div className="space-y-4">
         {data.items.length === 0 ? (
           <p className="border border-line bg-panel px-4 py-12 text-center text-mute">
-            {q ? "No orders match your search." : "No orders yet."}
+            {hasFilters
+              ? "No orders match your filters."
+              : "No orders yet."}
           </p>
         ) : (
           data.items.map((order) => (
@@ -145,7 +166,7 @@ export default async function OrdersPage({ searchParams }: Props) {
         totalPages={data.totalPages}
         total={data.total}
         basePath="/orders"
-        searchParams={{ q }}
+        searchParams={{ q, from, to }}
       />
     </AdminShell>
   );

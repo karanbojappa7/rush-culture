@@ -9,6 +9,7 @@ import { Request } from 'express';
 
 import { brand } from '@linq/site-config';
 import { PrismaService } from '../../../../common/prisma/prisma.service';
+import { openToken } from '../../../../common/crypto/token-seal';
 
 export type AuthUser = {
   id: string;
@@ -28,10 +29,16 @@ export class AuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest<Request & { user?: AuthUser }>();
-    const token = this.extractToken(request);
-    if (!token) {
+    const request = context
+      .switchToHttp()
+      .getRequest<Request & { user?: AuthUser }>();
+    const sealed = this.extractToken(request);
+    if (!sealed) {
       throw new UnauthorizedException('Authentication required');
+    }
+    const token = openToken(sealed);
+    if (!token) {
+      throw new UnauthorizedException('Invalid or expired session');
     }
     try {
       const payload = await this.jwtService.verifyAsync<{

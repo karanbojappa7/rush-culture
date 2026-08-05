@@ -63,6 +63,23 @@ function clearStoredSession() {
   }
 }
 
+function permissionsEqual(a: string[], b: string[]) {
+  if (a === b) return true;
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i += 1) {
+    if (a[i] !== b[i]) return false;
+  }
+  return true;
+}
+
+function sessionsEqual(a: StickySession, b: StickySession) {
+  return (
+    a.roleCode === b.roleCode &&
+    a.userLabel === b.userLabel &&
+    permissionsEqual(a.permissions, b.permissions)
+  );
+}
+
 export function AdminShell({
   children,
   title,
@@ -85,12 +102,14 @@ export function AdminShell({
   const pathname = usePathname();
   const router = useRouter();
   const showBack = Boolean(backHref) || (breadcrumbs?.length ?? 0) > 1;
+  const permissionList = Array.isArray(permissions) ? permissions : [];
+  const permissionsKey = permissionList.join("\0");
 
   const [session, setSession] = useState<StickySession>(() => {
     if (roleCode) {
       const next: StickySession = {
         roleCode,
-        permissions: Array.isArray(permissions) ? permissions : [],
+        permissions: permissionList,
         userLabel,
       };
       writeStoredSession(next);
@@ -109,18 +128,20 @@ export function AdminShell({
     if (roleCode) {
       const next: StickySession = {
         roleCode,
-        permissions: Array.isArray(permissions) ? permissions : [],
+        permissions: permissionsKey ? permissionsKey.split("\0") : [],
         userLabel,
       };
-      setSession(next);
-      writeStoredSession(next);
+      setSession((prev) => {
+        if (sessionsEqual(prev, next)) return prev;
+        writeStoredSession(next);
+        return next;
+      });
       return;
     }
     const stored = readStoredSession();
-    if (stored) {
-      setSession(stored);
-    }
-  }, [roleCode, permissions, userLabel]);
+    if (!stored) return;
+    setSession((prev) => (sessionsEqual(prev, stored) ? prev : stored));
+  }, [roleCode, userLabel, permissionsKey]);
 
   const items = nav.filter((item) => hasPermission(session, item.permission));
   const label = session.userLabel || userLabel;
