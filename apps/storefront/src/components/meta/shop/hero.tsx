@@ -1,8 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
-import { brand } from "@linq/site-config";
+import type { BrandSettings } from "@linq/site-config";
 
-export function Hero({ firstCollectionSlug }: { firstCollectionSlug?: string }) {
+export function Hero({
+  brand,
+  firstCollectionSlug,
+}: {
+  brand: Pick<BrandSettings, "name" | "tagline" | "shortDescription">;
+  firstCollectionSlug?: string;
+}) {
   const nameParts = brand.name.split(" ");
   const dropsHref = firstCollectionSlug
     ? `/collections/${firstCollectionSlug}`
@@ -26,7 +32,7 @@ export function Hero({ firstCollectionSlug }: { firstCollectionSlug?: string }) 
       <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-[1400px] flex-col justify-end px-5 pb-16 pt-28 md:justify-center md:px-8 md:pb-24 md:pt-20">
         <p className="animate-rise font-display text-[clamp(3.25rem,12vw,8.75rem)] leading-[0.88] font-extrabold tracking-[-0.045em] text-ink">
           {nameParts.map((part, index) => (
-            <span key={part} className="block md:inline">
+            <span key={`${part}-${index}`} className="block md:inline">
               {part}
               {index < nameParts.length - 1 ? (
                 <span className="hidden md:inline"> </span>

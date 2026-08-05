@@ -1303,6 +1303,112 @@
               }
             }
           ]
+        },
+        {
+          "name": "brand",
+          "item": [
+            {
+              "name": "GetBrandSettings",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{url}}/api/brand-settings",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "brand-settings"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "UpdateBrandSettings",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{url}}/api/brand-settings",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "brand-settings"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Rush Culture\",\n  \"legalName\": \"Rush Culture\",\n  \"tagline\": \"Move fast. Dress louder.\",\n  \"description\": \"Street-ready youth clothing. Oversized tees, cargos, and limited drops.\",\n  \"shortDescription\": \"Street-ready fits for Gen Z — oversized tees, cargos, and limited drops that move fast.\",\n  \"footerBlurb\": \"Youth clothing built for the drop cycle — sharp cuts, loud seasons, zero filler.\",\n  \"locale\": \"en-IN\",\n  \"currency\": \"INR\",\n  \"country\": \"IN\",\n  \"supportEmail\": \"support@rushculture.example\",\n  \"supportPhone\": \"\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "policies",
+          "item": [
+            {
+              "name": "GetPolicySettings",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{url}}/api/policy-settings",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "policy-settings"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "UpdatePolicySettings",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{url}}/api/policy-settings",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "policy-settings"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"shipping\": {\n    \"title\": \"Shipping\",\n    \"intro\": \"Rush Culture ships across India.\",\n    \"sections\": [\n      {\n        \"title\": \"Delivery windows\",\n        \"body\": \"Metros: 2–4 working days after dispatch.\"\n      }\n    ]\n  },\n  \"returns\": {\n    \"title\": \"Returns\",\n    \"intro\": \"Returns within 7 days of delivery.\",\n    \"sections\": [\n      {\n        \"title\": \"Eligible returns\",\n        \"body\": \"Unworn items with original tags.\"\n      }\n    ]\n  },\n  \"sizeGuide\": {\n    \"title\": \"Size guide\",\n    \"intro\": \"Fits run oversized by design.\",\n    \"note\": \"Measurements in inches, approximate.\",\n    \"rows\": [\n      {\n        \"size\": \"M\",\n        \"chest\": \"40–42\",\n        \"length\": \"28\",\n        \"shoulder\": \"21\"\n      }\n    ]\n  },\n  \"contactTopics\": [\n    {\n      \"value\": \"SHIPPING\",\n      \"label\": \"Shipping\"\n    },\n    {\n      \"value\": \"RETURNS\",\n      \"label\": \"Returns\"\n    },\n    {\n      \"value\": \"ORDER\",\n      \"label\": \"Order\"\n    },\n    {\n      \"value\": \"PRODUCT\",\n      \"label\": \"Product\"\n    },\n    {\n      \"value\": \"OTHER\",\n      \"label\": \"Other\"\n    }\n  ],\n  \"contactIntro\": \"Questions about shipping, returns, sizing, or an order? Send a note.\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              }
+            }
+          ]
         }
       ]
     },

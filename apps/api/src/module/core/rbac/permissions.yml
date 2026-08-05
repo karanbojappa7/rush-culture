@@ -65,6 +65,18 @@ modules:
       - code: seo.manage
         name: Manage SEO
         description: Storefront titles, meta tags, Open Graph, robots, and structured data
+  - key: brand
+    name: Brand
+    permissions:
+      - code: brand.manage
+        name: Manage brand
+        description: Legal name, support contact, tagline, locale, and storefront copy
+  - key: policies
+    name: Policies
+    permissions:
+      - code: policies.manage
+        name: Manage policies
+        description: Shipping, returns, size guide, and contact topic labels
   - key: access
     name: Access control
     permissions:

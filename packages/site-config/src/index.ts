@@ -1,6 +1,11 @@
 export { brand, sku, withBrandName, formatInr } from "./brand";
 export type { BrandConfig } from "./brand";
 export {
+  defaultBrandSettings,
+  normalizeBrandSettings,
+} from "./brand-settings";
+export type { BrandSettings } from "./brand-settings";
+export {
   themePalettes,
   resolveTheme,
   listThemePalettes,
@@ -81,5 +86,15 @@ export {
   returnsPolicy,
   sizeGuide,
   contactTopics,
+  defaultPoliciesSettings,
+  normalizePoliciesSettings,
 } from "./policies";
-export type { PolicySection } from "./policies";
+export type {
+  PolicySection,
+  PolicyDocument,
+  SizeGuideRow,
+  SizeGuideSettings,
+  ContactTopic,
+  ContactTopicValue,
+  PoliciesSettings,
+} from "./policies";

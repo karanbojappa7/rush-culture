@@ -6,8 +6,9 @@ alwaysApply: false
 
 # White-label (`@linq/site-config`)
 
-- Brand fields live only in `packages/site-config/src/brand.ts`.
+- Deploy-time identity + infra live in `packages/site-config/src/brand.ts` (`skuPrefix`, `orderPrefix`, `cartStorageKey`, `adminAuthCookie`, `themeId`, admin meta titles).
+- Runtime store-facing brand copy/contact is AppConfig `ui.brand` — types/defaults/normalize in `brand-settings.ts`, API `GET/PUT /api/brand-settings`, admin **Brand** (`brand.manage`). Do **not** duplicate SEO organization fields (`organizationName` / `organizationEmail` / `sameAs`) in brand.
+- Policies (shipping / returns / size guide / contact topics) defaults in `policies.ts`; runtime AppConfig `ui.policies` via `GET/PUT /api/policy-settings` and admin **Policies** (`policies.manage`).
 - Catalog lives in `packages/site-config/src/catalog.ts`. Product `brand` must use `brand.name`; SKUs via `sku("CODE")`.
-- Apps re-export or import from `@linq/site-config` — do not maintain a second catalog of products or brand strings.
-- UI chrome (title, hero, footer, admin shell, cart storage key, order prefix) must read from `brand`.
-- To rebrand: edit `brand.ts` (and catalog content if needed), then `npm run build:site-config` for API consumers.
+- Apps import from `@linq/site-config`; storefront chrome should prefer **fetched** brand/policy settings with package defaults as fallback.
+- After site-config edits: `npm run build:site-config` for API consumers.

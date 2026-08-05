@@ -1,23 +1,32 @@
 import type { Metadata } from "next";
-import { returnsPolicy } from "@linq/site-config";
 import { PolicyPage } from "@/components/common/site/policy-page";
+import { fetchBrandSettings } from "@/base/brand";
+import { fetchPoliciesSettings } from "@/base/policies";
 import { fetchSeoSettings, seoToPageMetadata } from "@/base/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const seo = await fetchSeoSettings();
+  const [seo, policies] = await Promise.all([
+    fetchSeoSettings(),
+    fetchPoliciesSettings(),
+  ]);
   return seoToPageMetadata(seo, {
-    title: returnsPolicy.title,
-    description: returnsPolicy.intro,
+    title: policies.returns.title,
+    description: policies.returns.intro,
     path: "/returns",
   });
 }
 
-export default function ReturnsPage() {
+export default async function ReturnsPage() {
+  const [policies, storeBrand] = await Promise.all([
+    fetchPoliciesSettings(),
+    fetchBrandSettings(),
+  ]);
   return (
     <PolicyPage
-      title={returnsPolicy.title}
-      intro={returnsPolicy.intro}
-      sections={[...returnsPolicy.sections]}
+      title={policies.returns.title}
+      intro={policies.returns.intro}
+      sections={[...policies.returns.sections]}
+      supportEmail={storeBrand.supportEmail}
     />
   );
 }

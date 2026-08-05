@@ -1,12 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { brand } from "@linq/site-config";
 import { useCart } from "@/components/common/cart/cart-provider";
 
 type NavLink = { href: string; label: string };
 
-export function SiteHeader({ collectionLinks = [] }: { collectionLinks?: NavLink[] }) {
+export function SiteHeader({
+  brandName,
+  collectionLinks = [],
+}: {
+  brandName: string;
+  collectionLinks?: NavLink[];
+}) {
   const { count } = useCart();
   const links: NavLink[] = [
     { href: "/shop", label: "Shop" },
@@ -32,7 +37,7 @@ export function SiteHeader({ collectionLinks = [] }: { collectionLinks?: NavLink
           href="/"
           className="font-display cursor-pointer text-lg font-extrabold tracking-tight text-ink md:absolute md:left-1/2 md:-translate-x-1/2 md:text-2xl"
         >
-          {brand.name}
+          {brandName}
         </Link>
 
         <div className="flex items-center gap-5">

@@ -18,9 +18,10 @@ Workspaces: npm (`apps/*`, `packages/*`).
 
 ## White-label / DRY
 
-- Brand name, cart storage key, order prefix, admin auth cookie → `@linq/site-config` (`brand`)
+- Brand name, cart storage key, order prefix, admin auth cookie → `@linq/site-config` (`brand`); **runtime** store identity copy/contact → AppConfig `ui.brand` (`GET/PUT /api/brand-settings`, Super Admin **Brand**, `brand.manage`)
 - Theme settings (palette, **custom colors**, Google fonts, custom font size, day/night) → `packages/site-config/src/themes.ts`; API module `apps/api/src/module/core/theme` (`GET/PUT /api/theme-settings`, AppConfig `ui.theme` with `{ storefront, admin }`); Super Admin **Theming** (`theming.manage`)
 - Storefront SEO → `packages/site-config/src/seo.ts`; API module `apps/api/src/module/core/seo`; Super Admin **SEO** (`seo.manage`)
+- Policies (shipping / returns / size guide / contact) → `packages/site-config/src/policies.ts` defaults; runtime AppConfig `ui.policies` (`GET/PUT /api/policy-settings`, Super Admin **Policies**, `policies.manage`)
 - RBAC → `apps/api/src/module/core/rbac` (`permissions.yml`, access APIs)
 - Device / crypto / rate-limit → `apps/api/src/module/security/{device,crypto,rate-limit}`
 - Email → `apps/api/src/module/communication/email` (public schema EmailLog)
@@ -30,7 +31,7 @@ Workspaces: npm (`apps/*`, `packages/*`).
 - Frontend architecture (mirrors API): `@linq/app-layer` — **sole HTTP entry** is `BaseRepo` / `CachedApi` (never raw Nest fetch). Flow: Controller → Service → Repo. **Read:** cache hit → return; miss → API → store → return. **Write:** API then auto-invalidate resource prefix `api:{resource}` (all scopes). Shared process L1 (`MemoryCacheStore`) reduces Nest load under scale. Keys: `api:{resource}:{scope?}{METHOD}:{path}`. Ephemeral paths (`/api/auth/*`, health, cache admin, stock-check) skip cache. Admin server scopes by auth cookie; browser uses `browser` / storefront `storefront`. App helpers `@/base/api` + `api-server` are thin `CachedApi` wrappers so every call site is cache-first. Domain modules under `module/{schema}/{domain}`.
 - SKU helpers → `sku` / `withBrandName` from site-config (no hardcoded prefixes)
 - Money → `formatInr` from site-config
-- Policies (shipping / returns / size guide topics) → `packages/site-config/src/policies.ts`
+- Policies (shipping / returns / size guide topics) → defaults in `packages/site-config/src/policies.ts`; live CMS via AppConfig `ui.policies`
 - Seed catalog is bootstrap-only; live catalog is Postgres via API
 - After site-config edits: `npm run build:site-config`
 
@@ -176,6 +177,10 @@ Controller → executeMethod → Service → Repo (Prisma) → Postgres
 | reviews | `reviews.manage` |
 | devices | `devices.read` |
 | cache | `cache.flush` |
+| theming | `theming.manage` |
+| brand | `brand.manage` |
+| policies | `policies.manage` |
+| seo | `seo.manage` |
 | access | `access.dashboard`, `roles.manage`, `roles.delete`, `permissions.manage`, `users.manage`, `users.delete` |
 
 Add/edit codes in **YAML only**, restart API to sync. Grant via matrix for non–Super Admin roles. Super Admin always all codes (matrix column locked).
@@ -244,7 +249,8 @@ Env: `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FR
 - PDP: **About this piece** description + **Ratings & reviews** (guest form; shows approved only)
 - Cart: localStorage; quantity capped by `maxStock`; stock sync
 - Checkout: FormData captured before async stock verify; stock-check then order create
-- Help pages: `/shipping`, `/returns`, `/size-guide`, `/contact` (posts CustomerQuery)
+- Help pages: `/shipping`, `/returns`, `/size-guide`, `/contact` (posts CustomerQuery) — content from `GET /api/policy-settings` (fallback package defaults)
+- Brand chrome (header, hero, footer support email) from `GET /api/brand-settings`
 - Design: Syne + Figtree; paper / ink / volt tokens
 
 ---
@@ -256,6 +262,10 @@ Env: `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FR
 - Products: structured variants (size, color, ₹ price, Auto SKU), image URL rows, edit/create
 - Categories, customers, orders, **Queries**, **Reviews** (approve/delete)
 - **Devices** — IP/UA telemetry; nav + page require `devices.read` (default Super Admin only)
+- **Brand** — `/brand`; storefront name, legal name, tagline, copy, support contact; `brand.manage`
+- **Policies** — `/policies`; shipping / returns / size guide / contact topics; `policies.manage`
+- **SEO** — `/seo`; titles, robots, OG, structured data; `seo.manage`
+- **Theming** — `/theming`; storefront + admin surfaces; `theming.manage`
 - **Cache** — `/cache`; status + flush all / per service; requires `cache.flush` (Super Admin by default)
 - **Access** (`/access`, requires access permissions):
   - Tabs: Overview · Permissions · Roles · Users

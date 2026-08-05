@@ -10,6 +10,8 @@ import { HealthModule } from './common/health/health.module';
 import { PrismaModule } from './common/prisma/prisma.module';
 import { RateLimitModule } from './module/security/rate-limit/rate-limit.module';
 import { RbacModule } from './module/core/rbac/rbac.module';
+import { BrandSettingsModule } from './module/core/brand/brand-settings.module';
+import { PolicySettingsModule } from './module/core/policies/policy-settings.module';
 import { SeoSettingsModule } from './module/core/seo/seo-settings.module';
 import { ThemeSettingsModule } from './module/core/theme/theme-settings.module';
 import { AppConfigModule } from './module/core/app-config/app-config.module';
@@ -32,6 +34,8 @@ import { ReviewModule } from './module/meta/review/review.module';
     DeviceModule,
     EmailModule,
     ThemeSettingsModule,
+    BrandSettingsModule,
+    PolicySettingsModule,
     SeoSettingsModule,
     RateLimitModule,
     HealthModule,

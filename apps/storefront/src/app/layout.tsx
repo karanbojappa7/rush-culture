@@ -8,6 +8,7 @@ import { SiteHeader } from "@/components/common/site/site-header";
 import { ThemeBootstrap } from "@/components/core/theme/theme-bootstrap";
 import { ThemeProvider } from "@/components/core/theme/theme-provider";
 import { fetchCollections } from "@/base/catalog";
+import { fetchBrandSettings } from "@/base/brand";
 import { fetchSeoSettings, seoToRootMetadata } from "@/base/seo";
 import "./globals.css";
 
@@ -33,9 +34,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [collections, seo] = await Promise.all([
+  const [collections, seo, storeBrand] = await Promise.all([
     fetchCollections(),
     fetchSeoSettings(),
+    fetchBrandSettings(),
   ]);
   const collectionLinks = collections.map((collection) => ({
     href: `/collections/${collection.slug}`,
@@ -44,7 +46,7 @@ export default async function RootLayout({
 
   return (
     <html
-      lang={seo.locale.split("-")[0] || "en"}
+      lang={seo.locale.split("-")[0] || storeBrand.locale.split("-")[0] || "en"}
       data-theme={brand.themeId}
       data-scroll-behavior="smooth"
       className={`${syne.variable} ${figtree.variable} h-full`}
@@ -56,9 +58,12 @@ export default async function RootLayout({
       <body className="flex min-h-full flex-col font-sans antialiased">
         <ThemeProvider>
           <CartProvider>
-            <SiteHeader collectionLinks={collectionLinks} />
+            <SiteHeader
+              brandName={storeBrand.name}
+              collectionLinks={collectionLinks}
+            />
             <main className="flex-1">{children}</main>
-            <SiteFooter collections={collections} />
+            <SiteFooter brand={storeBrand} collections={collections} />
           </CartProvider>
         </ThemeProvider>
       </body>

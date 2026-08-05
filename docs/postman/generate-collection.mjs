@@ -345,6 +345,67 @@ const collection = {
           sitemapAdditionalPaths: [],
         }),
       ]),
+      folder("brand", [
+        req("GetBrandSettings", "GET", "/api/brand-settings"),
+        req("UpdateBrandSettings", "PUT", "/api/brand-settings", {
+          name: "Rush Culture",
+          legalName: "Rush Culture",
+          tagline: "Move fast. Dress louder.",
+          description:
+            "Street-ready youth clothing. Oversized tees, cargos, and limited drops.",
+          shortDescription:
+            "Street-ready fits for Gen Z — oversized tees, cargos, and limited drops that move fast.",
+          footerBlurb:
+            "Youth clothing built for the drop cycle — sharp cuts, loud seasons, zero filler.",
+          locale: "en-IN",
+          currency: "INR",
+          country: "IN",
+          supportEmail: "support@rushculture.example",
+          supportPhone: "",
+        }),
+      ]),
+      folder("policies", [
+        req("GetPolicySettings", "GET", "/api/policy-settings"),
+        req("UpdatePolicySettings", "PUT", "/api/policy-settings", {
+          shipping: {
+            title: "Shipping",
+            intro: "Rush Culture ships across India.",
+            sections: [
+              {
+                title: "Delivery windows",
+                body: "Metros: 2–4 working days after dispatch.",
+              },
+            ],
+          },
+          returns: {
+            title: "Returns",
+            intro: "Returns within 7 days of delivery.",
+            sections: [
+              {
+                title: "Eligible returns",
+                body: "Unworn items with original tags.",
+              },
+            ],
+          },
+          sizeGuide: {
+            title: "Size guide",
+            intro: "Fits run oversized by design.",
+            note: "Measurements in inches, approximate.",
+            rows: [
+              { size: "M", chest: "40–42", length: "28", shoulder: "21" },
+            ],
+          },
+          contactTopics: [
+            { value: "SHIPPING", label: "Shipping" },
+            { value: "RETURNS", label: "Returns" },
+            { value: "ORDER", label: "Order" },
+            { value: "PRODUCT", label: "Product" },
+            { value: "OTHER", label: "Other" },
+          ],
+          contactIntro:
+            "Questions about shipping, returns, sizing, or an order? Send a note.",
+        }),
+      ]),
     ]),
     folder("Master", [
       folder("category", [

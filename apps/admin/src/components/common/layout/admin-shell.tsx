@@ -19,6 +19,8 @@ const nav = [
   { href: "/reviews", label: "Reviews", permission: "reviews.manage" },
   { href: "/devices", label: "Devices", permission: "devices.read" },
   { href: "/theming", label: "Theming", permission: "theming.manage" },
+  { href: "/brand", label: "Brand", permission: "brand.manage" },
+  { href: "/policies", label: "Policies", permission: "policies.manage" },
   { href: "/seo", label: "SEO", permission: "seo.manage" },
   { href: "/access", label: "Access", permission: "access.dashboard" },
   { href: "/cache", label: "Cache", permission: "cache.flush" },

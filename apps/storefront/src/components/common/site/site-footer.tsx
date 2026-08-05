@@ -1,8 +1,14 @@
 import Link from "next/link";
-import { brand } from "@linq/site-config";
+import type { BrandSettings } from "@linq/site-config";
 import type { Collection } from "@/base/catalog";
 
-export function SiteFooter({ collections = [] }: { collections?: Collection[] }) {
+export function SiteFooter({
+  brand,
+  collections = [],
+}: {
+  brand: Pick<BrandSettings, "name" | "legalName" | "footerBlurb">;
+  collections?: Collection[];
+}) {
   return (
     <footer className="border-t border-line bg-ink text-paper">
       <div className="mx-auto grid max-w-[1400px] gap-10 px-5 py-14 md:grid-cols-[1.4fr_1fr_1fr] md:px-8">

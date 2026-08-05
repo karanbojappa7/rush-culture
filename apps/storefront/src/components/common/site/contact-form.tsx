@@ -2,15 +2,15 @@
 
 import { FormEvent, useState } from "react";
 import Link from "next/link";
-import { contactTopics } from "@linq/site-config";
+import type { ContactTopic, ContactTopicValue } from "@linq/site-config";
 import { apiPost } from "@/base/api";
 
-export function ContactForm() {
+export function ContactForm({ topics }: { topics: ContactTopic[] }) {
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
-  const [topic, setTopic] = useState<(typeof contactTopics)[number]["value"]>(
-    "SHIPPING",
+  const [topic, setTopic] = useState<ContactTopicValue>(
+    topics[0]?.value ?? "SHIPPING",
   );
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
@@ -69,7 +69,7 @@ export function ContactForm() {
           Topic
         </p>
         <div className="mt-2 flex flex-wrap gap-2">
-          {contactTopics.map((item) => (
+          {topics.map((item) => (
             <button
               key={item.value}
               type="button"

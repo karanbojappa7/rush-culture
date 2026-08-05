@@ -1,14 +1,16 @@
-import { brand, type PolicySection } from "@linq/site-config";
+import type { PolicySection } from "@linq/site-config";
 import Link from "next/link";
 
 export function PolicyPage({
   title,
   intro,
   sections,
+  supportEmail,
 }: {
   title: string;
   intro: string;
   sections: PolicySection[];
+  supportEmail: string;
 }) {
   return (
     <div className="mx-auto max-w-3xl px-5 pt-28 pb-20 md:px-8">
@@ -37,10 +39,10 @@ export function PolicyPage({
         <p className="text-sm text-mute">
           Need help? Email{" "}
           <a
-            href={`mailto:${brand.supportEmail}`}
+            href={`mailto:${supportEmail}`}
             className="text-ink underline"
           >
-            {brand.supportEmail}
+            {supportEmail}
           </a>{" "}
           or{" "}
           <Link href="/contact" className="text-ink underline">

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Hero } from "@/components/meta/shop/hero";
 import { ProductGrid } from "@/components/meta/shop/product-grid";
 import { fetchCollections, fetchProducts } from "@/base/catalog";
+import { fetchBrandSettings } from "@/base/brand";
 import { fetchSeoSettings, seoToPageMetadata } from "@/base/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -16,14 +17,18 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
-  const [collections, products] = await Promise.all([
+  const [collections, products, storeBrand] = await Promise.all([
     fetchCollections(),
     fetchProducts(4),
+    fetchBrandSettings(),
   ]);
 
   return (
     <>
-      <Hero firstCollectionSlug={collections[0]?.slug} />
+      <Hero
+        brand={storeBrand}
+        firstCollectionSlug={collections[0]?.slug}
+      />
 
       <section className="border-y border-line bg-paper">
         <div className="mx-auto max-w-[1400px] px-5 py-16 md:px-8 md:py-20">
