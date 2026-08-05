@@ -5,7 +5,7 @@ export class CreateReviewDto {
   productId!: string;
 
   @IsString()
-  userId!: string;
+  customerId!: string;
 
   @IsInt()
   @Min(1)

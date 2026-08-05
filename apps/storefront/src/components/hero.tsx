@@ -2,8 +2,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { brand } from "@linq/site-config";
 
-export function Hero() {
+export function Hero({ firstCollectionSlug }: { firstCollectionSlug?: string }) {
   const nameParts = brand.name.split(" ");
+  const dropsHref = firstCollectionSlug
+    ? `/collections/${firstCollectionSlug}`
+    : "/shop";
 
   return (
     <section className="relative min-h-[100svh] overflow-hidden bg-mist">
@@ -42,7 +45,7 @@ export function Hero() {
           <Link href="/shop" className="btn-primary">
             Shop now
           </Link>
-          <Link href="/collections/drops" className="btn-secondary">
+          <Link href={dropsHref} className="btn-secondary">
             New drops
           </Link>
         </div>

@@ -1,0 +1,9 @@
+name: auth
+version: 1.0.0
+enabled: true
+prefix: /api/auth
+description: Staff authentication
+schema: security
+
+security:
+  encrypt: false

@@ -5,9 +5,10 @@ import { formatInr } from "@/lib/format";
 
 type Props = {
   product: Product;
+  priority?: boolean;
 };
 
-export function ProductCard({ product }: Props) {
+export function ProductCard({ product, priority = false }: Props) {
   const price = getLowestPrice(product);
 
   return (
@@ -17,6 +18,8 @@ export function ProductCard({ product }: Props) {
           src={product.images[0]}
           alt={product.name}
           fill
+          priority={priority}
+          loading={priority ? "eager" : undefined}
           className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
           sizes="(max-width: 768px) 50vw, 25vw"
         />

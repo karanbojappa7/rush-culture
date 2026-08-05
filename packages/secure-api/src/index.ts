@@ -6,6 +6,12 @@ export type ApiResponse<T> = {
   data?: T;
 };
 
+export type SecureApiOptions = {
+  credentials?: RequestCredentials;
+  headers?: HeadersInit;
+  getCookieHeader?: () => string | Promise<string | undefined>;
+};
+
 type EncryptedResponse = {
   enc: true;
   iv: string;
@@ -107,7 +113,21 @@ function isEncryptedResponse(body: unknown): body is EncryptedResponse {
   );
 }
 
-export function createSecureApi(baseUrl: string) {
+export function resolveApiBaseUrl(fallback = "http://localhost:3001") {
+  if (typeof window === "undefined") {
+    return (
+      process.env.API_INTERNAL_URL ??
+      process.env.NEXT_PUBLIC_API_URL ??
+      fallback
+    );
+  }
+  return process.env.NEXT_PUBLIC_API_URL ?? fallback;
+}
+
+export function createSecureApi(
+  baseUrl: string,
+  options: SecureApiOptions = {},
+) {
   let cached:
     | { enabled: false }
     | { enabled: true; publicKey: CryptoKey }
@@ -137,6 +157,16 @@ export function createSecureApi(baseUrl: string) {
   ): Promise<ApiResponse<T>> {
     const mode = await resolveCrypto();
     const headers = new Headers(init?.headers);
+    if (options.headers) {
+      new Headers(options.headers).forEach((value, key) => {
+        headers.set(key, value);
+      });
+    }
+    const cookieHeader = options.getCookieHeader
+      ? await options.getCookieHeader()
+      : undefined;
+    if (cookieHeader) headers.set("Cookie", cookieHeader);
+
     let body = init?.body;
 
     if (!mode.enabled) {
@@ -149,6 +179,7 @@ export function createSecureApi(baseUrl: string) {
         headers,
         body,
         cache: "no-store",
+        credentials: options.credentials,
       });
       return res.json() as Promise<ApiResponse<T>>;
     }
@@ -172,6 +203,7 @@ export function createSecureApi(baseUrl: string) {
       headers,
       body,
       cache: "no-store",
+      credentials: options.credentials,
     });
     const raw = await res.json();
     if (isEncryptedResponse(raw)) {
@@ -182,8 +214,11 @@ export function createSecureApi(baseUrl: string) {
 
   return {
     get: <T>(path: string) => request<T>(path, { method: "GET" }),
-    post: <T>(path: string, json: unknown) =>
+    post: <T>(path: string, json?: unknown) =>
       request<T>(path, { method: "POST", json }),
+    patch: <T>(path: string, json?: unknown) =>
+      request<T>(path, { method: "PATCH", json }),
+    delete: <T>(path: string) => request<T>(path, { method: "DELETE" }),
     clearCache: () => {
       cached = null;
     },

@@ -26,9 +26,9 @@ export class CartRepo extends BaseRepo<Cart, Prisma.CartCreateInput, Prisma.Cart
     });
   }
 
-  async findByUserId(userId: string): Promise<Cart | null> {
+  async findByCustomerId(customerId: string): Promise<Cart | null> {
     return this.prisma.cart.findFirst({
-      where: this.notDeletedWhere({ userId }),
+      where: this.notDeletedWhere({ customerId }),
       orderBy: { updatedAt: 'desc' },
     });
   }

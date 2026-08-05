@@ -1,0 +1,9 @@
+name: customer
+version: 1.0.0
+enabled: true
+prefix: /api/customers
+description: Storefront customers in meta schema
+schema: meta
+
+security:
+  encrypt: true

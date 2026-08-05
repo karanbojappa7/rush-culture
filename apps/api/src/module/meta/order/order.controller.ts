@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/commo
 import { BaseController } from '../../../common/base/base.controller';
 import { ResponseBuilder } from '../../../common/response/response.builder';
 import { ResponseVm } from '../../../common/response/response.vm';
+import { StaffAuth } from '../../security/auth/guards/staff-auth.decorator';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { OrderService } from './order.service';
@@ -25,6 +26,7 @@ export class OrderController extends BaseController {
   }
 
   @Get()
+  @StaffAuth()
   findAll(): Promise<ResponseVm> {
     return this.executeMethod(
       (_data: Record<string, never>) => this.orderService.findAll(),
@@ -34,6 +36,7 @@ export class OrderController extends BaseController {
   }
 
   @Get('summary')
+  @StaffAuth()
   summary(): Promise<ResponseVm> {
     return this.executeMethod(
       (_data: Record<string, never>) => this.orderService.summary(),
@@ -43,6 +46,7 @@ export class OrderController extends BaseController {
   }
 
   @Get(':id')
+  @StaffAuth()
   findById(@Param('id') id: string): Promise<ResponseVm> {
     return this.executeMethod(
       (data) => this.orderService.findById(data),
@@ -52,7 +56,11 @@ export class OrderController extends BaseController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() data: UpdateOrderDto): Promise<ResponseVm> {
+  @StaffAuth()
+  update(
+    @Param('id') id: string,
+    @Body() data: UpdateOrderDto,
+  ): Promise<ResponseVm> {
     return this.executeMethod(
       (payload) => this.orderService.update(payload),
       { id, data },
@@ -61,7 +69,12 @@ export class OrderController extends BaseController {
   }
 
   @Delete(':id')
+  @StaffAuth()
   softDelete(@Param('id') id: string): Promise<ResponseVm> {
-    return this.executeMethod((data) => this.orderService.softDelete(data), { id }, 'Order deleted');
+    return this.executeMethod(
+      (data) => this.orderService.softDelete(data),
+      { id },
+      'Order deleted',
+    );
   }
 }

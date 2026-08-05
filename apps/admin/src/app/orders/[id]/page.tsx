@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { AdminShell } from "@/components/admin-shell";
-import { apiGet, formatInr } from "@/lib/api";
+import { apiGet, formatInr } from "@/lib/api-server";
+import { getSessionUser, sessionLabel } from "@/lib/session";
 
 type Order = {
   id: string;
@@ -36,12 +37,15 @@ type Props = { params: Promise<{ id: string }> };
 
 export default async function OrderDetailPage({ params }: Props) {
   const { id } = await params;
-  const res = await apiGet<Order>(`/api/orders/${id}`);
+  const [user, res] = await Promise.all([
+    getSessionUser(),
+    apiGet<Order>(`/api/orders/${id}`),
+  ]);
   if (!res.data) notFound();
   const order = res.data;
 
   return (
-    <AdminShell title={order.orderNumber}>
+    <AdminShell title={order.orderNumber} userLabel={sessionLabel(user)}>
       <div className="grid gap-6 lg:grid-cols-2">
         <section className="border border-line bg-panel p-5">
           <h2 className="font-display text-lg font-bold">Customer & shipping</h2>

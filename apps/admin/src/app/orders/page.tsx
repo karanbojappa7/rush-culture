@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { AdminShell } from "@/components/admin-shell";
-import { apiGet, formatInr } from "@/lib/api";
+import { apiGet, formatInr } from "@/lib/api-server";
+import { getSessionUser, sessionLabel } from "@/lib/session";
 
 type OrderItem = {
   productName: string;
@@ -31,11 +32,14 @@ type Order = {
 };
 
 export default async function OrdersPage() {
-  const res = await apiGet<Order[]>("/api/orders");
+  const [user, res] = await Promise.all([
+    getSessionUser(),
+    apiGet<Order[]>("/api/orders"),
+  ]);
   const orders = res.data ?? [];
 
   return (
-    <AdminShell title="Orders">
+    <AdminShell title="Orders" userLabel={sessionLabel(user)}>
       <div className="space-y-4">
         {orders.length === 0 ? (
           <p className="text-mute">No orders yet.</p>

@@ -3,7 +3,7 @@ import { IsOptional, IsString } from 'class-validator';
 export class CreateCartDto {
   @IsOptional()
   @IsString()
-  userId?: string;
+  customerId?: string;
 
   @IsOptional()
   @IsString()

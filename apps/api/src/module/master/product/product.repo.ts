@@ -5,6 +5,7 @@ import { PrismaService } from '../../../common/prisma/prisma.service';
 import { ProductFilters, buildProductWhere } from './utility/product-filter.utility';
 
 export const productInclude = {
+  category: true,
   variants: { where: { isDeleted: false } },
   images: { where: { isDeleted: false } },
 } satisfies Prisma.ProductInclude;

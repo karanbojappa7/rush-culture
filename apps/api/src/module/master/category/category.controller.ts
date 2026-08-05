@@ -10,6 +10,7 @@ import {
 import { BaseController } from '../../../common/base/base.controller';
 import { ResponseBuilder } from '../../../common/response/response.builder';
 import { ResponseVm } from '../../../common/response/response.vm';
+import { StaffAuth } from '../../security/auth/guards/staff-auth.decorator';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
@@ -24,6 +25,7 @@ export class CategoryController extends BaseController {
   }
 
   @Post()
+  @StaffAuth()
   create(@Body() payload: CreateCategoryDto): Promise<ResponseVm> {
     return this.executeMethod(
       (data) => this.categoryService.create(data),
@@ -60,6 +62,7 @@ export class CategoryController extends BaseController {
   }
 
   @Patch(':id')
+  @StaffAuth()
   update(
     @Param('id') id: string,
     @Body() data: UpdateCategoryDto,
@@ -72,6 +75,7 @@ export class CategoryController extends BaseController {
   }
 
   @Delete(':id')
+  @StaffAuth()
   softDelete(@Param('id') id: string): Promise<ResponseVm> {
     return this.executeMethod(
       (data) => this.categoryService.softDelete(data),

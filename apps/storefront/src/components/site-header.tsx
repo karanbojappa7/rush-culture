@@ -4,14 +4,14 @@ import Link from "next/link";
 import { brand } from "@linq/site-config";
 import { useCart } from "@/components/cart-provider";
 
-const links = [
-  { href: "/shop", label: "Shop" },
-  { href: "/collections/streetwear", label: "Streetwear" },
-  { href: "/collections/drops", label: "Drops" },
-];
+type NavLink = { href: string; label: string };
 
-export function SiteHeader() {
+export function SiteHeader({ collectionLinks = [] }: { collectionLinks?: NavLink[] }) {
   const { count } = useCart();
+  const links: NavLink[] = [
+    { href: "/shop", label: "Shop" },
+    ...collectionLinks.slice(0, 2),
+  ];
 
   return (
     <header className="absolute inset-x-0 top-0 z-40">

@@ -1,15 +1,21 @@
 import { brand } from "@linq/site-config";
 import { ShopCatalog } from "@/components/shop-catalog";
+import { fetchCollections, fetchProducts } from "@/lib/catalog";
 
 export const metadata = {
   title: "Shop",
   description: brand.meta.shopDescription,
 };
 
-export default function ShopPage() {
+export default async function ShopPage() {
+  const [products, collections] = await Promise.all([
+    fetchProducts(),
+    fetchCollections(),
+  ]);
+
   return (
     <div className="pt-20 md:pt-24">
-      <ShopCatalog />
+      <ShopCatalog products={products} collections={collections} />
     </div>
   );
 }

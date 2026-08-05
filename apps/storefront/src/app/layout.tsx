@@ -4,6 +4,7 @@ import { brand } from "@linq/site-config";
 import { CartProvider } from "@/components/cart-provider";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { fetchCollections } from "@/lib/catalog";
 import "./globals.css";
 
 const syne = Syne({
@@ -26,18 +27,28 @@ export const metadata: Metadata = {
   description: brand.description,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const collections = await fetchCollections();
+  const collectionLinks = collections.map((collection) => ({
+    href: `/collections/${collection.slug}`,
+    label: collection.name,
+  }));
+
   return (
-    <html lang="en" className={`${syne.variable} ${figtree.variable} h-full`}>
+    <html
+      lang="en"
+      data-scroll-behavior="smooth"
+      className={`${syne.variable} ${figtree.variable} h-full`}
+    >
       <body className="flex min-h-full flex-col font-sans antialiased">
         <CartProvider>
-          <SiteHeader />
+          <SiteHeader collectionLinks={collectionLinks} />
           <main className="flex-1">{children}</main>
-          <SiteFooter />
+          <SiteFooter collections={collections} />
         </CartProvider>
       </body>
     </html>

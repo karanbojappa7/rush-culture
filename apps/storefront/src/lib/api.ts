@@ -1,27 +1,24 @@
-import { createSecureApi, type ApiResponse } from "@linq/secure-api";
+import {
+  createSecureApi,
+  resolveApiBaseUrl,
+  type ApiResponse,
+} from "@linq/secure-api";
+import { formatInr } from "@linq/site-config";
 
 export type { ApiResponse };
+export { formatInr };
 
-function resolveApiUrl() {
-  if (typeof window === "undefined") {
-    return (
-      process.env.API_INTERNAL_URL ??
-      process.env.NEXT_PUBLIC_API_URL ??
-      "http://localhost:3001"
-    );
-  }
-  return process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
-}
-
-export const API_URL = resolveApiUrl();
-
-export async function apiPost<T>(
-  path: string,
-  body: unknown,
-): Promise<ApiResponse<T>> {
-  return createSecureApi(resolveApiUrl()).post<T>(path, body);
+function client() {
+  return createSecureApi(resolveApiBaseUrl(), { credentials: "include" });
 }
 
 export async function apiGet<T>(path: string): Promise<ApiResponse<T>> {
-  return createSecureApi(resolveApiUrl()).get<T>(path);
+  return client().get<T>(path);
+}
+
+export async function apiPost<T>(
+  path: string,
+  body?: unknown,
+): Promise<ApiResponse<T>> {
+  return client().post<T>(path, body);
 }

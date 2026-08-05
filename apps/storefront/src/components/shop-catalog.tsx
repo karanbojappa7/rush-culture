@@ -2,32 +2,45 @@
 
 import { useMemo, useState } from "react";
 import {
+  Collection,
   Product,
-  collections,
   getLowestPrice,
-  products,
 } from "@/lib/catalog";
 import { ProductCard } from "./product-card";
 
-const ALL_SIZES = Array.from(
-  new Set(products.flatMap((p) => p.variants.map((v) => v.size))),
-).sort();
-
-const ALL_COLORS = Array.from(
-  new Set(products.flatMap((p) => p.variants.map((v) => v.color))),
-).sort();
-
 type Props = {
+  products: Product[];
+  collections: Collection[];
   initialCollection?: string;
   title?: string;
 };
 
-export function ShopCatalog({ initialCollection, title = "Shop" }: Props) {
+export function ShopCatalog({
+  products,
+  collections,
+  initialCollection,
+  title = "Shop",
+}: Props) {
   const [q, setQ] = useState("");
   const [collection, setCollection] = useState(initialCollection ?? "all");
   const [size, setSize] = useState("all");
   const [color, setColor] = useState("all");
   const [maxPrice, setMaxPrice] = useState(500000);
+
+  const allSizes = useMemo(
+    () =>
+      Array.from(
+        new Set(products.flatMap((p) => p.variants.map((v) => v.size))),
+      ).sort(),
+    [products],
+  );
+  const allColors = useMemo(
+    () =>
+      Array.from(
+        new Set(products.flatMap((p) => p.variants.map((v) => v.color))),
+      ).sort(),
+    [products],
+  );
 
   const filtered = useMemo(() => {
     return products.filter((product: Product) => {
@@ -53,7 +66,7 @@ export function ShopCatalog({ initialCollection, title = "Shop" }: Props) {
 
       return true;
     });
-  }, [q, collection, size, color, maxPrice]);
+  }, [products, q, collection, size, color, maxPrice]);
 
   return (
     <div className="mx-auto grid max-w-[1400px] gap-10 px-5 py-10 md:grid-cols-[220px_1fr] md:gap-12 md:px-8 md:py-14">
@@ -100,9 +113,18 @@ export function ShopCatalog({ initialCollection, title = "Shop" }: Props) {
             Size
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
-            <Chip active={size === "all"} onClick={() => setSize("all")} label="All" />
-            {ALL_SIZES.map((s) => (
-              <Chip key={s} active={size === s} onClick={() => setSize(s)} label={s} />
+            <Chip
+              active={size === "all"}
+              onClick={() => setSize("all")}
+              label="All"
+            />
+            {allSizes.map((s) => (
+              <Chip
+                key={s}
+                active={size === s}
+                onClick={() => setSize(s)}
+                label={s}
+              />
             ))}
           </div>
         </div>
@@ -117,7 +139,7 @@ export function ShopCatalog({ initialCollection, title = "Shop" }: Props) {
               onClick={() => setColor("all")}
               label="All"
             />
-            {ALL_COLORS.map((c) => (
+            {allColors.map((c) => (
               <Chip
                 key={c}
                 active={color === c}
@@ -129,23 +151,30 @@ export function ShopCatalog({ initialCollection, title = "Shop" }: Props) {
         </div>
 
         <div>
-          <p className="text-[12px] font-medium tracking-[0.14em] uppercase text-mute">
-            Max price — ₹{(maxPrice / 100).toLocaleString("en-IN")}
-          </p>
+          <label
+            htmlFor="max-price"
+            className="text-[12px] font-medium tracking-[0.14em] uppercase text-mute"
+          >
+            Max price
+          </label>
           <input
+            id="max-price"
             type="range"
-            min={99900}
+            min={50000}
             max={500000}
             step={10000}
             value={maxPrice}
             onChange={(e) => setMaxPrice(Number(e.target.value))}
-            className="mt-3 w-full accent-ink"
+            className="mt-3 w-full"
           />
+          <p className="mt-1 text-sm text-mute">
+            Up to ₹{Math.round(maxPrice / 100).toLocaleString("en-IN")}
+          </p>
         </div>
       </aside>
 
       <div>
-        <div className="mb-8 flex items-end justify-between gap-4 border-b border-line pb-4">
+        <div className="mb-8 flex items-end justify-between gap-4">
           <div>
             <h1 className="font-display text-4xl font-extrabold tracking-tight text-ink md:text-5xl">
               {title}
@@ -160,8 +189,12 @@ export function ShopCatalog({ initialCollection, title = "Shop" }: Props) {
           <p className="py-20 text-mute">No pieces match those filters.</p>
         ) : (
           <div className="grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-3 lg:gap-x-6">
-            {filtered.map((product) => (
-              <ProductCard key={product.id} product={product} />
+            {filtered.map((product, index) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                priority={index < 4}
+              />
             ))}
           </div>
         )}
@@ -206,7 +239,9 @@ function Chip({
       type="button"
       onClick={onClick}
       className={`cursor-pointer px-3 py-1.5 text-xs font-medium tracking-wide transition-colors ${
-        active ? "bg-ink text-paper" : "bg-mist text-ink hover:bg-ink hover:text-paper"
+        active
+          ? "bg-ink text-paper"
+          : "bg-mist text-ink hover:bg-ink hover:text-paper"
       }`}
     >
       {label}

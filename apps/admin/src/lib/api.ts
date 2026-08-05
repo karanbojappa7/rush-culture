@@ -1,35 +1,35 @@
-import { createSecureApi, type ApiResponse } from "@linq/secure-api";
+import {
+  createSecureApi,
+  resolveApiBaseUrl,
+  type ApiResponse,
+} from "@linq/secure-api";
+import { formatInr } from "@linq/site-config";
 
 export type { ApiResponse };
+export { formatInr };
 
-function resolveApiUrl() {
-  if (typeof window === "undefined") {
-    return (
-      process.env.API_INTERNAL_URL ??
-      process.env.NEXT_PUBLIC_API_URL ??
-      "http://localhost:3001"
-    );
-  }
-  return process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
+function client() {
+  return createSecureApi(resolveApiBaseUrl(), { credentials: "include" });
 }
 
-export const API_URL = resolveApiUrl();
-
 export async function apiGet<T>(path: string): Promise<ApiResponse<T>> {
-  return createSecureApi(resolveApiUrl()).get<T>(path);
+  return client().get<T>(path);
 }
 
 export async function apiPost<T>(
   path: string,
-  body: unknown,
+  body?: unknown,
 ): Promise<ApiResponse<T>> {
-  return createSecureApi(resolveApiUrl()).post<T>(path, body);
+  return client().post<T>(path, body);
 }
 
-export function formatInr(paise: number) {
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
-    maximumFractionDigits: 0,
-  }).format(paise / 100);
+export async function apiPatch<T>(
+  path: string,
+  body?: unknown,
+): Promise<ApiResponse<T>> {
+  return client().patch<T>(path, body);
+}
+
+export async function apiDelete<T>(path: string): Promise<ApiResponse<T>> {
+  return client().delete<T>(path);
 }

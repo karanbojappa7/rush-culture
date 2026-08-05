@@ -1,19 +1,20 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { ProductBuyBox } from "@/components/product-buy-box";
-import { getProductBySlug, products } from "@/lib/catalog";
+import { fetchProductBySlug, fetchProducts } from "@/lib/catalog";
 
 type Props = {
   params: Promise<{ slug: string }>;
 };
 
 export async function generateStaticParams() {
-  return products.map((p) => ({ slug: p.slug }));
+  const products = await fetchProducts();
+  return products.map((product) => ({ slug: product.slug }));
 }
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await fetchProductBySlug(slug);
   if (!product) return { title: "Product" };
   return {
     title: product.name,
@@ -23,7 +24,7 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await fetchProductBySlug(slug);
   if (!product) notFound();
 
   return (

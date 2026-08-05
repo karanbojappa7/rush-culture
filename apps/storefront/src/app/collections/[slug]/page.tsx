@@ -1,5 +1,9 @@
 import { ShopCatalog } from "@/components/shop-catalog";
-import { getCollectionBySlug } from "@/lib/catalog";
+import {
+  fetchCollectionBySlug,
+  fetchCollections,
+  fetchProducts,
+} from "@/lib/catalog";
 import { notFound } from "next/navigation";
 
 type Props = {
@@ -8,7 +12,7 @@ type Props = {
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params;
-  const collection = getCollectionBySlug(slug);
+  const collection = await fetchCollectionBySlug(slug);
   if (!collection) return { title: "Collection" };
   return {
     title: collection.name,
@@ -18,7 +22,11 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function CollectionPage({ params }: Props) {
   const { slug } = await params;
-  const collection = getCollectionBySlug(slug);
+  const [collection, products, collections] = await Promise.all([
+    fetchCollectionBySlug(slug),
+    fetchProducts(),
+    fetchCollections(),
+  ]);
   if (!collection) notFound();
 
   return (
@@ -32,7 +40,12 @@ export default async function CollectionPage({ params }: Props) {
         </h1>
         <p className="mt-3 max-w-lg text-mute">{collection.tagline}</p>
       </div>
-      <ShopCatalog initialCollection={slug} title="Browse" />
+      <ShopCatalog
+        products={products}
+        collections={collections}
+        initialCollection={slug}
+        title="Browse"
+      />
     </div>
   );
 }

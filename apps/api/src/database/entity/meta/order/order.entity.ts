@@ -3,6 +3,7 @@ import { BaseEntity } from '../../../../common/entities/base.entity';
 
 export class OrderEntity extends BaseEntity {
   orderNumber!: string;
+  customerId!: string | null;
   status!: OrderStatus;
   paymentStatus!: PaymentStatus;
   subtotalInPaise!: number;

@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { brand } from "@linq/site-config";
+import type { Collection } from "@/lib/catalog";
 
-export function SiteFooter() {
+export function SiteFooter({ collections = [] }: { collections?: Collection[] }) {
   return (
     <footer className="border-t border-line bg-ink text-paper">
       <div className="mx-auto grid max-w-[1400px] gap-10 px-5 py-14 md:grid-cols-[1.4fr_1fr_1fr] md:px-8">
@@ -23,21 +24,16 @@ export function SiteFooter() {
                 All clothing
               </Link>
             </li>
-            <li>
-              <Link href="/collections/streetwear" className="hover:text-volt">
-                Streetwear
-              </Link>
-            </li>
-            <li>
-              <Link href="/collections/essentials" className="hover:text-volt">
-                Essentials
-              </Link>
-            </li>
-            <li>
-              <Link href="/collections/drops" className="hover:text-volt">
-                Drops
-              </Link>
-            </li>
+            {collections.map((collection) => (
+              <li key={collection.slug}>
+                <Link
+                  href={`/collections/${collection.slug}`}
+                  className="hover:text-volt"
+                >
+                  {collection.name}
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
         <div>

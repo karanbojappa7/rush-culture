@@ -1,6 +1,6 @@
 # What’s done
 
-Status of the LINQ / white-label youth clothing e-commerce monorepo as of the current codebase.
+Status of the Rush Culture / white-label youth clothing e-commerce monorepo as of the current codebase.
 
 ## Monorepo
 
@@ -8,18 +8,32 @@ Status of the LINQ / white-label youth clothing e-commerce monorepo as of the cu
 |---|---|
 | `apps/api` | NestJS + Prisma API |
 | `apps/storefront` | Next.js storefront |
-| `apps/admin` | Next.js admin |
-| `packages/site-config` | White-label brand + shared catalog |
-| `packages/secure-api` | Encrypted API client helpers |
+| `apps/admin` | Next.js admin CMS |
+| `packages/site-config` | White-label brand + seed catalog + `formatInr` |
+| `packages/secure-api` | Shared API client (get/post/patch/delete, cookies) |
 
 Workspaces: npm (`apps/*`, `packages/*`).
 
-## White-label
+## White-label / DRY
 
-- Single brand config: `packages/site-config/src/brand.ts`
-- Shared catalog: `packages/site-config/src/catalog.ts` (uses `brand.name` / `sku()`)
-- Storefront + admin + API order prefix / cart key read from `brand`
+- Brand, cart key, order prefix, admin auth cookie: `packages/site-config/src/brand.ts`
+- Money formatting: `formatInr` from `@linq/site-config` (not duplicated in apps)
+- API client: `@linq/secure-api` (`resolveApiBaseUrl`, credentials/cookie forwarding)
+- Seed catalog in site-config is bootstrap-only; live catalog is Prisma via API
 - After brand edits for API: `npm run build:site-config`
+
+## Schema ownership
+
+| Schema | Contents |
+|---|---|
+| `master` | Category, Product, ProductVariant, ProductImage (catalog) |
+| `core` | Role, UserType, User (staff), AppConfig, Discount (system) |
+| `security` | Account, Session, VerificationToken (auth credentials/sessions) |
+| `meta` | Customer, Address, Cart, CartItem, Order, OrderItem, Review (transactions) |
+
+- Staff `User` (core) vs shopper `Customer` (meta)
+- Checkout find-or-creates `Customer` by email and sets `order.customerId`
+- Nest modules live under `module/{master|core|meta|security}/`
 
 ## API architecture
 
@@ -29,78 +43,54 @@ Controller → executeMethod → Service → Repo (Prisma) → Postgres
          ResponseBuilder (success 200 / warning 401 / authError 403 / codeError 1000)
 ```
 
-- Base layers: `apps/api/src/common/base/` (`BaseController`, `BaseService`, `BaseRepo`)
-- Shared entity audit fields: `apps/api/src/common/entities/base.entity.ts`
-- Module layout: `apps/api/src/module/{master|core|meta}/{domain}/`
-- DB entities (TS): `apps/api/src/database/entity/{master|core|meta}/`
-- Prisma multi-schema: `master` / `core` / `meta` under `apps/api/prisma/schema/`
-- Each Nest module has `config/module.yml`
-- Domain helpers live in that module’s `utility/` folder
-- Cross-cutting helpers (dates, slug): `apps/api/src/common/utility/`
-- Soft delete via `isDeleted` (no hard deletes in CRUD)
-- No comments in application code (project convention)
+- Module layout: `apps/api/src/module/{master|core|meta|security}/{domain}/`
+- Soft delete via `isDeleted`
+- No comments in application code
 
-## UTC dates
+## Auth (admin)
 
-- All timestamps treated as UTC
-- Helpers: `apps/api/src/common/utility/date.utility.ts`
-- `BaseRepo` sets `createdAt` / `updatedAt` with `utcNow()`
-- Postgres pool/session timezone UTC
-- Prisma `DateTime` uses `@db.Timestamptz(3)`
+- `POST /api/auth/login|logout`, `GET /api/auth/me` (`module/security/auth`)
+- JWT in httpOnly cookie (`brand.adminAuthCookie`)
+- `@StaffAuth()` on admin write/list routes; public product/category reads + order create
+- Bootstrap admin from `ADMIN_EMAIL` / `ADMIN_PASSWORD`
+- Admin `/login` + Next middleware
 
-## API modules (CRUD)
+## API modules
 
-| Module | Prefix | Notes |
+| Module | Prefix | Schema |
 |---|---|---|
-| Users | `/api/users` | + roles `/api/roles`, user-types `/api/user-types` |
-| Addresses | `/api/addresses` | Default-address clearing utility |
-| Categories | `/api/categories` | Slug helpers |
-| Products | `/api/products` | Prisma CRUD; seeds from site-config when empty |
-| App configs | `/api/app-configs` | Key/value core config |
-| Discounts | `/api/discounts` | UTC window validation |
-| Carts | `/api/carts` | Nested item routes |
-| Orders | `/api/orders` | Totals + order-number utilities; payment fields captured, Razorpay charge later |
-| Reviews | `/api/reviews` | Includes approve |
-
-Pattern per module: `dto/` · `*.controller.ts` · `*.service.ts` · `*.repo.ts` · `*.module.ts` · `utility/` · `config/module.yml`
-
-HTTP verbs: `POST` create · `GET` list/get · `PATCH` update · `DELETE` soft-delete.
-
-## Encryption
-
-- Optional hybrid encryption when `ENABLE_ENCRYPTION=true`
-- Public key: `/api/crypto/public-key`
-- Client package: `@linq/secure-api`
+| Auth | `/api/auth` | security |
+| Users / Roles / UserTypes | `/api/users` etc. | core |
+| Categories | `/api/categories` | master |
+| Products | `/api/products` (+ variants/images patch) | master |
+| Customers | `/api/customers` | meta |
+| Addresses | `/api/addresses` | meta |
+| Carts / Orders / Reviews | `/api/carts` etc. | meta |
+| App configs / Discounts | `/api/app-configs` etc. | core |
 
 ## Storefront / admin
 
-- Storefront: brand-first home, shop, PDP, cart (localStorage), checkout → API orders
-- Admin: overview, orders, products, customers
-- Design: Syne + Figtree; paper/ink/volt tokens (avoid generic AI purple/cream looks)
-
-## Docker
-
-- `docker-compose.yml`: postgres, api, storefront, admin
-- API entry: wait for DB → Prisma push → start
-- Not fully validated end-to-end in all environments
+- Storefront: products & categories from API; localStorage cart; checkout → Customer + Order
+- Admin: login, overview, orders, product CMS (create/edit), categories, customers
+- Design: Syne + Figtree; paper/ink/volt
 
 ## Still open / next
 
-- Auth.js on storefront; API session validation
-- Razorpay charge flow (fields already on Order)
-- Harden admin against live Prisma product shape vs older mock catalog UI assumptions
+- Storefront customer login
+- Razorpay charge flow
+- Media upload (URLs only today)
 - Full Docker compose verification
-- Replace remaining hardcoded copy if any appear outside `site-config`
+- Apply schema with `prisma db push --accept-data-loss` on local (needs explicit consent when AI-run)
 
 ## Local commands
 
 ```bash
 npm run build:site-config
+npm run prisma:generate -w apps/api
+npx prisma db push --accept-data-loss   # local ecommerce DB only
 npm run dev:api
 npm run dev:storefront
 npm run dev:admin
-npm run prisma:generate -w apps/api
-npm run prisma:migrate -w apps/api
 ```
 
-API default: `http://localhost:3001` · Storefront: `http://localhost:3000` · Admin: `http://localhost:3002`
+API: `http://localhost:3001` · Storefront: `http://localhost:3000` · Admin: `http://localhost:3002`

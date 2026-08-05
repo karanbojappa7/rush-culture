@@ -3,10 +3,12 @@ import { CryptoModule } from './common/crypto/crypto.module';
 import { PrismaModule } from './common/prisma/prisma.module';
 import { AppConfigModule } from './module/core/app-config/app-config.module';
 import { DiscountModule } from './module/core/discount/discount.module';
-import { AddressModule } from './module/master/address/address.module';
+import { UserModule } from './module/core/user/user.module';
 import { CategoryModule } from './module/master/category/category.module';
-import { UserModule } from './module/master/user/user.module';
 import { ProductModule } from './module/master/product/product.module';
+import { AuthModule } from './module/security/auth/auth.module';
+import { AddressModule } from './module/meta/address/address.module';
+import { CustomerModule } from './module/meta/customer/customer.module';
 import { OrderModule } from './module/meta/order/order.module';
 import { CartModule } from './module/meta/cart/cart.module';
 import { ReviewModule } from './module/meta/review/review.module';
@@ -17,10 +19,12 @@ import { ReviewModule } from './module/meta/review/review.module';
     PrismaModule,
     AppConfigModule,
     DiscountModule,
-    AddressModule,
-    CategoryModule,
+    AuthModule,
     UserModule,
+    CategoryModule,
     ProductModule,
+    CustomerModule,
+    AddressModule,
     OrderModule,
     CartModule,
     ReviewModule,

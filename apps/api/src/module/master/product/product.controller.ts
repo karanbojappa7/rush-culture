@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestj
 import { BaseController } from '../../../common/base/base.controller';
 import { ResponseBuilder } from '../../../common/response/response.builder';
 import { ResponseVm } from '../../../common/response/response.vm';
+import { StaffAuth } from '../../security/auth/guards/staff-auth.decorator';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductService } from './product.service';
@@ -16,8 +17,13 @@ export class ProductController extends BaseController {
   }
 
   @Post()
+  @StaffAuth()
   create(@Body() payload: CreateProductDto): Promise<ResponseVm> {
-    return this.executeMethod((data) => this.productService.create(data), payload, 'Product created');
+    return this.executeMethod(
+      (data) => this.productService.create(data),
+      payload,
+      'Product created',
+    );
   }
 
   @Get()
@@ -47,7 +53,11 @@ export class ProductController extends BaseController {
 
   @Get('id/:id')
   findById(@Param('id') id: string): Promise<ResponseVm> {
-    return this.executeMethod((data) => this.productService.findById(data), { id }, 'Product fetched');
+    return this.executeMethod(
+      (data) => this.productService.findById(data),
+      { id },
+      'Product fetched',
+    );
   }
 
   @Get(':slug')
@@ -60,7 +70,11 @@ export class ProductController extends BaseController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() data: UpdateProductDto): Promise<ResponseVm> {
+  @StaffAuth()
+  update(
+    @Param('id') id: string,
+    @Body() data: UpdateProductDto,
+  ): Promise<ResponseVm> {
     return this.executeMethod(
       (payload) => this.productService.update(payload),
       { id, data },
@@ -68,8 +82,39 @@ export class ProductController extends BaseController {
     );
   }
 
+  @Patch(':id/variants')
+  @StaffAuth()
+  replaceVariants(
+    @Param('id') id: string,
+    @Body() body: { variants: CreateProductDto['variants'] },
+  ): Promise<ResponseVm> {
+    return this.executeMethod(
+      (payload) => this.productService.replaceVariants(payload),
+      { id, variants: body.variants },
+      'Product variants updated',
+    );
+  }
+
+  @Patch(':id/images')
+  @StaffAuth()
+  replaceImages(
+    @Param('id') id: string,
+    @Body() body: { images: CreateProductDto['images'] },
+  ): Promise<ResponseVm> {
+    return this.executeMethod(
+      (payload) => this.productService.replaceImages(payload),
+      { id, images: body.images },
+      'Product images updated',
+    );
+  }
+
   @Delete(':id')
+  @StaffAuth()
   softDelete(@Param('id') id: string): Promise<ResponseVm> {
-    return this.executeMethod((data) => this.productService.softDelete(data), { id }, 'Product deleted');
+    return this.executeMethod(
+      (data) => this.productService.softDelete(data),
+      { id },
+      'Product deleted',
+    );
   }
 }

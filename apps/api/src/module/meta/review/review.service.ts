@@ -14,8 +14,10 @@ export class ReviewService extends BaseService {
   async create(payload: CreateReviewDto) {
     assertValidRating(payload.rating);
     const existing = await this.reviewRepo.findAllByProductId(payload.productId);
-    if (existing.some((review) => review.userId === payload.userId)) {
-      throw new ConflictException('A review already exists for this product and user');
+    if (existing.some((review) => review.customerId === payload.customerId)) {
+      throw new ConflictException(
+        'A review already exists for this product and customer',
+      );
     }
     return this.reviewRepo.create(payload);
   }

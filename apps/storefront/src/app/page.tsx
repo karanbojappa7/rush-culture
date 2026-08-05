@@ -2,12 +2,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { Hero } from "@/components/hero";
 import { ProductGrid } from "@/components/product-grid";
-import { collections, products } from "@/lib/catalog";
+import { fetchCollections, fetchProducts } from "@/lib/catalog";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [collections, products] = await Promise.all([
+    fetchCollections(),
+    fetchProducts(),
+  ]);
+
   return (
     <>
-      <Hero />
+      <Hero firstCollectionSlug={collections[0]?.slug} />
 
       <section className="border-y border-line bg-paper">
         <div className="mx-auto max-w-[1400px] px-5 py-16 md:px-8 md:py-20">
@@ -16,11 +21,11 @@ export default function HomePage() {
               Collections
             </h2>
             <p className="hidden max-w-xs text-right text-sm text-mute md:block">
-              Three lanes. Pick a mood and go.
+              Pick a lane and go.
             </p>
           </div>
           <div className="grid gap-4 md:grid-cols-3 md:gap-5">
-            {collections.map((collection) => (
+            {collections.map((collection, index) => (
               <Link
                 key={collection.slug}
                 href={`/collections/${collection.slug}`}
@@ -30,6 +35,7 @@ export default function HomePage() {
                   src={collection.image}
                   alt={collection.name}
                   fill
+                  priority={index === 0}
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
                   sizes="(max-width: 768px) 100vw, 33vw"
                 />

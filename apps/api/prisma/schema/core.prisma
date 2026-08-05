@@ -42,3 +42,78 @@ model Discount {
   @@map("discount")
   @@schema("core")
 }
+
+model Role {
+  id          String  @id @default(cuid())
+  code        String  @unique
+  name        String
+  description String?
+  isActive    Boolean @default(true) @map("is_active")
+
+  userId    String?  @map("user_id")
+  createdAt DateTime @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt DateTime @updatedAt @db.Timestamptz(3) @map("updated_at")
+  createdBy String?  @map("created_by")
+  updatedBy String?  @map("updated_by")
+  isDeleted Boolean  @default(false) @map("is_deleted")
+
+  users User[]
+
+  @@index([isDeleted])
+  @@index([isActive])
+  @@map("role")
+  @@schema("core")
+}
+
+model UserType {
+  id          String  @id @default(cuid())
+  code        String  @unique
+  name        String
+  description String?
+  isActive    Boolean @default(true) @map("is_active")
+
+  userId    String?  @map("user_id")
+  createdAt DateTime @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt DateTime @updatedAt @db.Timestamptz(3) @map("updated_at")
+  createdBy String?  @map("created_by")
+  updatedBy String?  @map("updated_by")
+  isDeleted Boolean  @default(false) @map("is_deleted")
+
+  users User[]
+
+  @@index([isDeleted])
+  @@index([isActive])
+  @@map("user_type")
+  @@schema("core")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  phoneNumber   String?   @unique @map("phone_number")
+  name          String?
+  image         String?
+  passwordHash  String?   @map("password_hash")
+  emailVerified DateTime? @db.Timestamptz(3) @map("email_verified")
+
+  roleId     String   @map("role_id")
+  role       Role     @relation(fields: [roleId], references: [id])
+  userTypeId String   @map("user_type_id")
+  userType   UserType @relation(fields: [userTypeId], references: [id])
+
+  userId    String?  @map("user_id")
+  createdAt DateTime @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt DateTime @updatedAt @db.Timestamptz(3) @map("updated_at")
+  createdBy String?  @map("created_by")
+  updatedBy String?  @map("updated_by")
+  isDeleted Boolean  @default(false) @map("is_deleted")
+
+  accounts Account[]
+  sessions Session[]
+
+  @@index([isDeleted])
+  @@index([roleId])
+  @@index([userTypeId])
+  @@map("user")
+  @@schema("core")
+}

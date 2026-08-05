@@ -1,4 +1,4 @@
-export { brand, sku, withBrandName } from "./brand";
+export { brand, sku, withBrandName, formatInr } from "./brand";
 export type { BrandConfig } from "./brand";
 export {
   collections,

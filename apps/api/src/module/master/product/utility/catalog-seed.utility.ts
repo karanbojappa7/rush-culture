@@ -1,17 +1,36 @@
-import { brand, products } from '@linq/site-config';
+import { brand, collections, products } from '@linq/site-config';
 import { Prisma } from '@prisma/client';
 import { BASE_ENTITY_DEFAULTS } from '../../../../common/entities/base.entity';
 import { utcNow } from '../../../../common/utility/date.utility';
 
+export function mapCatalogCategoryToCreateInput(
+  collection: (typeof collections)[number],
+): Prisma.CategoryCreateInput {
+  const stamp = utcNow();
+  return {
+    name: collection.name,
+    slug: collection.slug,
+    description: collection.tagline,
+    imageUrl: collection.image,
+    ...BASE_ENTITY_DEFAULTS,
+    createdAt: stamp,
+    updatedAt: stamp,
+  };
+}
+
 export function mapCatalogProductToCreateInput(
   product: (typeof products)[number],
+  categoryId?: string,
 ): Prisma.ProductCreateInput {
   const stamp = utcNow();
   return {
     name: product.name,
     slug: product.slug,
-    description: `${product.description}\n\nCollection: ${product.collection}`,
+    description: product.description,
     brand: product.brand || brand.name,
+    ...(categoryId
+      ? { category: { connect: { id: categoryId } } }
+      : {}),
     ...BASE_ENTITY_DEFAULTS,
     createdAt: stamp,
     updatedAt: stamp,

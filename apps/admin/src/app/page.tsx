@@ -1,5 +1,6 @@
 import { AdminShell } from "@/components/admin-shell";
-import { apiGet, formatInr } from "@/lib/api";
+import { apiGet, formatInr } from "@/lib/api-server";
+import { getSessionUser, sessionLabel } from "@/lib/session";
 
 type Summary = {
   orders: number;
@@ -19,20 +20,28 @@ type Order = {
 };
 
 export default async function AdminHomePage() {
-  const [summaryRes, ordersRes] = await Promise.all([
+  const [user, summaryRes, ordersRes] = await Promise.all([
+    getSessionUser(),
     apiGet<Summary>("/api/orders/summary"),
     apiGet<Order[]>("/api/orders"),
   ]);
 
-  const summary = summaryRes.data ?? { orders: 0, pending: 0, revenueInPaise: 0 };
+  const summary = summaryRes.data ?? {
+    orders: 0,
+    pending: 0,
+    revenueInPaise: 0,
+  };
   const recent = (ordersRes.data ?? []).slice(0, 8);
 
   return (
-    <AdminShell title="Overview">
+    <AdminShell title="Overview" userLabel={sessionLabel(user)}>
       <div className="grid gap-4 sm:grid-cols-3">
         <Stat label="Orders" value={String(summary.orders)} />
         <Stat label="Pending payment" value={String(summary.pending)} />
-        <Stat label="Revenue captured" value={formatInr(summary.revenueInPaise)} />
+        <Stat
+          label="Revenue captured"
+          value={formatInr(summary.revenueInPaise)}
+        />
       </div>
 
       <div className="mt-10">
@@ -56,8 +65,13 @@ export default async function AdminHomePage() {
                 </tr>
               ) : (
                 recent.map((order) => (
-                  <tr key={order.id} className="border-b border-line last:border-0">
-                    <td className="px-4 py-3 font-medium">{order.orderNumber}</td>
+                  <tr
+                    key={order.id}
+                    className="border-b border-line last:border-0"
+                  >
+                    <td className="px-4 py-3 font-medium">
+                      {order.orderNumber}
+                    </td>
                     <td className="px-4 py-3">
                       <div>{order.shippingFullName}</div>
                       <div className="text-mute">{order.customerEmail}</div>
@@ -65,7 +79,9 @@ export default async function AdminHomePage() {
                     <td className="px-4 py-3 uppercase">
                       {order.paymentMethod ?? "—"} · {order.paymentStatus}
                     </td>
-                    <td className="px-4 py-3">{formatInr(order.totalInPaise)}</td>
+                    <td className="px-4 py-3">
+                      {formatInr(order.totalInPaise)}
+                    </td>
                   </tr>
                 ))
               )}

@@ -4,6 +4,7 @@ import { BASE_ENTITY_DEFAULTS } from '../../../common/entities/base.entity';
 import { BaseService } from '../../../common/base/base.service';
 import { PrismaService } from '../../../common/prisma/prisma.service';
 import { utcNow } from '../../../common/utility/date.utility';
+import { CustomerService } from '../customer/customer.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { OrderRepo } from './order.repo';
@@ -15,6 +16,7 @@ export class OrderService extends BaseService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly orderRepo: OrderRepo,
+    private readonly customerService: CustomerService,
   ) {
     super(OrderService.name);
   }
@@ -30,6 +32,12 @@ export class OrderService extends BaseService {
       });
       if (existing) return existing;
     }
+
+    const customer = await this.customerService.findOrCreateByEmail({
+      email: payload.customerEmail,
+      phoneNumber: payload.shippingPhone,
+      name: payload.shippingFullName,
+    });
 
     const stamp = utcNow();
     const items = payload.items.map((item) => ({
@@ -52,6 +60,7 @@ export class OrderService extends BaseService {
     return this.prisma.order.create({
       data: {
         orderNumber: createOrderNumber(),
+        customerId: customer.id,
         customerEmail: payload.customerEmail,
         shippingFullName: payload.shippingFullName,
         shippingPhone: payload.shippingPhone,

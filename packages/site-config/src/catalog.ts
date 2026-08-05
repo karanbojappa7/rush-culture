@@ -42,7 +42,7 @@ export const collections: Collection[] = [
     name: "Essentials",
     tagline: "Daily layers that hold up.",
     image:
-      "https://images.unsplash.com/photo-1523381216712-3a8e0d04d5c8?auto=format&fit=crop&w=1600&q=80",
+      "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?auto=format&fit=crop&w=1600&q=80",
   },
   {
     slug: "drops",
@@ -294,7 +294,7 @@ export const products: Product[] = [
     brand: brand.name,
     collection: "essentials",
     images: [
-      "https://images.unsplash.com/photo-1596755094514-f87e34085b81?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?auto=format&fit=crop&w=1200&q=80",
     ],
     variants: [
       {
