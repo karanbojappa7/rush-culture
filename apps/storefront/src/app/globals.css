@@ -15,6 +15,7 @@
   --accent-ink: var(--volt-ink);
   --bg: var(--paper);
   --font-scale: 1;
+  --font-size-base: 16px;
   --btn: #0e0e0e;
   --btn-fg: #ffffff;
 }
@@ -31,8 +32,8 @@
   --color-line: var(--line);
   --color-btn: var(--btn);
   --color-btn-fg: var(--btn-fg);
-  --font-display: var(--font-syne);
-  --font-sans: var(--font-figtree);
+  --font-display: var(--font-display-family, var(--font-syne));
+  --font-sans: var(--font-sans-family, var(--font-figtree));
 }
 
 * {
@@ -41,7 +42,7 @@
 
 html {
   scroll-behavior: smooth;
-  font-size: calc(16px * var(--font-scale, 1));
+  font-size: var(--font-size-base, calc(16px * var(--font-scale, 1)));
 }
 
 body {

@@ -5,15 +5,24 @@
   --panel: #fffcf8;
   --ink: #141414;
   --mute: #6a655c;
+  --mist: #e6e2d9;
   --line: rgba(20, 20, 20, 0.1);
   --accent: #c8f542;
+  --accent-ink: #1a2200;
   --font-scale: 1;
+  --font-size-base: 16px;
   --btn: #141414;
   --btn-fg: #ffffff;
+  --tone-a: var(--accent);
+  --tone-b: var(--ink);
+  --tone-c: var(--mute);
+  --tone-d: color-mix(in srgb, var(--mist) 35%, var(--ink));
+  --tone-e: color-mix(in srgb, var(--accent) 40%, var(--mist));
+  --tone-f: color-mix(in srgb, var(--ink) 55%, var(--mute));
 }
 
 html {
-  font-size: calc(16px * var(--font-scale, 1));
+  font-size: var(--font-size-base, calc(16px * var(--font-scale, 1)));
 }
 
 @theme inline {
@@ -23,31 +32,180 @@ html {
   --color-mute: var(--mute);
   --color-line: var(--line);
   --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-mist: var(--mist, color-mix(in srgb, var(--bg) 70%, var(--ink)));
   --color-btn: var(--btn);
   --color-btn-fg: var(--btn-fg);
-  --font-sans: var(--font-figtree);
-  --font-display: var(--font-syne);
+  --font-sans: var(--font-sans-family, var(--font-figtree));
+  --font-display: var(--font-display-family, var(--font-syne));
 }
 
 body {
-  background:
+  min-height: 100vh;
+  background-color: var(--bg);
+  background-image:
     radial-gradient(
-      ellipse 80% 50% at 0% -10%,
-      color-mix(in srgb, var(--accent) 18%, transparent),
+      ellipse 70% 45% at 0% -8%,
+      color-mix(in srgb, var(--accent) 16%, transparent),
+      transparent 58%
+    ),
+    radial-gradient(
+      ellipse 50% 40% at 100% 0%,
+      color-mix(in srgb, var(--mist) 55%, transparent),
+      transparent 52%
+    ),
+    radial-gradient(
+      ellipse 45% 35% at 70% 100%,
+      color-mix(in srgb, var(--ink) 6%, transparent),
       transparent 55%
-    ),
-    radial-gradient(
-      ellipse 60% 40% at 100% 0%,
-      color-mix(in srgb, var(--ink) 4%, transparent),
-      transparent 50%
-    ),
-    var(--bg);
+    );
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: 100% 100%;
   color: var(--ink);
   font-family: var(--font-sans), system-ui, sans-serif;
 }
 
 .admin-main {
   animation: admin-fade 280ms ease-out;
+}
+
+.admin-main > header {
+  border-color: var(--line);
+  border-image: linear-gradient(
+      90deg,
+      var(--accent) 0%,
+      var(--mist) 28%,
+      var(--line) 55%,
+      color-mix(in srgb, var(--ink) 18%, transparent) 100%
+    )
+    1;
+}
+
+.admin-main > header h1 {
+  position: relative;
+  padding-left: 0.85rem;
+}
+
+.admin-main > header h1::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.15em;
+  bottom: 0.15em;
+  width: 0.3rem;
+  background: linear-gradient(
+    180deg,
+    var(--accent) 0%,
+    color-mix(in srgb, var(--ink) 70%, var(--mute)) 55%,
+    var(--mute) 100%
+  );
+}
+
+.admin-main .border.border-line.bg-panel,
+.admin-main section.border.border-line,
+.admin-main form.border.border-line,
+.admin-main div.border.border-line.bg-panel {
+  border-color: var(--line);
+  background: var(--panel);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--mist) 40%, transparent);
+}
+
+.admin-main > div > section.border.border-line:nth-of-type(3n + 1),
+.admin-main > div.grid > section:nth-child(3n + 1),
+.admin-main > div.grid > a:nth-child(3n + 1) {
+  border-top: 3px solid var(--accent);
+}
+
+.admin-main > div > section.border.border-line:nth-of-type(3n + 2),
+.admin-main > div.grid > section:nth-child(3n + 2),
+.admin-main > div.grid > a:nth-child(3n + 2) {
+  border-top: 3px solid color-mix(in srgb, var(--ink) 75%, var(--mute));
+}
+
+.admin-main > div > section.border.border-line:nth-of-type(3n),
+.admin-main > div.grid > section:nth-child(3n),
+.admin-main > div.grid > a:nth-child(3n) {
+  border-top: 3px solid color-mix(in srgb, var(--mute) 70%, var(--mist));
+}
+
+.admin-main a.border.border-line.bg-panel:hover,
+.admin-main a.border.border-line:hover {
+  border-color: color-mix(in srgb, var(--ink) 25%, var(--line));
+  background: color-mix(in srgb, var(--mist) 35%, var(--panel));
+}
+
+.admin-main button.bg-ink,
+.admin-main a.bg-ink {
+  background-color: var(--ink) !important;
+  color: var(--panel) !important;
+  border-color: var(--ink) !important;
+}
+
+.admin-main button.bg-ink:hover,
+.admin-main a.bg-ink:hover {
+  background-color: color-mix(in srgb, var(--ink) 88%, var(--mute)) !important;
+}
+
+.admin-main button.border-ink.bg-ink,
+.admin-main a.border-ink.bg-ink {
+  border-color: var(--ink) !important;
+}
+
+.admin-main input:not([type="color"]):not([type="checkbox"]):not([type="radio"]):focus,
+.admin-main select:focus,
+.admin-main textarea:focus {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--ink)) !important;
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--accent) 22%, transparent),
+    0 0 0 4px color-mix(in srgb, var(--mist) 45%, transparent) !important;
+  outline: none;
+}
+
+.admin-main a[class*="uppercase"].text-mute:hover {
+  color: var(--ink);
+}
+
+.admin-table {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--mist) 30%, transparent);
+}
+
+.admin-table thead {
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--mist) 70%, var(--panel)) 0%,
+    color-mix(in srgb, var(--accent) 8%, var(--panel)) 50%,
+    color-mix(in srgb, var(--ink) 4%, var(--panel)) 100%
+  );
+  color: var(--mute);
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.admin-table tbody tr {
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
+  transition: background-color 140ms ease;
+}
+
+.admin-table tbody tr:last-child {
+  border-bottom: 0;
+}
+
+.admin-table tbody tr:nth-child(even) {
+  background: color-mix(in srgb, var(--mist) 28%, transparent);
+}
+
+.admin-table tbody tr:hover {
+  background: color-mix(in srgb, var(--accent) 8%, var(--mist));
+}
+
+.admin-table tbody tr:hover td:first-child {
+  box-shadow: inset 3px 0 0 var(--accent);
 }
 
 .chart-bar {
@@ -115,15 +273,16 @@ body {
   }
 }
 
-html[data-color-mode="night"] .bg-ink {
+html[data-color-mode="night"] .admin-main button.bg-ink,
+html[data-color-mode="night"] .admin-main a.bg-ink,
+html[data-color-mode="night"] .admin-main .bg-ink.text-white,
+html[data-color-mode="night"] .admin-main .text-white.bg-ink {
   background-color: var(--btn) !important;
-}
-
-html[data-color-mode="night"] .text-white.bg-ink,
-html[data-color-mode="night"] .bg-ink.text-white {
   color: var(--btn-fg) !important;
+  border-color: var(--btn) !important;
 }
 
-html[data-color-mode="night"] .border-ink.bg-ink {
-  border-color: color-mix(in srgb, var(--btn-fg) 35%, transparent) !important;
+html[data-color-mode="night"] .admin-main button.border-ink.bg-ink,
+html[data-color-mode="night"] .admin-main a.border-ink.bg-ink {
+  border-color: color-mix(in srgb, var(--btn-fg) 30%, transparent) !important;
 }

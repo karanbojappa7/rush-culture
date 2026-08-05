@@ -155,47 +155,56 @@ export default async function AdminHomePage({ searchParams }: Props) {
           value={String(summary.orders)}
           hint={period}
           href={ordersHref}
+          tone="accent"
         />
         <Stat
           label="Pending payment"
           value={String(summary.pending)}
           hint="Needs follow-up"
           href={ordersHref}
+          tone="warm"
         />
         <Stat
           label="Revenue captured"
           value={formatInr(summary.revenueInPaise)}
           hint={period}
+          tone="mint"
         />
         <Stat
           label="Active queries"
           value={String(activeQueries)}
           hint={`${querySummary.open} open`}
           href="/queries?status=OPEN"
+          tone="cool"
         />
       </div>
 
       <div className="mt-8">
         <OverviewCharts
           querySlices={[
-            { key: "open", label: "Open", value: querySummary.open, color: "#141414" },
+            {
+              key: "open",
+              label: "Open",
+              value: querySummary.open,
+              color: "var(--ink)",
+            },
             {
               key: "inProgress",
               label: "In progress",
               value: querySummary.inProgress,
-              color: "#6a655c",
+              color: "var(--mute)",
             },
             {
               key: "resolved",
               label: "Resolved",
               value: querySummary.resolved,
-              color: "#9bb82e",
+              color: "var(--accent)",
             },
             {
               key: "closed",
               label: "Closed",
               value: querySummary.closed,
-              color: "#c8f542",
+              color: "color-mix(in srgb, var(--mist) 35%, var(--ink))",
             },
           ]}
           paymentBars={groupPaymentStatus(recent)}
@@ -205,7 +214,6 @@ export default async function AdminHomePage({ searchParams }: Props) {
           pendingPayments={summary.pending}
         />
       </div>
-
       <div className="mt-10 grid gap-10 xl:grid-cols-2">
         <div>
           <div className="flex items-end justify-between gap-3">
@@ -312,21 +320,67 @@ function Stat({
   value,
   hint,
   href,
+  tone = "accent",
 }: {
   label: string;
   value: string;
   hint?: string;
   href?: string;
+  tone?: "accent" | "warm" | "mint" | "cool";
 }) {
+  const toneStyle: Record<
+    "accent" | "warm" | "mint" | "cool",
+    { border: string; wash: string; chip: string }
+  > = {
+    accent: {
+      border: "var(--accent)",
+      wash: "color-mix(in srgb, var(--accent) 12%, var(--panel))",
+      chip: "var(--accent)",
+    },
+    warm: {
+      border: "var(--mute)",
+      wash: "color-mix(in srgb, var(--mute) 10%, var(--panel))",
+      chip: "var(--mute)",
+    },
+    mint: {
+      border: "var(--ink)",
+      wash: "color-mix(in srgb, var(--ink) 5%, var(--panel))",
+      chip: "var(--ink)",
+    },
+    cool: {
+      border: "color-mix(in srgb, var(--mist) 20%, var(--ink))",
+      wash: "color-mix(in srgb, var(--mist) 45%, var(--panel))",
+      chip: "color-mix(in srgb, var(--mist) 15%, var(--ink))",
+    },
+  };
+  const colors = toneStyle[tone];
+
   const body = (
-    <div className="border border-line bg-panel p-5 transition-colors hover:border-ink/20">
+    <div
+      className="relative overflow-hidden border border-line p-5 transition-colors hover:border-ink/25"
+      style={{ background: colors.wash }}
+    >
+      <span
+        className="absolute inset-y-0 left-0 w-1"
+        style={{ background: colors.border }}
+        aria-hidden
+      />
       <p className="text-[11px] font-medium tracking-[0.14em] uppercase text-mute">
         {label}
       </p>
-      <p className="mt-2 font-display text-3xl font-extrabold tracking-tight">
+      <p className="mt-2 font-display text-3xl font-extrabold tracking-tight text-ink">
         {value}
       </p>
-      {hint ? <p className="mt-2 text-xs text-mute">{hint}</p> : null}
+      {hint ? (
+        <p className="mt-2 inline-flex items-center gap-2 text-xs text-mute">
+          <span
+            className="h-1.5 w-1.5 shrink-0 rounded-full"
+            style={{ background: colors.chip }}
+            aria-hidden
+          />
+          {hint}
+        </p>
+      ) : null}
     </div>
   );
   if (!href) return body;

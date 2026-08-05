@@ -10,7 +10,7 @@ export function ThemeBootstrap() {
   return (
     <style
       dangerouslySetInnerHTML={{
-        __html: `:root{${css}}html{font-size:calc(16px * var(--font-scale, 1));}`,
+        __html: `:root{${css}}html{font-size:var(--font-size-base,calc(16px * var(--font-scale, 1)));}`,
       }}
     />
   );

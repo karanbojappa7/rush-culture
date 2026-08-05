@@ -22,6 +22,40 @@ type Props = {
   pendingPayments: number;
 };
 
+const PAYMENT_TONES = [
+  "var(--tone-a, var(--accent))",
+  "var(--tone-b, var(--ink))",
+  "var(--tone-c, var(--mute))",
+  "var(--tone-d)",
+  "var(--tone-e)",
+  "var(--tone-f)",
+];
+
+const REVENUE_TONES = [
+  "var(--accent)",
+  "var(--ink)",
+  "var(--mute)",
+  "color-mix(in srgb, var(--mist) 25%, var(--ink))",
+  "color-mix(in srgb, var(--accent) 55%, var(--mist))",
+  "color-mix(in srgb, var(--ink) 50%, var(--mute))",
+  "color-mix(in srgb, var(--accent) 70%, var(--ink))",
+  "color-mix(in srgb, var(--mute) 60%, var(--bg))",
+];
+
+function paymentBarColor(label: string, index: number) {
+  const key = label.toUpperCase();
+  if (key.includes("CAPTURE") || key.includes("PAID") || key.includes("SUCCESS")) {
+    return "var(--accent)";
+  }
+  if (key.includes("PENDING") || key.includes("COD")) {
+    return "var(--mute)";
+  }
+  if (key.includes("FAIL") || key.includes("REFUND")) {
+    return "var(--ink)";
+  }
+  return PAYMENT_TONES[index % PAYMENT_TONES.length];
+}
+
 export function OverviewCharts({
   querySlices,
   paymentBars,
@@ -44,7 +78,7 @@ export function OverviewCharts({
             <h2 className="font-display text-lg font-bold">Query health</h2>
             <p className="mt-1 text-sm text-mute">Status mix across all tickets</p>
           </div>
-          <p className="shrink-0 font-display text-2xl font-extrabold tabular-nums">
+          <p className="shrink-0 font-display text-2xl font-extrabold tabular-nums text-ink">
             {queryTotal}
           </p>
         </div>
@@ -83,7 +117,7 @@ export function OverviewCharts({
             <p className="mt-1 text-sm text-mute">Recent orders by payment state</p>
           </div>
           <div className="shrink-0 text-right">
-            <p className="font-display text-2xl font-extrabold tabular-nums">
+            <p className="font-display text-2xl font-extrabold tabular-nums text-ink">
               {paidShare}%
             </p>
             <p className="text-[11px] tracking-[0.1em] uppercase text-mute">
@@ -97,9 +131,10 @@ export function OverviewCharts({
               No recent orders yet.
             </p>
           ) : (
-            paymentBars.map((bar) => {
+            paymentBars.map((bar, index) => {
               const max = Math.max(...paymentBars.map((item) => item.value), 1);
               const width = Math.max(6, Math.round((bar.value / max) * 100));
+              const tone = paymentBarColor(bar.label, index);
               return (
                 <div key={bar.label}>
                   <div className="mb-1.5 flex items-center justify-between gap-3 text-sm">
@@ -110,10 +145,10 @@ export function OverviewCharts({
                       {bar.value}
                     </span>
                   </div>
-                  <div className="h-2 overflow-hidden bg-bg">
+                  <div className="h-2.5 overflow-hidden bg-mist">
                     <div
-                      className="chart-bar h-full bg-ink"
-                      style={{ width: `${width}%` }}
+                      className="chart-bar h-full"
+                      style={{ width: `${width}%`, background: tone }}
                     />
                   </div>
                 </div>
@@ -165,7 +200,7 @@ function Donut({ slices, total }: { slices: QuerySlice[]; total: number }) {
           cy={center}
           r={radius}
           fill="none"
-          stroke="var(--line)"
+          stroke="color-mix(in srgb, var(--line) 80%, var(--mist))"
           strokeWidth={stroke}
         />
         {total > 0 ? (
@@ -210,7 +245,8 @@ function RevenueBars({ points, max }: { points: BarPoint[]; max: number }) {
     <div className="flex h-36 w-full items-end gap-1.5 sm:gap-2">
       {points.map((point, index) => {
         const heightPct =
-          max <= 0 ? 0 : Math.max(8, Math.round((point.value / max) * 100));
+          max <= 0 ? 0 : Math.max(12, Math.round((point.value / max) * 100));
+        const tone = REVENUE_TONES[index % REVENUE_TONES.length];
         return (
           <div
             key={`${point.label}-${index}`}
@@ -219,8 +255,8 @@ function RevenueBars({ points, max }: { points: BarPoint[]; max: number }) {
           >
             <div className="flex h-28 w-full items-end justify-center">
               <div
-                className="chart-col w-full max-w-8 bg-ink"
-                style={{ height: `${heightPct}%` }}
+                className="chart-col w-full max-w-8"
+                style={{ height: `${heightPct}%`, background: tone }}
               />
             </div>
             <span className="w-full truncate text-center text-[10px] tracking-[0.04em] text-mute uppercase">

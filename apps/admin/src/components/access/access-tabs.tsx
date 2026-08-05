@@ -25,8 +25,8 @@ export function AccessTabs() {
             href={tab.href}
             className={`-mb-px cursor-pointer border-b-2 px-4 py-2.5 text-[11px] font-semibold tracking-[0.12em] uppercase transition-colors ${
               active
-                ? "border-ink text-ink"
-                : "border-transparent text-mute hover:text-ink"
+                ? "border-accent text-ink"
+                : "border-transparent text-mute hover:border-accent/40 hover:text-ink"
             }`}
           >
             {tab.label}

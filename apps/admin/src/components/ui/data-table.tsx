@@ -16,9 +16,9 @@ type Props = {
 
 export function DataTable({ columns, empty, children, isEmpty }: Props) {
   return (
-    <div className="overflow-x-auto border border-line bg-panel shadow-[0_1px_0_rgba(20,20,20,0.03)]">
+    <div className="admin-table overflow-x-auto">
       <table className="min-w-full text-left text-sm">
-        <thead className="border-b border-line bg-bg/60 text-[11px] tracking-[0.12em] uppercase text-mute">
+        <thead>
           <tr>
             {columns.map((column) => (
               <th
@@ -32,7 +32,7 @@ export function DataTable({ columns, empty, children, isEmpty }: Props) {
             ))}
           </tr>
         </thead>
-        <tbody className="[&_tr]:transition-colors [&_tr:hover]:bg-bg/70">
+        <tbody>
           {isEmpty ? (
             <tr>
               <td
@@ -58,11 +58,7 @@ export function DataTableRow({
   children: ReactNode;
   className?: string;
 }) {
-  return (
-    <tr className={`border-b border-line last:border-0 ${className}`}>
-      {children}
-    </tr>
-  );
+  return <tr className={className}>{children}</tr>;
 }
 
 export function DataTableCell({

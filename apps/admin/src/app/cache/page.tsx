@@ -70,13 +70,15 @@ export default async function CacheAdminPage() {
                 : "Disabled"
               : res.message || "Unavailable"
           }
+          tone={status?.enabled ? "ok" : "warn"}
         />
-        <Meta label="Store" value={status?.type ?? "—"} />
+        <Meta label="Store" value={status?.type ?? "—"} tone="accent" />
         <Meta
           label="Default TTL"
           value={status ? `${status.defaultTtl}s` : "—"}
+          tone="cool"
         />
-        <Meta label="Key prefix" value={status?.prefix ?? "—"} />
+        <Meta label="Key prefix" value={status?.prefix ?? "—"} tone="mute" />
       </div>
 
       <div className="mt-8 flex flex-wrap items-end justify-between gap-4 border border-line bg-panel p-5">
@@ -157,13 +159,38 @@ export default async function CacheAdminPage() {
   );
 }
 
-function Meta({ label, value }: { label: string; value: string }) {
+function Meta({
+  label,
+  value,
+  tone = "accent",
+}: {
+  label: string;
+  value: string;
+  tone?: "ok" | "warn" | "accent" | "cool" | "mute";
+}) {
+  const chip =
+    tone === "ok"
+      ? "var(--accent)"
+      : tone === "warn"
+        ? "color-mix(in srgb, var(--mute) 55%, var(--accent))"
+        : tone === "cool"
+          ? "color-mix(in srgb, var(--ink) 40%, var(--accent))"
+          : tone === "mute"
+            ? "var(--mute)"
+            : "var(--accent)";
   return (
     <div>
       <p className="text-[11px] font-semibold tracking-[0.12em] uppercase text-mute">
         {label}
       </p>
-      <p className="mt-1 font-medium text-ink">{value}</p>
+      <p className="mt-1 inline-flex items-center gap-2 font-medium text-ink">
+        <span
+          className="h-2 w-2 shrink-0 rounded-full"
+          style={{ background: chip }}
+          aria-hidden
+        />
+        {value}
+      </p>
     </div>
   );
 }

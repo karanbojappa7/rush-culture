@@ -21,6 +21,7 @@ import {
   type ThemeSettings,
 } from "@linq/site-config";
 import { apiGet } from "@/lib/api";
+import { applyThemeFontsToDocument } from "@/components/theme/apply-theme-fonts";
 
 type ThemeContextValue = {
   settings: ThemeSettings;
@@ -42,9 +43,14 @@ function applySettings(settings: ThemeSettings) {
   for (const [key, value] of Object.entries(vars)) {
     root.style.setProperty(key, value);
   }
+  applyThemeFontsToDocument({
+    displayFont: normalized.displayFont,
+    bodyFont: normalized.bodyFont,
+  });
   root.dataset.theme = theme.id;
   root.dataset.colorMode = normalized.colorMode;
   root.dataset.fontScale = normalized.fontScale;
+  root.dataset.fontSize = String(normalized.fontSizePx);
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {

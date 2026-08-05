@@ -23,30 +23,66 @@ export type ThemeColors = {
 };
 
 export type ColorMode = "day" | "night";
-export type FontScale = "sm" | "md" | "lg";
+export type FontScale = "sm" | "md" | "lg" | "custom";
 
 export type ThemeSettings = {
   themeId: string;
   colorMode: ColorMode;
   fontScale: FontScale;
+  fontSizePx: number;
+  displayFont: string;
+  bodyFont: string;
   colors: ThemeColors;
 };
 
 export const CUSTOM_THEME_ID = "custom";
 
 export const FONT_SCALE_OPTIONS: Array<{
-  id: FontScale;
+  id: Exclude<FontScale, "custom">;
   name: string;
-  scale: number;
+  sizePx: number;
 }> = [
-  { id: "sm", name: "Small", scale: 0.925 },
-  { id: "md", name: "Medium", scale: 1 },
-  { id: "lg", name: "Large", scale: 1.075 },
+  { id: "sm", name: "Small", sizePx: 14 },
+  { id: "md", name: "Medium", sizePx: 16 },
+  { id: "lg", name: "Large", sizePx: 18 },
 ];
+
+export const FONT_SIZE_PX_MIN = 12;
+export const FONT_SIZE_PX_MAX = 24;
 
 export const COLOR_MODE_OPTIONS: Array<{ id: ColorMode; name: string }> = [
   { id: "day", name: "Day" },
   { id: "night", name: "Night" },
+];
+
+export const DEFAULT_DISPLAY_FONT = "Syne";
+export const DEFAULT_BODY_FONT = "Figtree";
+
+export const GOOGLE_FONT_OPTIONS: Array<{
+  id: string;
+  name: string;
+  role: "display" | "body" | "both";
+}> = [
+  { id: "Syne", name: "Syne", role: "display" },
+  { id: "Figtree", name: "Figtree", role: "body" },
+  { id: "Inter", name: "Inter", role: "both" },
+  { id: "DM Sans", name: "DM Sans", role: "both" },
+  { id: "Space Grotesk", name: "Space Grotesk", role: "display" },
+  { id: "Outfit", name: "Outfit", role: "both" },
+  { id: "Manrope", name: "Manrope", role: "body" },
+  { id: "Plus Jakarta Sans", name: "Plus Jakarta Sans", role: "both" },
+  { id: "Sora", name: "Sora", role: "both" },
+  { id: "Work Sans", name: "Work Sans", role: "body" },
+  { id: "Rubik", name: "Rubik", role: "both" },
+  { id: "Nunito Sans", name: "Nunito Sans", role: "body" },
+  { id: "Libre Franklin", name: "Libre Franklin", role: "body" },
+  { id: "Playfair Display", name: "Playfair Display", role: "display" },
+  { id: "Bebas Neue", name: "Bebas Neue", role: "display" },
+  { id: "Archivo Black", name: "Archivo Black", role: "display" },
+  { id: "Oswald", name: "Oswald", role: "display" },
+  { id: "Raleway", name: "Raleway", role: "both" },
+  { id: "Poppins", name: "Poppins", role: "both" },
+  { id: "Montserrat", name: "Montserrat", role: "both" },
 ];
 
 export const THEME_COLOR_FIELDS: Array<{
@@ -145,8 +181,8 @@ const themeById = new Map<string, ThemePalette>(
   themePalettes.map((theme) => [theme.id, theme]),
 );
 
-const fontScaleById = new Map(
-  FONT_SCALE_OPTIONS.map((option) => [option.id, option.scale]),
+const fontSizeByScale = new Map(
+  FONT_SCALE_OPTIONS.map((option) => [option.id, option.sizePx]),
 );
 
 export function resolveTheme(themeId?: string | null): ThemePalette {
@@ -159,6 +195,84 @@ export function resolveTheme(themeId?: string | null): ThemePalette {
 
 export function listThemePalettes(): ThemePalette[] {
   return themePalettes.map((theme) => ({ ...theme }));
+}
+
+export function listGoogleFonts(role?: "display" | "body") {
+  if (!role) return GOOGLE_FONT_OPTIONS.map((font) => ({ ...font }));
+  return GOOGLE_FONT_OPTIONS.filter(
+    (font) => font.role === role || font.role === "both",
+  ).map((font) => ({ ...font }));
+}
+
+export function clampFontSizePx(value: unknown, fallback = 16): number {
+  const n =
+    typeof value === "number"
+      ? value
+      : typeof value === "string"
+        ? Number(value)
+        : NaN;
+  if (!Number.isFinite(n)) return fallback;
+  return Math.min(FONT_SIZE_PX_MAX, Math.max(FONT_SIZE_PX_MIN, Math.round(n)));
+}
+
+export function fontScaleFromSizePx(sizePx: number): FontScale {
+  const match = FONT_SCALE_OPTIONS.find((option) => option.sizePx === sizePx);
+  return match?.id ?? "custom";
+}
+
+export function sizePxFromFontScale(
+  fontScale: FontScale | undefined,
+  fontSizePx?: number,
+  fallback = 16,
+): number {
+  if (fontScale === "custom" || fontScale === undefined) {
+    return clampFontSizePx(fontSizePx, fallback);
+  }
+  if (fontScale === "sm" || fontScale === "md" || fontScale === "lg") {
+    if (fontSizePx != null && Number.isFinite(Number(fontSizePx))) {
+      const px = clampFontSizePx(fontSizePx, fallback);
+      if (fontScaleFromSizePx(px) === fontScale) return px;
+    }
+    return fontSizeByScale.get(fontScale) ?? fallback;
+  }
+  return clampFontSizePx(fontSizePx, fallback);
+}
+
+export function normalizeFontName(value: unknown, fallback: string): string {
+  if (typeof value !== "string") return fallback;
+  const trimmed = value.trim().replace(/\s+/g, " ");
+  if (!/^[A-Za-z0-9][A-Za-z0-9 ]{0,48}[A-Za-z0-9]$|^[A-Za-z0-9]{2,50}$/.test(trimmed)) {
+    return fallback;
+  }
+  return trimmed;
+}
+
+export function fontFamilyCss(fontName: string): string {
+  const safe = fontName.replace(/['"]/g, "").trim() || DEFAULT_BODY_FONT;
+  return `"${safe}", system-ui, sans-serif`;
+}
+
+export function buildGoogleFontsStylesheetUrl(
+  displayFont: string,
+  bodyFont: string,
+): string {
+  const families = Array.from(
+    new Set(
+      [displayFont, bodyFont]
+        .map((name) => name.trim())
+        .filter(Boolean),
+    ),
+  );
+  if (families.length === 0) {
+    families.push(DEFAULT_DISPLAY_FONT, DEFAULT_BODY_FONT);
+  }
+  const query = families
+    .map(
+      (family) =>
+        `family=${encodeURIComponent(family).replace(/%20/g, "+")}:wght@400;500;600;700;800`,
+    )
+    .join("&");
+  return `https://fonts.googleapis.com/css2?${query}&display=swap`;
 }
 
 export function paletteToColors(palette: ThemePalette): ThemeColors {
@@ -285,6 +399,9 @@ export function defaultThemeSettings(themeId?: string): ThemeSettings {
     themeId: palette.id,
     colorMode: "day",
     fontScale: "md",
+    fontSizePx: 16,
+    displayFont: DEFAULT_DISPLAY_FONT,
+    bodyFont: DEFAULT_BODY_FONT,
     colors: paletteToColors(palette),
   };
 }
@@ -303,35 +420,54 @@ export function normalizeThemeSettings(
     input?.colorMode === "night" || input?.colorMode === "day"
       ? input.colorMode
       : base.colorMode;
-  const fontScale: FontScale =
-    input?.fontScale === "sm" ||
-    input?.fontScale === "md" ||
-    input?.fontScale === "lg"
-      ? input.fontScale
+
+  const rawScale = input?.fontScale;
+  const explicitCustomScale = rawScale === "custom";
+  let fontScale: FontScale =
+    rawScale === "sm" ||
+    rawScale === "md" ||
+    rawScale === "lg" ||
+    rawScale === "custom"
+      ? rawScale
       : base.fontScale;
 
-  const presetBase =
-    requestedId === CUSTOM_THEME_ID
-      ? base.colors
-      : paletteToColors(resolveTheme(requestedId));
+  const fontSizePx = sizePxFromFontScale(
+    fontScale,
+    input?.fontSizePx ?? base.fontSizePx,
+    base.fontSizePx,
+  );
+  if (!explicitCustomScale) {
+    fontScale = fontScaleFromSizePx(fontSizePx);
+  } else {
+    fontScale = "custom";
+  }
+
+  const displayFont = normalizeFontName(
+    input?.displayFont,
+    base.displayFont,
+  );
+  const bodyFont = normalizeFontName(input?.bodyFont, base.bodyFont);
 
   const hasCustomColors =
     input?.colors != null && typeof input.colors === "object";
+  const presetBase =
+    requestedId === CUSTOM_THEME_ID
+      ? hasCustomColors
+        ? normalizeThemeColors(input.colors, base.colors)
+        : base.colors
+      : paletteToColors(resolveTheme(requestedId));
   const colors = normalizeThemeColors(
     hasCustomColors ? input.colors : presetBase,
     presetBase,
   );
 
   let themeId = requestedId;
-  if (requestedId !== CUSTOM_THEME_ID && themeById.has(requestedId)) {
+  if (requestedId === CUSTOM_THEME_ID) {
+    themeId = CUSTOM_THEME_ID;
+  } else if (themeById.has(requestedId)) {
     if (!colorsEqual(colors, paletteToColors(resolveTheme(requestedId)))) {
       themeId = CUSTOM_THEME_ID;
     }
-  } else if (requestedId !== CUSTOM_THEME_ID) {
-    const match = themePalettes.find((palette) =>
-      colorsEqual(paletteToColors(palette), colors),
-    );
-    themeId = match?.id ?? CUSTOM_THEME_ID;
   } else {
     const match = themePalettes.find((palette) =>
       colorsEqual(paletteToColors(palette), colors),
@@ -339,7 +475,15 @@ export function normalizeThemeSettings(
     themeId = match?.id ?? CUSTOM_THEME_ID;
   }
 
-  return { themeId, colorMode, fontScale, colors };
+  return {
+    themeId,
+    colorMode,
+    fontScale,
+    fontSizePx,
+    displayFont,
+    bodyFont,
+    colors,
+  };
 }
 
 export function resolveDisplayPalette(
@@ -362,13 +506,28 @@ export function resolveDisplayPalette(
 
 export function themeToCssVars(
   theme: ThemePalette,
-  options: { colorMode?: ColorMode; fontScale?: FontScale } = {},
+  options: {
+    colorMode?: ColorMode;
+    fontScale?: FontScale;
+    fontSizePx?: number;
+    displayFont?: string;
+    bodyFont?: string;
+  } = {},
 ): Record<string, string> {
   const colorMode = options.colorMode ?? "day";
   const display = resolveDisplayPalette(theme, colorMode);
-  const scale = fontScaleById.get(options.fontScale ?? "md") ?? 1;
+  const fontSizePx = sizePxFromFontScale(
+    options.fontScale,
+    options.fontSizePx,
+    16,
+  );
   const isNight = colorMode === "night";
   const dayInk = theme.ink;
+  const displayFont = normalizeFontName(
+    options.displayFont,
+    DEFAULT_DISPLAY_FONT,
+  );
+  const bodyFont = normalizeFontName(options.bodyFont, DEFAULT_BODY_FONT);
   return {
     "--ink": display.ink,
     "--paper": display.paper,
@@ -385,13 +544,22 @@ export function themeToCssVars(
     "--accent-ink": display.accentInk,
     "--btn": isNight ? "#0e0e0e" : dayInk,
     "--btn-fg": isNight ? "#f2efe8" : "#ffffff",
-    "--font-scale": String(scale),
+    "--font-scale": String(fontSizePx / 16),
+    "--font-size-base": `${fontSizePx}px`,
+    "--font-display-family": fontFamilyCss(displayFont),
+    "--font-sans-family": fontFamilyCss(bodyFont),
   };
 }
 
 export function themeToCssText(
   theme: ThemePalette,
-  options: { colorMode?: ColorMode; fontScale?: FontScale } = {},
+  options: {
+    colorMode?: ColorMode;
+    fontScale?: FontScale;
+    fontSizePx?: number;
+    displayFont?: string;
+    bodyFont?: string;
+  } = {},
 ): string {
   return Object.entries(themeToCssVars(theme, options))
     .map(([key, value]) => `${key}:${value};`)
@@ -407,6 +575,9 @@ export function themeSettingsToCssVars(
   return themeToCssVars(theme, {
     colorMode: normalized.colorMode,
     fontScale: normalized.fontScale,
+    fontSizePx: normalized.fontSizePx,
+    displayFont: normalized.displayFont,
+    bodyFont: normalized.bodyFont,
   });
 }
 

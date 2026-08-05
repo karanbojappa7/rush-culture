@@ -22,6 +22,7 @@ import {
 } from "@linq/site-config";
 import { apiGet, apiPut } from "@/lib/api";
 import { hasPermission, type SessionUser } from "@/lib/session-shared";
+import { applyThemeFontsToDocument } from "@/components/theme/apply-theme-fonts";
 
 type ThemeContextValue = {
   settings: ThemeSettings;
@@ -34,7 +35,7 @@ type ThemeContextValue = {
   canManage: boolean;
   refresh: () => Promise<void>;
   saveSettings: (next: ThemeSettings) => Promise<boolean>;
-  previewSettings: (next: Partial<ThemeSettings>) => void;
+  previewSettings: (next: ThemeSettings | Partial<ThemeSettings>) => void;
 };
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
@@ -48,9 +49,14 @@ function applySettings(settings: ThemeSettings) {
   for (const [key, value] of Object.entries(vars)) {
     root.style.setProperty(key, value);
   }
+  applyThemeFontsToDocument({
+    displayFont: normalized.displayFont,
+    bodyFont: normalized.bodyFont,
+  });
   root.dataset.theme = theme.id;
   root.dataset.colorMode = normalized.colorMode;
   root.dataset.fontScale = normalized.fontScale;
+  root.dataset.fontSize = String(normalized.fontSizePx);
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
@@ -95,6 +101,35 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     applySettings(settings);
   }, [settings]);
 
+  const previewSettings = useCallback(
+    (next: ThemeSettings | Partial<ThemeSettings>) => {
+      setSettings((prev) =>
+        normalizeThemeSettings({ ...prev, ...next }, brand.themeId),
+      );
+    },
+    [],
+  );
+
+  const saveSettings = useCallback(
+    async (next: ThemeSettings) => {
+      if (!canManage) return false;
+      setSaving(true);
+      setError(null);
+      const payload = normalizeThemeSettings(next, brand.themeId);
+      const res = await apiPut<ThemeSettings>("/api/theme-settings", payload);
+      setSaving(false);
+      if (res.status_code !== 200 || !res.data) {
+        setError(res.message || "Could not save theme settings");
+        return false;
+      }
+      const saved = normalizeThemeSettings(res.data, brand.themeId);
+      setSettings(saved);
+      applySettings(saved);
+      return true;
+    },
+    [canManage],
+  );
+
   const value = useMemo<ThemeContextValue>(() => {
     const theme = resolveThemeFromSettings(settings, brand.themeId);
     return {
@@ -107,32 +142,20 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       error,
       canManage,
       refresh,
-      previewSettings: (partial) => {
-        setSettings((prev) =>
-          normalizeThemeSettings({ ...prev, ...partial }, brand.themeId),
-        );
-      },
-      saveSettings: async (next) => {
-        if (!canManage) return false;
-        setSaving(true);
-        setError(null);
-        const payload = normalizeThemeSettings(next, brand.themeId);
-        const res = await apiPut<ThemeSettings>(
-          "/api/theme-settings",
-          payload,
-        );
-        setSaving(false);
-        if (res.status_code !== 200 || !res.data) {
-          setError(res.message || "Could not save theme settings");
-          return false;
-        }
-        const saved = normalizeThemeSettings(res.data, brand.themeId);
-        setSettings(saved);
-        applySettings(saved);
-        return true;
-      },
+      previewSettings,
+      saveSettings,
     };
-  }, [settings, palettes, loading, saving, error, canManage, refresh]);
+  }, [
+    settings,
+    palettes,
+    loading,
+    saving,
+    error,
+    canManage,
+    refresh,
+    previewSettings,
+    saveSettings,
+  ]);
 
   return (
     <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>

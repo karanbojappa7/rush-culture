@@ -156,8 +156,8 @@ export function AdminShell({
   }
 
   return (
-    <div className="admin-shell min-h-screen md:grid md:grid-cols-[232px_1fr]">
-      <aside className="flex flex-col border-b border-white/10 bg-[#101010] text-white md:sticky md:top-0 md:h-screen md:border-b-0 md:border-r md:border-white/10">
+    <div className="admin-shell min-h-screen md:grid md:grid-cols-[232px_1fr] md:items-start">
+      <aside className="flex flex-col border-b border-white/10 bg-[#101010] text-white md:sticky md:top-0 md:h-screen md:max-h-screen md:self-start md:border-b-0 md:border-r md:border-white/10">
         <div className="shrink-0 px-5 py-6">
           <Link href="/" className="block">
             <p className="font-display text-2xl font-extrabold tracking-tight">
@@ -181,10 +181,10 @@ export function AdminShell({
               <Link
                 key={item.href}
                 href={item.href}
-                className={`relative cursor-pointer whitespace-nowrap px-3 py-2.5 text-sm transition-colors ${
+                className={`cursor-pointer whitespace-nowrap border-l-2 px-3 py-2.5 text-sm transition-colors ${
                   active
-                    ? "bg-white/12 text-white before:absolute before:inset-y-1.5 before:left-0 before:w-0.5 before:bg-accent md:before:block"
-                    : "text-white/70 hover:bg-white/8 hover:text-white"
+                    ? "border-accent text-white"
+                    : "border-transparent text-white/70 hover:text-white"
                 }`}
               >
                 {item.label}
@@ -202,7 +202,7 @@ export function AdminShell({
           </button>
         </div>
       </aside>
-      <div className="admin-main px-5 py-8 md:px-10 md:py-10">
+      <div className="admin-main min-h-screen px-5 py-8 md:min-h-screen md:px-10 md:py-10">
         <header className="border-b border-line pb-6">
           {breadcrumbs ? <Breadcrumbs items={breadcrumbs} /> : null}
           {showBack ? (

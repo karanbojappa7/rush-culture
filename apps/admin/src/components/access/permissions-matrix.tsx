@@ -158,11 +158,11 @@ export function PermissionsMatrix({ initial }: Props) {
         </div>
       </div>
 
-      <div className="overflow-x-auto border border-line bg-panel shadow-[0_1px_0_rgba(20,20,20,0.03)]">
+      <div className="admin-table overflow-x-auto">
         <table className="min-w-full border-collapse text-left text-sm">
-          <thead className="sticky top-0 z-10 bg-bg/95 backdrop-blur-sm">
-            <tr className="border-b border-line">
-              <th className="sticky left-0 z-20 min-w-[220px] bg-bg/95 px-4 py-3 text-[11px] font-medium tracking-[0.12em] uppercase text-mute">
+          <thead className="sticky top-0 z-10 backdrop-blur-sm">
+            <tr>
+              <th className="sticky left-0 z-20 min-w-[220px] bg-[color-mix(in_srgb,var(--accent)_12%,var(--bg))] px-4 py-3 text-[11px] font-medium tracking-[0.12em] uppercase text-mute">
                 Permission
               </th>
               {roles.map((role) => (

@@ -71,21 +71,50 @@ export default async function AccessPage() {
       </p>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {cards.map((card) => (
-          <Link
-            key={card.label}
-            href={card.href}
-            className="border border-line bg-panel p-5 transition-colors hover:border-ink/30"
-          >
-            <p className="text-[11px] font-semibold tracking-[0.12em] uppercase text-mute">
-              {card.label}
-            </p>
-            <p className="mt-2 font-display text-3xl font-extrabold">
-              {card.value}
-            </p>
-            <p className="mt-1 text-xs text-mute">{card.hint}</p>
-          </Link>
-        ))}
+        {cards.map((card, index) => {
+          const tones = [
+            "var(--accent)",
+            "var(--ink)",
+            "var(--mute)",
+            "color-mix(in srgb, var(--mist) 25%, var(--ink))",
+          ];
+          const washes = [
+            "color-mix(in srgb, var(--accent) 10%, var(--panel))",
+            "color-mix(in srgb, var(--ink) 4%, var(--panel))",
+            "color-mix(in srgb, var(--mute) 10%, var(--panel))",
+            "color-mix(in srgb, var(--mist) 50%, var(--panel))",
+          ];
+          const tone = tones[index % tones.length];
+          const wash = washes[index % washes.length];
+          return (
+            <Link
+              key={card.label}
+              href={card.href}
+              className="relative overflow-hidden border border-line p-5 transition-colors hover:border-ink/30"
+              style={{ background: wash }}
+            >
+              <span
+                className="absolute inset-y-0 left-0 w-1"
+                style={{ background: tone }}
+                aria-hidden
+              />
+              <p className="text-[11px] font-semibold tracking-[0.12em] uppercase text-mute">
+                {card.label}
+              </p>
+              <p className="mt-2 font-display text-3xl font-extrabold">
+                {card.value}
+              </p>
+              <p className="mt-1 inline-flex items-center gap-2 text-xs text-mute">
+                <span
+                  className="h-1.5 w-1.5 shrink-0 rounded-full"
+                  style={{ background: tone }}
+                  aria-hidden
+                />
+                {card.hint}
+              </p>
+            </Link>
+          );
+        })}
       </div>
 
       <div className="mt-10 flex flex-wrap gap-3">
