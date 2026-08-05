@@ -47,6 +47,12 @@ modules:
       - code: devices.read
         name: View device intelligence
         description: IP, UA, and rate-limit block telemetry
+  - key: cache
+    name: Cache
+    permissions:
+      - code: cache.flush
+        name: Flush cache
+        description: View cache status and flush Redis/module keys
   - key: access
     name: Access control
     permissions:

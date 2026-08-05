@@ -18,6 +18,7 @@ const nav = [
   { href: "/reviews", label: "Reviews", permission: "reviews.manage" },
   { href: "/devices", label: "Devices", permission: "devices.read" },
   { href: "/access", label: "Access", permission: "access.dashboard" },
+  { href: "/cache", label: "Cache", permission: "cache.flush" },
 ];
 
 export function AdminShell({

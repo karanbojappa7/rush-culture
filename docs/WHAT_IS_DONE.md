@@ -72,7 +72,7 @@ Controller → executeMethod → Service → Repo (Prisma) → Postgres
 | App configs / Discounts | `/api/app-configs` etc. | core |
 | Client devices | `/api/client-devices` | `devices.read` (Super Admin by default) |
 | Health | `/api/health` | connectivity |
-| Cache admin | `/api/cache` | staff flush |
+| Cache admin | `/api/cache` | `cache.flush` — status + flush all/service |
 
 ### Reviews (meta)
 
@@ -163,6 +163,7 @@ Controller → executeMethod → Service → Repo (Prisma) → Postgres
 | queries | `queries.manage` |
 | reviews | `reviews.manage` |
 | devices | `devices.read` |
+| cache | `cache.flush` |
 | access | `access.dashboard`, `roles.manage`, `roles.delete`, `permissions.manage`, `users.manage`, `users.delete` |
 
 Add/edit codes in **YAML only**, restart API to sync. Grant via matrix for non–Super Admin roles. Super Admin always all codes (matrix column locked).
@@ -181,7 +182,7 @@ Location: `apps/api/src/common/caching`
   - Successful writes (POST/PATCH/PUT/DELETE) → clear that module’s keys (`rc:{module}:*`)
 - Product + category GET routes are cache-enabled in YAML
 
-### Cache admin (staff auth)
+### Cache admin (`cache.flush`)
 
 | Method | Path | Purpose |
 |---|---|---|
@@ -225,6 +226,7 @@ Overall `status`: `ok` | `degraded` | `error` (HTTP **503** if Postgres down).
 - Products: structured variants (size, color, ₹ price, Auto SKU), image URL rows, edit/create
 - Categories, customers, orders, **Queries**, **Reviews** (approve/delete)
 - **Devices** — IP/UA telemetry; nav + page require `devices.read` (default Super Admin only)
+- **Cache** — `/cache`; status + flush all / per service; requires `cache.flush` (Super Admin by default)
 - **Access** (`/access`, requires access permissions):
   - Tabs: Overview · Permissions · Roles · Users
   - **Permissions** — Drupal-style matrix (roles as columns, module groups as rows); filter; save grants; Super Admin column locked
