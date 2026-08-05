@@ -1,216 +1,288 @@
 # Graph Report - .  (2026-08-05)
 
 ## Corpus Check
-- Corpus is ~49,488 words - fits in a single context window. You may not need a graph.
+- 100 files · ~62,528 words
+- Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1898 nodes · 4049 edges · 178 communities (92 shown, 86 thin omitted)
-- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 70 edges (avg confidence: 0.81)
-- Token cost: 156,504 input · 0 output
+- 2100 nodes · 3935 edges · 238 communities (111 shown, 127 thin omitted)
+- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 106 edges (avg confidence: 0.83)
+- Token cost: 441,624 input · 0 output
 
 ## Community Hubs (Navigation)
-- [[_COMMUNITY_Controller Infra (BaseCacheCrypto)|Controller Infra (Base/Cache/Crypto)]]
-- [[_COMMUNITY_Base Repo Utilities & Stock Check|Base Repo Utilities & Stock Check]]
-- [[_COMMUNITY_App Bootstrap & Module Config|App Bootstrap & Module Config]]
-- [[_COMMUNITY_Cart Module|Cart Module]]
-- [[_COMMUNITY_Discount Module & Date Utils|Discount Module & Date Utils]]
-- [[_COMMUNITY_Authentication & Authorization|Authentication & Authorization]]
-- [[_COMMUNITY_AppConfig Module|AppConfig Module]]
-- [[_COMMUNITY_Review Module|Review Module]]
-- [[_COMMUNITY_Category Module|Category Module]]
-- [[_COMMUNITY_Order DTO Validation|Order DTO Validation]]
-- [[_COMMUNITY_Admin App Pages|Admin App Pages]]
-- [[_COMMUNITY_Database Entity Definitions|Database Entity Definitions]]
-- [[_COMMUNITY_Schema Design Docs|Schema Design Docs]]
-- [[_COMMUNITY_Admin Order Detail Page|Admin Order Detail Page]]
-- [[_COMMUNITY_API Client Libraries (AdminStorefront)|API Client Libraries (Admin/Storefront)]]
-- [[_COMMUNITY_API Dev Tooling Config|API Dev Tooling Config]]
-- [[_COMMUNITY_Base Repository Layer|Base Repository Layer]]
-- [[_COMMUNITY_Role Controller|Role Controller]]
-- [[_COMMUNITY_Customer Query Controller|Customer Query Controller]]
-- [[_COMMUNITY_Admin Product Form & Page|Admin Product Form & Page]]
-- [[_COMMUNITY_Cache Interface|Cache Interface]]
+- [[_COMMUNITY_Product Stock DTOs|Product Stock DTOs]]
+- [[_COMMUNITY_Cart Module API|Cart Module API]]
+- [[_COMMUNITY_App Config Module|App Config Module]]
+- [[_COMMUNITY_Category Module API|Category Module API]]
+- [[_COMMUNITY_Discount Module API|Discount Module API]]
+- [[_COMMUNITY_Order DTOs Validation|Order DTOs Validation]]
+- [[_COMMUNITY_User Type Module|User Type Module]]
+- [[_COMMUNITY_Admin UI Components|Admin UI Components]]
+- [[_COMMUNITY_Admin Product Form|Admin Product Form]]
+- [[_COMMUNITY_Customer Module API|Customer Module API]]
+- [[_COMMUNITY_Core Database Entities|Core Database Entities]]
+- [[_COMMUNITY_Crypto Module|Crypto Module]]
+- [[_COMMUNITY_Customer Query Module|Customer Query Module]]
+- [[_COMMUNITY_User Module API|User Module API]]
+- [[_COMMUNITY_Cache Implementations|Cache Implementations]]
+- [[_COMMUNITY_API Dev Dependencies|API Dev Dependencies]]
+- [[_COMMUNITY_Base Controllers Response|Base Controllers Response]]
+- [[_COMMUNITY_Base Repo Pattern|Base Repo Pattern]]
+- [[_COMMUNITY_Auth Access Permissions|Auth Access Permissions]]
+- [[_COMMUNITY_Address Module API|Address Module API]]
+- [[_COMMUNITY_Admin Access RBAC UI|Admin Access RBAC UI]]
+- [[_COMMUNITY_Admin Pages Session|Admin Pages Session]]
+- [[_COMMUNITY_RBAC Permission Catalog|RBAC Permission Catalog]]
 - [[_COMMUNITY_Admin Package Dependencies|Admin Package Dependencies]]
-- [[_COMMUNITY_Address Module & Paginated Repo|Address Module & Paginated Repo]]
-- [[_COMMUNITY_API TypeScript Config|API TypeScript Config]]
-- [[_COMMUNITY_Storefront Package Dependencies|Storefront Package Dependencies]]
-- [[_COMMUNITY_Storefront Product Components|Storefront Product Components]]
-- [[_COMMUNITY_API Runtime Dependencies|API Runtime Dependencies]]
-- [[_COMMUNITY_Cache Backend Implementations|Cache Backend Implementations]]
-- [[_COMMUNITY_Customer Module|Customer Module]]
-- [[_COMMUNITY_Storefront Cart & Checkout Pages|Storefront Cart & Checkout Pages]]
-- [[_COMMUNITY_Storefront TypeScript Config|Storefront TypeScript Config]]
-- [[_COMMUNITY_Cache Admin Service & Controller|Cache Admin Service & Controller]]
-- [[_COMMUNITY_Cache Interceptor & Key Builder|Cache Interceptor & Key Builder]]
-- [[_COMMUNITY_Search & Pagination Utilities|Search & Pagination Utilities]]
-- [[_COMMUNITY_User Repository|User Repository]]
-- [[_COMMUNITY_Root Monorepo Config|Root Monorepo Config]]
-- [[_COMMUNITY_SearchPaginationPort Concepts|Search/Pagination/Port Concepts]]
-- [[_COMMUNITY_Cache Config Service|Cache Config Service]]
-- [[_COMMUNITY_API NPM Scripts|API NPM Scripts]]
-- [[_COMMUNITY_Cache Singleton & Intercept Flow|Cache Singleton & Intercept Flow]]
-- [[_COMMUNITY_User Controller Decorators|User Controller Decorators]]
-- [[_COMMUNITY_User & UserType Module|User & UserType Module]]
-- [[_COMMUNITY_Storefront Layout & Cart Provider|Storefront Layout & Cart Provider]]
-- [[_COMMUNITY_Admin Login, Shell & Category Form|Admin Login, Shell & Category Form]]
-- [[_COMMUNITY_Admin TypeScript Config|Admin TypeScript Config]]
-- [[_COMMUNITY_Cache Handler Operations|Cache Handler Operations]]
-- [[_COMMUNITY_Admin Page Concepts|Admin Page Concepts]]
-- [[_COMMUNITY_UserType Controller Decorators|UserType Controller Decorators]]
-- [[_COMMUNITY_Site-Config Package Manifest|Site-Config Package Manifest]]
-- [[_COMMUNITY_Redis Cache Operations|Redis Cache Operations]]
-- [[_COMMUNITY_Health Check Service|Health Check Service]]
-- [[_COMMUNITY_Role DTO Validation|Role DTO Validation]]
-- [[_COMMUNITY_Customer Query Creation Flow|Customer Query Creation Flow]]
-- [[_COMMUNITY_Site-Config TypeScript Config|Site-Config TypeScript Config]]
-- [[_COMMUNITY_Base Service & New Modules|Base Service & New Modules]]
-- [[_COMMUNITY_User DTO Validation|User DTO Validation]]
-- [[_COMMUNITY_Storefront Collection & Shop Pages|Storefront Collection & Shop Pages]]
-- [[_COMMUNITY_Site-Config Dist Catalog|Site-Config Dist Catalog]]
-- [[_COMMUNITY_API Build Config|API Build Config]]
-- [[_COMMUNITY_UserType DTO Validation|UserType DTO Validation]]
-- [[_COMMUNITY_Storefront Home Page & Hero|Storefront Home Page & Hero]]
-- [[_COMMUNITY_Storefront Size Guide & Policies|Storefront Size Guide & Policies]]
-- [[_COMMUNITY_Admin Layout & Middleware|Admin Layout & Middleware]]
-- [[_COMMUNITY_API Jest Config|API Jest Config]]
-- [[_COMMUNITY_Site-Config Catalog Collections|Site-Config Catalog Collections]]
-- [[_COMMUNITY_Admin Search Components|Admin Search Components]]
-- [[_COMMUNITY_Storefront Product Detail Page|Storefront Product Detail Page]]
-- [[_COMMUNITY_Storefront Returns & Shipping Pages|Storefront Returns & Shipping Pages]]
-- [[_COMMUNITY_Package Manifests (BrandDistbak)|Package Manifests (Brand/Distbak)]]
-- [[_COMMUNITY_Live Stock Verification Flow|Live Stock Verification Flow]]
-- [[_COMMUNITY_Storefront Layout Concepts|Storefront Layout Concepts]]
-- [[_COMMUNITY_NestJS CLI Config|NestJS CLI Config]]
-- [[_COMMUNITY_API Package Meta|API Package Meta]]
-- [[_COMMUNITY_Site-Config Catalog Functions|Site-Config Catalog Functions]]
-- [[_COMMUNITY_Postman Collection Generator|Postman Collection Generator]]
-- [[_COMMUNITY_Secure-API Package Manifest|Secure-API Package Manifest]]
-- [[_COMMUNITY_Base Repo CRUD Methods|Base Repo CRUD Methods]]
-- [[_COMMUNITY_Storefront Contact Page & Form|Storefront Contact Page & Form]]
-- [[_COMMUNITY_Storefront Policy Pages|Storefront Policy Pages]]
-- [[_COMMUNITY_Site-Config Catalog Compiled JS|Site-Config Catalog Compiled JS]]
-- [[_COMMUNITY_Admin Dashboard & DataTable|Admin Dashboard & DataTable]]
-- [[_COMMUNITY_Workspace Path Aliases|Workspace Path Aliases]]
-- [[_COMMUNITY_Encryption Key Generator Script|Encryption Key Generator Script]]
-- [[_COMMUNITY_App Module & Main Bootstrap|App Module & Main Bootstrap]]
-- [[_COMMUNITY_Product Form Initial Helpers|Product Form Initial Helpers]]
-- [[_COMMUNITY_AdminStorefront Agent Rules Docs|Admin/Storefront Agent Rules Docs]]
-- [[_COMMUNITY_Admin Search Components (Concepts)|Admin Search Components (Concepts)]]
-- [[_COMMUNITY_Site-Config Catalog Type Defs|Site-Config Catalog Type Defs]]
-- [[_COMMUNITY_Site-Config Brand Module|Site-Config Brand Module]]
-- [[_COMMUNITY_Site-Config Catalog Type Defs (Src)|Site-Config Catalog Type Defs (Src)]]
-- [[_COMMUNITY_Admin Next.js Config|Admin Next.js Config]]
-- [[_COMMUNITY_Admin TSConfig Includes|Admin TSConfig Includes]]
-- [[_COMMUNITY_Storefront Next.js Config|Storefront Next.js Config]]
-- [[_COMMUNITY_Checkout Success Page|Checkout Success Page]]
-- [[_COMMUNITY_Date Utility Functions|Date Utility Functions]]
-- [[_COMMUNITY_Order Totals Utility|Order Totals Utility]]
-- [[_COMMUNITY_AdminAPI Port Config Bridge|Admin/API Port Config Bridge]]
-- [[_COMMUNITY_API Docker & Prisma Config|API Docker & Prisma Config]]
-- [[_COMMUNITY_Admin ESLint Config|Admin ESLint Config]]
-- [[_COMMUNITY_Admin Next Type Declarations|Admin Next Type Declarations]]
-- [[_COMMUNITY_Admin PostCSS Config|Admin PostCSS Config]]
-- [[_COMMUNITY_API Docker Entrypoint|API Docker Entrypoint]]
-- [[_COMMUNITY_Storefront ESLint Config|Storefront ESLint Config]]
-- [[_COMMUNITY_Storefront Next Type Declarations|Storefront Next Type Declarations]]
-- [[_COMMUNITY_Storefront PostCSS Config|Storefront PostCSS Config]]
-- [[_COMMUNITY_Contact Form Submission Config|Contact Form Submission Config]]
-- [[_COMMUNITY_Project Docs & Cursor Rules|Project Docs & Cursor Rules]]
-- [[_COMMUNITY_Order Creation Flow|Order Creation Flow]]
-- [[_COMMUNITY_Site-Config Index Compiled|Site-Config Index Compiled]]
-- [[_COMMUNITY_Auth Guard Methods|Auth Guard Methods]]
-- [[_COMMUNITY_Site-Config Brand Type Defs|Site-Config Brand Type Defs]]
-- [[_COMMUNITY_Site-Config Index Type Defs|Site-Config Index Type Defs]]
-- [[_COMMUNITY_Site-Config Brand Type Defs (Src)|Site-Config Brand Type Defs (Src)]]
-- [[_COMMUNITY_Product Buy Box & Card|Product Buy Box & Card]]
-- [[_COMMUNITY_Slug Resolver Utilities|Slug Resolver Utilities]]
-- [[_COMMUNITY_Admin ESLint Config Object|Admin ESLint Config Object]]
-- [[_COMMUNITY_Admin Next Config Object|Admin Next Config Object]]
-- [[_COMMUNITY_Admin PostCSS Config Object|Admin PostCSS Config Object]]
-- [[_COMMUNITY_Admin TSConfig Root|Admin TSConfig Root]]
-- [[_COMMUNITY_API ESLint Config|API ESLint Config]]
-- [[_COMMUNITY_API NestCLI Root|API NestCLI Root]]
-- [[_COMMUNITY_API NestJS Bootstrap Readme|API NestJS Bootstrap Readme]]
-- [[_COMMUNITY_Base Repo SoftDelete Method|Base Repo SoftDelete Method]]
-- [[_COMMUNITY_Base Repo Audit Method|Base Repo Audit Method]]
-- [[_COMMUNITY_Auth Service Init Hook|Auth Service Init Hook]]
-- [[_COMMUNITY_Category Module Config|Category Module Config]]
-- [[_COMMUNITY_Claude Settings Local Config|Claude Settings Local Config]]
-- [[_COMMUNITY_Module Config Route-Cache Normalizer|Module Config Route-Cache Normalizer]]
-- [[_COMMUNITY_Contact Form Component|Contact Form Component]]
-- [[_COMMUNITY_API Catalog Data Module|API Catalog Data Module]]
-- [[_COMMUNITY_Base Entity Audit Actor|Base Entity Audit Actor]]
-- [[_COMMUNITY_Base Entity Defaults|Base Entity Defaults]]
-- [[_COMMUNITY_Database Entity Index|Database Entity Index]]
-- [[_COMMUNITY_Order Page Type Shape|Order Page Type Shape]]
-- [[_COMMUNITY_Order Row Type Shape|Order Row Type Shape]]
-- [[_COMMUNITY_Admin Login Page Component|Admin Login Page Component]]
-- [[_COMMUNITY_Site-Config Brand SKU Type|Site-Config Brand SKU Type]]
-- [[_COMMUNITY_Site-Config Brand WithBrandName Type|Site-Config Brand WithBrandName Type]]
-- [[_COMMUNITY_Site-Config Catalog Type Method|Site-Config Catalog Type Method]]
-- [[_COMMUNITY_Pagination Query Parser|Pagination Query Parser]]
-- [[_COMMUNITY_Pagination Result Builder|Pagination Result Builder]]
-- [[_COMMUNITY_Product Buy Box Add Handler|Product Buy Box Add Handler]]
-- [[_COMMUNITY_Product Form Key Generator|Product Form Key Generator]]
-- [[_COMMUNITY_Product Form SKU Suggester|Product Form SKU Suggester]]
-- [[_COMMUNITY_Admin File Icon Asset|Admin File Icon Asset]]
-- [[_COMMUNITY_Admin Globe Icon Asset|Admin Globe Icon Asset]]
-- [[_COMMUNITY_Admin Next.js Logo Asset|Admin Next.js Logo Asset]]
-- [[_COMMUNITY_Admin Vercel Logo Asset|Admin Vercel Logo Asset]]
-- [[_COMMUNITY_Admin Window Icon Asset|Admin Window Icon Asset]]
-- [[_COMMUNITY_Shop Catalog Component|Shop Catalog Component]]
-- [[_COMMUNITY_Site-Config Index Type Defs|Site-Config Index Type Defs]]
-- [[_COMMUNITY_Admin Middleware Function|Admin Middleware Function]]
-- [[_COMMUNITY_Storefront ESLint Config Object|Storefront ESLint Config Object]]
-- [[_COMMUNITY_Storefront Next Config Object|Storefront Next Config Object]]
-- [[_COMMUNITY_Storefront Next Types Reference|Storefront Next Types Reference]]
-- [[_COMMUNITY_Storefront PostCSS Config Object|Storefront PostCSS Config Object]]
-- [[_COMMUNITY_Storefront File Icon Asset|Storefront File Icon Asset]]
-- [[_COMMUNITY_Storefront Globe Icon Asset|Storefront Globe Icon Asset]]
-- [[_COMMUNITY_Storefront Next.js Logo Asset|Storefront Next.js Logo Asset]]
-- [[_COMMUNITY_Storefront Vercel Logo Asset|Storefront Vercel Logo Asset]]
-- [[_COMMUNITY_Storefront Window Icon Asset|Storefront Window Icon Asset]]
-- [[_COMMUNITY_Storefront TSConfig Root|Storefront TSConfig Root]]
-- [[_COMMUNITY_Cart Item Key Builder|Cart Item Key Builder]]
-- [[_COMMUNITY_Cart Item Quantity Merger|Cart Item Quantity Merger]]
-- [[_COMMUNITY_Date Utility utcNow|Date Utility utcNow]]
-- [[_COMMUNITY_Default Address Clearer|Default Address Clearer]]
-- [[_COMMUNITY_Discount Window Checker|Discount Window Checker]]
-- [[_COMMUNITY_Order Number Generator|Order Number Generator]]
-- [[_COMMUNITY_Review Rating Validator|Review Rating Validator]]
-- [[_COMMUNITY_API Slugify Utility|API Slugify Utility]]
-- [[_COMMUNITY_Redis BullMQ Connection Builder|Redis BullMQ Connection Builder]]
-- [[_COMMUNITY_Redis Queue Options Builder|Redis Queue Options Builder]]
+- [[_COMMUNITY_API TS Config|API TS Config]]
+- [[_COMMUNITY_Appsstorefront|Apps\storefront]]
+- [[_COMMUNITY_Appsapi|Apps\api]]
+- [[_COMMUNITY_Appsapisrccommonrbac|Apps\api\src\common\rbac]]
+- [[_COMMUNITY_Appsstorefrontsrccomponents|Apps\storefront\src\components]]
+- [[_COMMUNITY_Appsstorefrontsrccomponents|Apps\storefront\src\components]]
+- [[_COMMUNITY_Appsstorefront|Apps\storefront]]
+- [[_COMMUNITY_Appsapisrcmodulecoreuser|Apps\api\src\module\core\user]]
+- [[_COMMUNITY_Appsapisrccommoncaching|Apps\api\src\common\caching]]
+- [[_COMMUNITY_Appsapisrccommoncaching|Apps\api\src\common\caching]]
+- [[_COMMUNITY_Appsapisrcmodulecoreuserrole|Apps\api\src\module\core\user\role]]
+- [[_COMMUNITY_Misc|Misc]]
+- [[_COMMUNITY_Appsapisrccommoncachingutils|Apps\api\src\common\caching\utils]]
+- [[_COMMUNITY_Appsapisrccommonhealth|Apps\api\src\common\health]]
+- [[_COMMUNITY_Packagessecure Apisrc|Packages\secure Api\src]]
+- [[_COMMUNITY_Appsapi|Apps\api]]
+- [[_COMMUNITY_Appsapisrcmodulemetaorderutility|Apps\api\src\module\meta\order\utility]]
+- [[_COMMUNITY_Appsapisrcmodulemetareview|Apps\api\src\module\meta\review]]
+- [[_COMMUNITY_Appsadminsrccomponentsaccess|Apps\admin\src\components\access]]
+- [[_COMMUNITY_Appsapisrccommoncaching|Apps\api\src\common\caching]]
+- [[_COMMUNITY_Appsstorefrontsrccomponents|Apps\storefront\src\components]]
+- [[_COMMUNITY_Appsstorefrontsrccomponents|Apps\storefront\src\components]]
+- [[_COMMUNITY_Appsadminsrccomponentslayout|Apps\admin\src\components\layout]]
+- [[_COMMUNITY_Appsadmin|Apps\admin]]
+- [[_COMMUNITY_Appsapisrccommoncaching|Apps\api\src\common\caching]]
+- [[_COMMUNITY_Docs|Docs]]
+- [[_COMMUNITY_Appsstorefrontsrclib|Apps\storefront\src\lib]]
+- [[_COMMUNITY_Appsadminsrcapp|Apps\admin\src\app]]
+- [[_COMMUNITY_Appsapisrcmodulesecurityauth|Apps\api\src\module\security\auth]]
+- [[_COMMUNITY_Appsstorefrontsrccomponents|Apps\storefront\src\components]]
+- [[_COMMUNITY_Packagessite Config|Packages\site Config]]
+- [[_COMMUNITY_Appsapisrccommondevice|Apps\api\src\common\device]]
+- [[_COMMUNITY_Appsapisrccommoncaching|Apps\api\src\common\caching]]
+- [[_COMMUNITY_Appsapisrccommoncachingimplementations|Apps\api\src\common\caching\implementations]]
+- [[_COMMUNITY_Appsapisrccommondevice|Apps\api\src\common\device]]
+- [[_COMMUNITY_Appsapisrccommondevice|Apps\api\src\common\device]]
+- [[_COMMUNITY_Appsapisrcmodulemetareview|Apps\api\src\module\meta\review]]
+- [[_COMMUNITY_Appsapisrccommonrbacdto|Apps\api\src\common\rbac\dto]]
+- [[_COMMUNITY_Appsapisrcmodulemetacustomer Querydto|Apps\api\src\module\meta\customer Query\dto]]
+- [[_COMMUNITY_Appsapisrcmodulemetareviewdto|Apps\api\src\module\meta\review\dto]]
+- [[_COMMUNITY_Packagessite Config|Packages\site Config]]
+- [[_COMMUNITY_Appsapisrc|Apps\api\src]]
+- [[_COMMUNITY_Appsapisrcmodulemetareview|Apps\api\src\module\meta\review]]
+- [[_COMMUNITY_Packagessite Configdist.bak|Packages\site Config\dist.bak]]
+- [[_COMMUNITY_Appsapi|Apps\api]]
+- [[_COMMUNITY_Appsapisrcmodulecoreuserdto|Apps\api\src\module\core\user\dto]]
+- [[_COMMUNITY_Packagessite Configsrc|Packages\site Config\src]]
+- [[_COMMUNITY_Dsanjay|D:\sanjay]]
+- [[_COMMUNITY_Appsadminsrcapp|Apps\admin\src\app]]
+- [[_COMMUNITY_Appsadminsrccomponentsqueries|Apps\admin\src\components\queries]]
+- [[_COMMUNITY_Appsapi|Apps\api]]
+- [[_COMMUNITY_Appsapisrccommonrate Limit|Apps\api\src\common\rate Limit]]
+- [[_COMMUNITY_Appsapisrcmodulemetaaddressdto|Apps\api\src\module\meta\address\dto]]
+- [[_COMMUNITY_Packagessite Configsrc|Packages\site Config\src]]
+- [[_COMMUNITY_Appsadminsrccomponentsoverview|Apps\admin\src\components\overview]]
+- [[_COMMUNITY_Appsapisrccommonrate Limit|Apps\api\src\common\rate Limit]]
+- [[_COMMUNITY_Appsstorefrontsrcappreturns|Apps\storefront\src\app\returns]]
+- [[_COMMUNITY_Dsanjaypackagessite Configsrc|D:\sanjay\packages\site Config\src]]
+- [[_COMMUNITY_Dsanjayappsstorefrontsrccomponents|D:\sanjay\apps\storefront\src\components]]
+- [[_COMMUNITY_Appsadminsrccomponents|Apps\admin\src\components]]
+- [[_COMMUNITY_Appsapi|Apps\api]]
+- [[_COMMUNITY_Appsapi|Apps\api]]
+- [[_COMMUNITY_Appsapisrccommoncrypto|Apps\api\src\common\crypto]]
+- [[_COMMUNITY_Appsapisrcmodulesecurityauthguards|Apps\api\src\module\security\auth\guards]]
+- [[_COMMUNITY_Dsanjaypackagessite Configsrc|D:\sanjay\packages\site Config\src]]
+- [[_COMMUNITY_Dsanjayappsstorefrontsrccomponents|D:\sanjay\apps\storefront\src\components]]
+- [[_COMMUNITY_Docs|Docs]]
+- [[_COMMUNITY_Docspostman|Docs\postman]]
+- [[_COMMUNITY_Packagessecure Api|Packages\secure Api]]
+- [[_COMMUNITY_Appsadminsrccomponentscategories|Apps\admin\src\components\categories]]
+- [[_COMMUNITY_Appsadminsrccomponents|Apps\admin\src\components]]
+- [[_COMMUNITY_Appsapisrccommonbase|Apps\api\src\common\base]]
+- [[_COMMUNITY_Appsapisrccommoncontext|Apps\api\src\common\context]]
+- [[_COMMUNITY_Appsstorefrontsrcappcontact|Apps\storefront\src\app\contact]]
+- [[_COMMUNITY_Dsanjayappsstorefrontsrccomponents|D:\sanjay\apps\storefront\src\components]]
+- [[_COMMUNITY_Packagessite Configsrc|Packages\site Config\src]]
+- [[_COMMUNITY_Appsadminsrccomponents|Apps\admin\src\components]]
+- [[_COMMUNITY_Appsadmin|Apps\admin]]
+- [[_COMMUNITY_Appsapiscripts|Apps\api\scripts]]
+- [[_COMMUNITY_Dsanjayappsadmin|D:\sanjay\apps\admin]]
+- [[_COMMUNITY_Dsanjayappsapisrcmodulemetaorder|D:\sanjay\apps\api\src\module\meta\order]]
+- [[_COMMUNITY_Packagessite Configdist.bak|Packages\site Config\dist.bak]]
+- [[_COMMUNITY_Packagessite Configsrc|Packages\site Config\src]]
+- [[_COMMUNITY_Packagessite Configsrc|Packages\site Config\src]]
+- [[_COMMUNITY_Appsadmin|Apps\admin]]
+- [[_COMMUNITY_Appsadminsrcappaccessrolesid|Apps\admin\src\app\access\roles\[id]]]
+- [[_COMMUNITY_Appsadminsrccomponents|Apps\admin\src\components]]
+- [[_COMMUNITY_Appsadminsrccomponentsreviews|Apps\admin\src\components\reviews]]
+- [[_COMMUNITY_Appsadmin|Apps\admin]]
+- [[_COMMUNITY_Appsapisrccommonconfig|Apps\api\src\common\config]]
+- [[_COMMUNITY_Appsapisrcmodulemasterproductutility|Apps\api\src\module\master\product\utility]]
+- [[_COMMUNITY_Appsstorefront|Apps\storefront]]
+- [[_COMMUNITY_Appsstorefrontsrcappcheckoutsuccess|Apps\storefront\src\app\checkout\success]]
+- [[_COMMUNITY_Dsanjayappsapisrcmodulesecurityauthguards|D:\sanjay\apps\api\src\module\security\auth\guards]]
+- [[_COMMUNITY_Dsanjayappsapisrccommonutility|D:\sanjay\apps\api\src\common\utility]]
+- [[_COMMUNITY_Dsanjayappsapisrcmodulemetaorderutility|D:\sanjay\apps\api\src\module\meta\order\utility]]
+- [[_COMMUNITY_Dsanjayappsadmin|D:\sanjay\apps\admin]]
+- [[_COMMUNITY_Dsanjayappsapi|D:\sanjay\apps\api]]
+- [[_COMMUNITY_Appsadmin|Apps\admin]]
+- [[_COMMUNITY_Appsadmin|Apps\admin]]
+- [[_COMMUNITY_Appsadmin|Apps\admin]]
+- [[_COMMUNITY_Appsapi|Apps\api]]
+- [[_COMMUNITY_Appsapisrccommonrbac|Apps\api\src\common\rbac]]
+- [[_COMMUNITY_Appsapisrccommonrbac|Apps\api\src\common\rbac]]
+- [[_COMMUNITY_Appsapisrccommonrbac|Apps\api\src\common\rbac]]
+- [[_COMMUNITY_Appsapisrccommonrbac|Apps\api\src\common\rbac]]
+- [[_COMMUNITY_Appsapisrccommonrbac|Apps\api\src\common\rbac]]
+- [[_COMMUNITY_Appsapisrccommonrbac|Apps\api\src\common\rbac]]
+- [[_COMMUNITY_Appsapisrccommonrbac|Apps\api\src\common\rbac]]
+- [[_COMMUNITY_Appsstorefront|Apps\storefront]]
+- [[_COMMUNITY_Appsstorefront|Apps\storefront]]
+- [[_COMMUNITY_Appsstorefront|Apps\storefront]]
+- [[_COMMUNITY_Dsanjayappsapisrcmodulemetacustomer|D:\sanjay\apps\api\src\module\meta\customer]]
+- [[_COMMUNITY_Dsanjayappsstorefrontsrccomponents|D:\sanjay\apps\storefront\src\components]]
+- [[_COMMUNITY_Dsanjayappsapisrcmodulemetacustomer|D:\sanjay\apps\api\src\module\meta\customer]]
+- [[_COMMUNITY_Dsanjaypackagessite Configdist.bak|D:\sanjay\packages\site Config\dist.bak]]
+- [[_COMMUNITY_Packagessite Configdist.bak|Packages\site Config\dist.bak]]
+- [[_COMMUNITY_Packagessite Configdist.bak|Packages\site Config\dist.bak]]
+- [[_COMMUNITY_Packagessite Configsrc|Packages\site Config\src]]
+- [[_COMMUNITY_Dsanjayappsapisrcmodulemastercategoryutility|D:\sanjay\apps\api\src\module\master\category\utility]]
+- [[_COMMUNITY_Dsanjayappsapisrcmodulemetaaddressconfig|D:\sanjay\apps\api\src\module\meta\address\config]]
+- [[_COMMUNITY_Dsanjayappsadmin|D:\sanjay\apps\admin]]
+- [[_COMMUNITY_Dsanjayappsadmin|D:\sanjay\apps\admin]]
+- [[_COMMUNITY_Dsanjayappsadmin|D:\sanjay\apps\admin]]
+- [[_COMMUNITY_Dsanjayappsapi|D:\sanjay\apps\api]]
+- [[_COMMUNITY_Dsanjayappsadminsrclib|D:\sanjay\apps\admin\src\lib]]
+- [[_COMMUNITY_Dsanjayappsapi|D:\sanjay\apps\api]]
+- [[_COMMUNITY_Dsanjayappsapi|D:\sanjay\apps\api]]
+- [[_COMMUNITY_Dsanjayappsapisrcmodulecoreapp Configconfig|D:\sanjay\apps\api\src\module\core\app Config\config]]
+- [[_COMMUNITY_Appsapisrccommonbase|Apps\api\src\common\base]]
+- [[_COMMUNITY_Appsapisrccommonbase|Apps\api\src\common\base]]
+- [[_COMMUNITY_Appsapisrccommonbase|Apps\api\src\common\base]]
+- [[_COMMUNITY_Appsapisrccommonbase|Apps\api\src\common\base]]
+- [[_COMMUNITY_Appsapisrccommoncaching|Apps\api\src\common\caching]]
+- [[_COMMUNITY_Community 164|Community 164]]
+- [[_COMMUNITY_Community 165|Community 165]]
+- [[_COMMUNITY_Community 166|Community 166]]
+- [[_COMMUNITY_Community 167|Community 167]]
+- [[_COMMUNITY_Community 168|Community 168]]
+- [[_COMMUNITY_Community 169|Community 169]]
+- [[_COMMUNITY_Community 170|Community 170]]
+- [[_COMMUNITY_Community 172|Community 172]]
+- [[_COMMUNITY_Community 173|Community 173]]
+- [[_COMMUNITY_Community 174|Community 174]]
+- [[_COMMUNITY_Community 175|Community 175]]
+- [[_COMMUNITY_Community 176|Community 176]]
+- [[_COMMUNITY_Community 177|Community 177]]
+- [[_COMMUNITY_Community 178|Community 178]]
+- [[_COMMUNITY_Community 179|Community 179]]
+- [[_COMMUNITY_Community 180|Community 180]]
+- [[_COMMUNITY_Community 181|Community 181]]
+- [[_COMMUNITY_Community 182|Community 182]]
+- [[_COMMUNITY_Community 183|Community 183]]
+- [[_COMMUNITY_Dsanjayappsapisrcmodulesecurityauth|D:\sanjay\apps\api\src\module\security\auth]]
+- [[_COMMUNITY_Dsanjayappsapisrcmodulemetacartconfig|D:\sanjay\apps\api\src\module\meta\cart\config]]
+- [[_COMMUNITY_Dsanjayappsapisrcmodulemastercategoryconfig|D:\sanjay\apps\api\src\module\master\category\config]]
+- [[_COMMUNITY_.claude|.claude]]
+- [[_COMMUNITY_Dsanjayappsstorefrontsrccomponents|D:\sanjay\apps\storefront\src\components]]
+- [[_COMMUNITY_Dsanjayappsapisrcmodulemetacustomerconfig|D:\sanjay\apps\api\src\module\meta\customer\config]]
+- [[_COMMUNITY_Dsanjayappsapisrcdata|D:\sanjay\apps\api\src\data]]
+- [[_COMMUNITY_Dsanjayappsapisrcmodulecorediscountconfig|D:\sanjay\apps\api\src\module\core\discount\config]]
+- [[_COMMUNITY_Docs|Docs]]
+- [[_COMMUNITY_Docs|Docs]]
+- [[_COMMUNITY_Docs|Docs]]
+- [[_COMMUNITY_Docs|Docs]]
+- [[_COMMUNITY_Dsanjayappsadminsrclib|D:\sanjay\apps\admin\src\lib]]
+- [[_COMMUNITY_Dsanjayappsapisrccommonentities|D:\sanjay\apps\api\src\common\entities]]
+- [[_COMMUNITY_Dsanjayappsapisrccommonentities|D:\sanjay\apps\api\src\common\entities]]
+- [[_COMMUNITY_Dsanjayappsapisrcdatabaseentity|D:\sanjay\apps\api\src\database\entity]]
+- [[_COMMUNITY_Dsanjayappsadminsrclib|D:\sanjay\apps\admin\src\lib]]
+- [[_COMMUNITY_Appsadmin|Apps\admin]]
+- [[_COMMUNITY_Appsadmin|Apps\admin]]
+- [[_COMMUNITY_Dsanjayappsadminsrcapplogin|D:\sanjay\apps\admin\src\app\login]]
+- [[_COMMUNITY_Dsanjayappsapisrcmodulemetaorderconfig|D:\sanjay\apps\api\src\module\meta\order\config]]
+- [[_COMMUNITY_Packagessite Configdist.bak|Packages\site Config\dist.bak]]
+- [[_COMMUNITY_Packagessite Configdist.bak|Packages\site Config\dist.bak]]
+- [[_COMMUNITY_Packagessite Configdist.bak|Packages\site Config\dist.bak]]
+- [[_COMMUNITY_Dsanjayappsadminpublic|D:\sanjay\apps\admin\public]]
+- [[_COMMUNITY_Dsanjayappsadminpublic|D:\sanjay\apps\admin\public]]
+- [[_COMMUNITY_Dsanjayappsadminpublic|D:\sanjay\apps\admin\public]]
+- [[_COMMUNITY_Dsanjayappsadminpublic|D:\sanjay\apps\admin\public]]
+- [[_COMMUNITY_Dsanjayappsadminpublic|D:\sanjay\apps\admin\public]]
+- [[_COMMUNITY_Dsanjayappsstorefrontsrccomponents|D:\sanjay\apps\storefront\src\components]]
+- [[_COMMUNITY_Dsanjaypackagessite Configsrc|D:\sanjay\packages\site Config\src]]
+- [[_COMMUNITY_Dsanjayappsadminsrc|D:\sanjay\apps\admin\src]]
+- [[_COMMUNITY_Dsanjayappsstorefront|D:\sanjay\apps\storefront]]
+- [[_COMMUNITY_Dsanjayappsstorefront|D:\sanjay\apps\storefront]]
+- [[_COMMUNITY_Dsanjayappsstorefront|D:\sanjay\apps\storefront]]
+- [[_COMMUNITY_Dsanjayappsstorefrontpublic|D:\sanjay\apps\storefront\public]]
+- [[_COMMUNITY_Dsanjayappsstorefrontpublic|D:\sanjay\apps\storefront\public]]
+- [[_COMMUNITY_Dsanjayappsstorefrontpublic|D:\sanjay\apps\storefront\public]]
+- [[_COMMUNITY_Dsanjayappsstorefrontpublic|D:\sanjay\apps\storefront\public]]
+- [[_COMMUNITY_Dsanjayappsstorefrontpublic|D:\sanjay\apps\storefront\public]]
+- [[_COMMUNITY_Dsanjayappsstorefront|D:\sanjay\apps\storefront]]
+- [[_COMMUNITY_Dsanjayappsapisrcmodulecoreuserconfig|D:\sanjay\apps\api\src\module\core\user\config]]
+- [[_COMMUNITY_Dsanjayappsapisrcmodulemetacartutility|D:\sanjay\apps\api\src\module\meta\cart\utility]]
+- [[_COMMUNITY_Dsanjayappsapisrcmodulemetacartutility|D:\sanjay\apps\api\src\module\meta\cart\utility]]
+- [[_COMMUNITY_Dsanjayappsapisrccommonutility|D:\sanjay\apps\api\src\common\utility]]
+- [[_COMMUNITY_Dsanjayappsapisrcmodulemetaaddressutility|D:\sanjay\apps\api\src\module\meta\address\utility]]
+- [[_COMMUNITY_Dsanjayappsapisrcmodulecorediscountutility|D:\sanjay\apps\api\src\module\core\discount\utility]]
+- [[_COMMUNITY_Dsanjayappsapisrcmodulemetaorderutility|D:\sanjay\apps\api\src\module\meta\order\utility]]
+- [[_COMMUNITY_Dsanjayappsapisrcmodulemasterproductutility|D:\sanjay\apps\api\src\module\master\product\utility]]
+- [[_COMMUNITY_Dsanjayappsapisrcmodulemetareviewutility|D:\sanjay\apps\api\src\module\meta\review\utility]]
+- [[_COMMUNITY_Dsanjayappsapisrccommonutility|D:\sanjay\apps\api\src\common\utility]]
+- [[_COMMUNITY_Dsanjayappsapisrccommoncachingutils|D:\sanjay\apps\api\src\common\caching\utils]]
+- [[_COMMUNITY_Dsanjayappsapisrccommoncachingutils|D:\sanjay\apps\api\src\common\caching\utils]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `ResponseVm` - 119 edges
-2. `PrismaService` - 53 edges
-3. `ResponseBuilder` - 47 edges
-4. `BaseRepo` - 38 edges
-5. `BaseController` - 37 edges
-6. `BaseEntity` - 31 edges
-7. `BaseService` - 30 edges
-8. `CacheHandler` - 30 edges
-9. `apiGet()` - 27 edges
-10. `parsePageQuery()` - 27 edges
+1. `ResponseVm` - 99 edges
+2. `ResponseBuilder` - 40 edges
+3. `PrismaService` - 39 edges
+4. `sessionLabel` - 35 edges
+5. `BaseRepo` - 32 edges
+6. `BaseController` - 31 edges
+7. `BaseEntity` - 31 edges
+8. `RbacService` - 31 edges
+9. `CacheHandler` - 29 edges
+10. `getSessionUser` - 28 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `apiGet (client)` --semantically_similar_to--> `apiGet()`  [INFERRED] [semantically similar]
-  D:/sanjay/apps/admin/src/lib/api.ts → apps/admin/src/lib/api-server.ts
-- `buildProductWhere` --semantically_similar_to--> `buildContainsOr`  [INFERRED] [semantically similar]
-  D:/sanjay/apps/api/src/module/master/product/utility/product-filter.utility.ts → apps/api/src/common/utility/search.utility.ts
 - `mapCatalogCategoryToCreateInput` --semantically_similar_to--> `CreateCategoryDto`  [INFERRED] [semantically similar]
   D:/sanjay/apps/api/src/module/master/product/utility/catalog-seed.utility.ts → apps/api/src/module/master/category/dto/create-category.dto.ts
 - `mapCatalogProductToCreateInput` --semantically_similar_to--> `CreateProductDto`  [INFERRED] [semantically similar]
   D:/sanjay/apps/api/src/module/master/product/utility/catalog-seed.utility.ts → apps/api/src/module/master/product/dto/create-product.dto.ts
 - `getLowestPrice (storefront catalog-map)` --semantically_similar_to--> `getLowestPrice (dist.bak declaration)`  [INFERRED] [semantically similar]
   apps/storefront/src/lib/catalog-map.ts → packages/site-config/dist.bak/catalog.d.ts
+- `fetchProducts` --semantically_similar_to--> `products (dist.bak declaration)`  [INFERRED] [semantically similar]
+  apps/storefront/src/lib/catalog.ts → packages/site-config/dist.bak/catalog.d.ts
+- `fetchCollections` --semantically_similar_to--> `collections (dist.bak declaration)`  [INFERRED] [semantically similar]
+  apps/storefront/src/lib/catalog.ts → packages/site-config/dist.bak/catalog.d.ts
 
 ## Import Cycles
 - None detected.
 
 ## Hyperedges (group relationships)
-- **Shared Admin List/Search/Pagination Pattern** — components_data_table_datatable, components_debounced_search_debouncedsearch, components_list_toolbar_listtoolbar, hooks_use_debounce_usedebounce [INFERRED 0.85]
+- **Admin Pages Composed via Shared AdminShell Layout** — app_page_adminhomepage, apps_admin_src_app_access_page_accesspage, apps_admin_src_app_access_permissions_page_accesspermissionspage, apps_admin_src_app_access_roles_page_accessrolespage, apps_admin_src_app_access_users_page_accessuserspage, apps_admin_src_app_categories_page_categoriespage, apps_admin_src_app_customers_page_customerspage, apps_admin_src_app_devices_page_devicesadminpage, apps_admin_src_app_orders_page_orderspage, id_page_orderdetailpage, apps_admin_src_app_products_page_productspage, apps_admin_src_app_products_id_page_editproductpage, apps_admin_src_app_products_new_page_newproductpage, apps_admin_src_app_queries_page_queriespage, apps_admin_src_app_queries_id_page_querydetailpage, apps_admin_src_app_reviews_page_reviewsadminpage, apps_admin_src_components_layout_admin_shell_adminshell [INFERRED 0.85]
+- **List Pages Built from ListToolbar + DataTable + PaginationNav** — apps_admin_src_app_categories_page_categoriespage, apps_admin_src_app_customers_page_customerspage, apps_admin_src_app_devices_page_devicesadminpage, apps_admin_src_app_orders_page_orderspage, apps_admin_src_app_products_page_productspage, apps_admin_src_app_queries_page_queriespage, apps_admin_src_app_reviews_page_reviewsadminpage [INFERRED 0.85]
+- **Permission-Gated Pages Using hasPermission + redirect Guard** — apps_admin_src_app_access_page_accesspage, apps_admin_src_app_access_permissions_page_accesspermissionspage, apps_admin_src_app_access_roles_page_accessrolespage, apps_admin_src_app_access_users_page_accessuserspage, apps_admin_src_app_devices_page_devicesadminpage [INFERRED 0.85]
+- **Admin save-and-refresh form pattern (apiPost/apiPatch + status_code check + router.refresh)** — apps_admin_src_components_access_assign_role_form_assignroleform, apps_admin_src_components_access_create_role_form_createroleform, apps_admin_src_components_access_role_permissions_form_rolepermissionsform, apps_admin_src_components_access_staff_user_form_staffuserform, apps_admin_src_components_access_permissions_matrix_permissionsmatrix, apps_admin_src_components_categories_category_form_categoryform, apps_admin_src_components_products_product_form_productform, apps_admin_src_components_queries_query_status_form_querystatusform [INFERRED 0.85]
+- **Role & permission administration flow (create role, assign role, edit role permissions, matrix view, add staff user)** — apps_admin_src_components_access_create_role_form_createroleform, apps_admin_src_components_access_assign_role_form_assignroleform, apps_admin_src_components_access_role_permissions_form_rolepermissionsform, apps_admin_src_components_access_permissions_matrix_permissionsmatrix, apps_admin_src_components_access_staff_user_form_staffuserform [INFERRED 0.85]
+- **AdminShell layout composition (header nav, breadcrumbs, back navigation)** — apps_admin_src_components_layout_admin_shell_adminshell, apps_admin_src_components_layout_back_button_backbutton, apps_admin_src_components_layout_breadcrumbs_breadcrumbs [EXTRACTED 1.00]
+- **Device Tracking & Rate Limiting Request Pipeline** — apps_api_src_common_device_device_tracking_middleware_devicetrackingmiddleware, apps_api_src_common_device_client_device_service_clientdeviceservice, apps_api_src_common_rate_limit_rate_limit_guard_ratelimitguard, apps_api_src_common_rate_limit_rate_limit_store_ratelimitstore, apps_api_src_common_caching_cache_config_service_cacheconfigservice [INFERRED 0.85]
+- **Admin Searchable/Paginated List UI Toolkit** — apps_admin_src_components_ui_data_table_datatable, apps_admin_src_components_ui_list_toolbar_listtoolbar, apps_admin_src_components_ui_debounced_search_debouncedsearch, apps_admin_src_components_ui_pagination_nav_paginationnav [INFERRED 0.80]
+- **RBAC Permission Enforcement Flow** — apps_api_src_common_rbac_permissions_decorator_permissionsauth, apps_api_src_common_rbac_permissions_guard_permissionsguard, apps_api_src_common_rbac_rbac_service_rbacservice, apps_api_src_common_rbac_load_permissions_catalog_loadpermissionscatalog, apps_api_src_common_rbac_permissions_catalog [INFERRED 0.85]
+- **Controller-Service-Repo Layering Pattern** — apps_api_src_module_core_user_user_controller_usercontroller, apps_api_src_module_core_user_user_service_userservice, apps_api_src_module_core_user_user_repo_userrepo, apps_api_src_module_meta_review_review_controller_reviewcontroller, apps_api_src_module_meta_review_review_service_reviewservice, apps_api_src_module_meta_review_review_repo_reviewrepo [INFERRED 0.85]
+- **Role Permission Matrix Management** — apps_api_src_common_rbac_dto_set_permission_matrix_dto_setpermissionmatrixdto, apps_api_src_common_rbac_dto_set_role_permissions_dto_setrolepermissionsdto, apps_api_src_common_rbac_rbac_service_rbacservice, apps_api_src_common_rbac_permissions_guard_permissionsguard [INFERRED 0.75]
+- **Staff Authentication & RBAC Guard Flow** — apps_api_src_module_security_auth_auth_module_authmodule, apps_api_src_module_security_auth_auth_service_authservice, apps_api_src_module_security_auth_guards_auth_guard_authguard, guards_auth_guard_authuser, guards_auth_guard_auth_cookie, guards_staff_auth_decorator_staffauth [EXTRACTED 0.90]
+- **Guest Review Submission & Staff Moderation Flow** — apps_api_src_module_meta_review_config_module_review, apps_api_src_module_meta_review_dto_create_review_dto_createreviewdto, apps_api_src_module_meta_review_dto_update_review_dto_updatereviewdto, apps_storefront_src_components_product_reviews_productreviews [INFERRED 0.85]
+- **Product Detail Page (PDP) Composition** — apps_storefront_src_app_products_slug_page_productpage, apps_storefront_src_components_product_buy_box_productbuybox, apps_storefront_src_components_product_image_gallery_productimagegallery, apps_storefront_src_components_product_reviews_productreviews [EXTRACTED 0.95]
 - **Pluggable Cache Backend (Memory/Redis/Dragonfly behind ICache)** — caching_cache_interface_icache, implementations_memory_cache_memorycache, implementations_redis_cache_rediscache, implementations_dragonfly_cache_dragonflycache, caching_cache_handler_cachehandler [INFERRED 0.85]
 - **HTTP Response Caching Interception Flow** — caching_cache_interceptor_cacheinterceptor, caching_cache_config_service_cacheconfigservice, caching_cache_handler_cachehandler [EXTRACTED 1.00]
 - **Pluggable Cache Backend Subsystem** — implementations_memory_cache_memorycache, implementations_redis_cache_rediscache, utils_cache_utils_cacheutils, utils_cache_key_builder_cachekeybuilder [INFERRED 0.85]
@@ -231,8 +303,6 @@
 - **Post-Purchase Domain (Order, Customer, Review)** — order_order_service_orderservice, customer_customer_service_customerservice, review_review_service_reviewservice [INFERRED 0.65]
 - **Order & Customer list search adoption via buildContainsOr** — order_repo_findallwithitems, order_controller_findall, customer_service_findall [EXTRACTED 1.00]
 - **Login and Session Cookie Issuance** — auth_auth_controller_authcontroller, auth_auth_service_authservice, guards_auth_guard_authguard [INFERRED 0.85]
-- **Authentication & Session Flow** — auth_auth_service_authservice, guards_auth_guard_authguard, guards_roles_guard_rolesguard [INFERRED 0.85]
-- **Staff Authorization Guard Composition** — guards_staff_auth_decorator_staffauth, guards_auth_guard_authguard, guards_roles_guard_rolesguard [EXTRACTED 1.00]
 - **Cart to Checkout Purchase Funnel** — cart_page_cartpage, checkout_page_checkoutpage, success_page_checkoutsuccesspage [INFERRED 0.85]
 - **Cart State Management** — components_cart_provider_cartprovider, components_cart_provider_usecart, app_layout_rootlayout [INFERRED 0.75]
 - **Contact form to customer-query submission flow** — contact_page_contactpage, contact_form_contactform, customer_query_module_yml [INFERRED 0.85]
@@ -243,401 +313,461 @@
 - **site-config TS source to compiled dist.bak build chain** — brand_brand, catalog_products, index_siteconfig_exports, src_brand_js, src_catalog_js, src_index_js, distbak_brand, distbak_catalog, distbak_index [INFERRED 0.85]
 - **Module Config Loading Pattern (module.yml)** — crypto_module, app_config_module, discount_module, user_module, category_module, product_module, address_module, cart_module, customer_module, order_module, review_module, auth_module [INFERRED 0.85]
 - **Dev server port reassignment across API/storefront/admin/docker/docs** — docker_compose, readme, docs_what_is_done, src_index_resolveapibaseurl, storefront_package [EXTRACTED 1.00]
-- **Four-Schema Ownership Pattern** — admin_auth_schema_cms_master_schema, admin_auth_schema_cms_core_schema, admin_auth_schema_cms_security_schema, admin_auth_schema_cms_meta_schema, what_is_done_schema_ownership [EXTRACTED 1.00]
 - **Admin CRUD controllers sharing BaseController.executeMethod + parsePageQuery pattern** — apps_api_src_module_core_app_config_app_config_controller_appconfigcontroller, apps_api_src_module_core_discount_discount_controller_discountcontroller, apps_api_src_module_core_user_role_role_controller_rolecontroller, apps_api_src_module_core_user_user_type_user_type_controller_usertypecontroller, apps_api_src_module_core_user_user_controller_usercontroller, apps_api_src_module_meta_address_address_controller_addresscontroller, apps_api_src_module_master_product_product_controller_productcontroller [EXTRACTED 1.00]
 - **Services validating uniqueness (findByX + ConflictException) before create** — apps_api_src_module_core_app_config_app_config_service_appconfigservice, apps_api_src_module_core_discount_discount_service_discountservice, apps_api_src_module_core_user_role_role_service_roleservice, apps_api_src_module_core_user_user_type_user_type_service_usertypeservice, apps_api_src_module_core_user_user_service_userservice [EXTRACTED 1.00]
 - **Services delegating softDelete (findById guard then repo.softDelete) into BaseRepo.softDelete** — apps_api_src_common_base_base_repo_softdelete, apps_api_src_module_core_app_config_app_config_service_appconfigservice, apps_api_src_module_core_discount_discount_service_discountservice, apps_api_src_module_core_user_role_role_service_roleservice, apps_api_src_module_core_user_user_type_user_type_service_usertypeservice, apps_api_src_module_core_user_user_service_userservice, apps_api_src_module_meta_address_address_service_addressservice [EXTRACTED 1.00]
 - **Cart CRUD + item management request flow** — apps_api_src_module_meta_cart_cart_controller_cartcontroller, apps_api_src_module_meta_cart_cart_service_cartservice, apps_api_src_module_meta_cart_cart_repo_cartrepo, apps_api_src_module_meta_cart_cart_repo_cartitemrepo [EXTRACTED 1.00]
-- **Review CRUD + approval request flow** — apps_api_src_module_meta_review_review_controller_reviewcontroller, apps_api_src_module_meta_review_review_service_reviewservice, apps_api_src_module_meta_review_review_repo_reviewrepo [EXTRACTED 1.00]
 - **Storefront pages fetching and mapping catalog data from API** — apps_storefront_src_app_page_homepage, apps_storefront_src_app_shop_page_shoppage, apps_storefront_src_lib_catalog_fetchproducts, apps_storefront_src_lib_catalog_fetchcollections, apps_storefront_src_lib_catalog_map_mapapiproduct [EXTRACTED 1.00]
 
-## Communities (178 total, 86 thin omitted)
+## Communities (238 total, 127 thin omitted)
 
-### Community 0 - "Controller Infra (Base/Cache/Crypto)"
-Cohesion: 0.06
-Nodes (46): BaseController, HealthController, Controller, Get, Res, HealthModule, Module, parsePageQuery() (+38 more)
-
-### Community 1 - "Base Repo Utilities & Stock Check"
+### Community 0 - "Product Stock DTOs"
 Cohesion: 0.05
-Nodes (45): BaseRepo.notDeletedWhere, BaseRepo.withUpdateAudit, utcNow(), CheckStockDto, CheckStockItemDto, IsArray, IsInt, IsString (+37 more)
+Nodes (37): CheckStockDto, CheckStockItemDto, IsArray, IsInt, IsString, Min, Type, ValidateNested (+29 more)
 
-### Community 2 - "App Bootstrap & Module Config"
+### Community 1 - "Cart Module API"
+Cohesion: 0.07
+Nodes (24): CartController, Body, Controller, Delete, Get, Param, Patch, Post (+16 more)
+
+### Community 2 - "App Config Module"
 Cohesion: 0.06
-Nodes (42): loadModuleConfig(), loadModuleConfigFromFilename(), MODULE_CONFIG, ModuleConfig, ModuleRouteCacheFlag, ModuleSecurityConfig, CryptoController, Controller (+34 more)
+Nodes (31): BaseService, AppConfigController, Body, Controller, Delete, Get, Param, Patch (+23 more)
 
-### Community 3 - "Cart Module"
+### Community 3 - "Category Module API"
 Cohesion: 0.07
-Nodes (23): CartController, Body, Controller, Delete, Get, Param, Patch, Post (+15 more)
+Nodes (29): ClientDeviceController.findAll, ClientDeviceService.findPage, slugify(), CategoryController, Body, Controller, Delete, Get (+21 more)
 
-### Community 4 - "Discount Module & Date Utils"
-Cohesion: 0.07
-Nodes (31): isWithinUtcWindow(), optionalUtcDate(), toUtcDate(), toUtcIso(), DiscountController, Body, Controller, Delete (+23 more)
-
-### Community 5 - "Authentication & Authorization"
-Cohesion: 0.07
-Nodes (33): AuthController, Body, Controller, Get, Post, Res, AuthModule, Module (+25 more)
-
-### Community 6 - "AppConfig Module"
-Cohesion: 0.09
-Nodes (23): AppConfigController, Body, Controller, Delete, Get, Param, Patch, Post (+15 more)
-
-### Community 7 - "Review Module"
+### Community 4 - "Discount Module API"
 Cohesion: 0.08
-Nodes (23): CreateReviewDto, IsBoolean, IsInt, IsOptional, IsString, Max, Min, UpdateReviewDto (+15 more)
+Nodes (30): isWithinUtcWindow(), DiscountController, Body, Controller, Delete, Get, Param, Patch (+22 more)
 
-### Community 8 - "Category Module"
-Cohesion: 0.09
-Nodes (21): slugify(), CategoryController, Body, Controller, Delete, Get, Param, Patch (+13 more)
+### Community 5 - "Order DTOs Validation"
+Cohesion: 0.06
+Nodes (30): CreateOrderDto, CreateOrderItemDto, IsArray, IsEmail, IsInt, IsOptional, IsString, Min (+22 more)
 
-### Community 9 - "Order DTO Validation"
+### Community 6 - "User Type Module"
 Cohesion: 0.08
-Nodes (24): CreateOrderDto, CreateOrderItemDto, IsArray, IsEmail, IsInt, IsOptional, IsString, Min (+16 more)
+Nodes (23): BaseRepo.findPage, CreateUserTypeDto, IsOptional, IsString, Matches, MinLength, IsBoolean, IsOptional (+15 more)
 
-### Community 10 - "Admin App Pages"
-Cohesion: 0.13
-Nodes (27): CategoriesPage(), Category, Props, Customer, Props, CustomerQuery, Order, QuerySummary (+19 more)
+### Community 7 - "Admin UI Components"
+Cohesion: 0.12
+Nodes (28): Props, Customer, Props, ClientDevice type, Props, OrderItem, Props, Props (+20 more)
 
-### Community 11 - "Database Entity Definitions"
+### Community 8 - "Admin Product Form"
+Cohesion: 0.12
+Nodes (31): Product type (edit product page), Props, Product type (products list), COLOR_PRESETS, inrToPaise(), ProductForm(), SIZE_OPTIONS, slugify() (+23 more)
+
+### Community 9 - "Customer Module API"
+Cohesion: 0.09
+Nodes (19): CustomerController, Body, Controller, Delete, Get, Param, Patch, Post (+11 more)
+
+### Community 10 - "Core Database Entities"
 Cohesion: 0.19
 Nodes (23): BASE_ENTITY_DEFAULTS, BaseEntity, BaseEntityFields, AppConfigEntity, DiscountEntity, AccountEntity, RoleEntity, SessionEntity (+15 more)
 
-### Community 12 - "Schema Design Docs"
-Cohesion: 0.10
-Nodes (34): address Module Config (module.yml), docs/admin_auth_schema_cms.md, Account (model), Address (model), AppConfig (model), Cart (model), CartItem (model), Category (model) (+26 more)
-
-### Community 13 - "Admin Order Detail Page"
-Cohesion: 0.15
-Nodes (27): CustomersPage(), Order, OrderDetailPage(), Props, Order, OrderItem, OrdersPage(), Props (+19 more)
-
-### Community 14 - "API Client Libraries (Admin/Storefront)"
+### Community 11 - "Crypto Module"
 Cohesion: 0.12
-Nodes (24): apiDelete(), apiPatch(), apiPost(), client(), apiGet(), apiPost(), client(), apiDelete (client) (+16 more)
+Nodes (17): CryptoModule, CryptoService, Injectable, EncryptedEnvelope, EncryptedResponse, ENCRYPTION_SKIP_PATHS, isEncryptedEnvelope(), DecryptMiddleware (+9 more)
 
-### Community 15 - "API Dev Tooling Config"
+### Community 12 - "Customer Query Module"
+Cohesion: 0.11
+Nodes (16): CustomerQueryController, Controller, Delete, Get, Param, Patch, Query, StaffAuth (+8 more)
+
+### Community 13 - "User Module API"
+Cohesion: 0.09
+Nodes (11): Body, Delete, Get, Param, Patch, PermissionsAuth, Post, Query (+3 more)
+
+### Community 14 - "Cache Implementations"
+Cohesion: 0.08
+Nodes (5): apps/api package.json dependencies, ICache, CacheEntry, RedisCache, DragonflyCache
+
+### Community 15 - "API Dev Dependencies"
 Cohesion: 0.07
 Nodes (29): devDependencies, eslint, eslint-config-prettier, @eslint/eslintrc, @eslint/js, eslint-plugin-prettier, globals, jest (+21 more)
 
-### Community 16 - "Base Repository Layer"
-Cohesion: 0.20
-Nodes (4): BaseRepo, toPageResult(), PrismaService, Injectable
+### Community 16 - "Base Controllers Response"
+Cohesion: 0.27
+Nodes (6): BaseController, Res, ResponseBuilder, Injectable, ResponseVm, StaffAuth()
 
-### Community 17 - "Role Controller"
-Cohesion: 0.13
-Nodes (12): RoleController, Body, Controller, Delete, Get, Param, Patch, Post (+4 more)
-
-### Community 18 - "Customer Query Controller"
-Cohesion: 0.12
-Nodes (14): CustomerQueryController, Controller, Delete, Get, Param, Patch, Query, StaffAuth (+6 more)
-
-### Community 19 - "Admin Product Form & Page"
+### Community 17 - "Base Repo Pattern"
 Cohesion: 0.16
-Nodes (21): Category, Product, Props, COLOR_PRESETS, inrToPaise(), ProductForm(), SIZE_OPTIONS, slugify() (+13 more)
+Nodes (5): BaseRepo, PrismaService, Injectable, RoleRepo, Injectable
 
-### Community 20 - "Cache Interface"
+### Community 18 - "Auth Access Permissions"
 Cohesion: 0.09
-Nodes (3): ICache, CacheEntry, MemoryCache
+Nodes (16): AccessController.myPermissions, Req, RbacService.getRolePermissionCodes, Get, AuthService, STAFF_ROLES, Injectable, AuthUser (+8 more)
 
-### Community 21 - "Admin Package Dependencies"
+### Community 19 - "Address Module API"
+Cohesion: 0.12
+Nodes (14): AddressController, Body, Controller, Delete, Get, Param, Patch, Post (+6 more)
+
+### Community 20 - "Admin Access RBAC UI"
+Cohesion: 0.12
+Nodes (18): AccessDashboard, Role type (roles page), Role type (users page), STAFF_CODES, StaffUser type, AccessTabs, tabs, AssignRoleForm (+10 more)
+
+### Community 21 - "Admin Pages Session"
+Cohesion: 0.21
+Nodes (26): AccessPage, AccessPermissionsPage, AccessRolesPage, AccessUsersPage, CategoriesPage, CustomersPage, DevicesAdminPage, Order (+18 more)
+
+### Community 22 - "RBAC Permission Catalog"
+Cohesion: 0.13
+Nodes (13): loadPermissionsCatalog, PermissionDefinition, PermissionsCatalog, YamlShape, Permissions Catalog (permissions.yml), PermissionsGuard, Injectable, RbacModule (+5 more)
+
+### Community 23 - "Admin Package Dependencies"
 Cohesion: 0.08
 Nodes (23): dependencies, @linq/secure-api, @linq/site-config, next, react, react-dom, devDependencies, eslint (+15 more)
 
-### Community 22 - "Address Module & Paginated Repo"
-Cohesion: 0.15
-Nodes (12): BaseRepo.findPage, Delete, AddressRepo, Injectable, AddressService, Injectable, CreateAddressDto, IsBoolean (+4 more)
-
-### Community 23 - "API TypeScript Config"
+### Community 24 - "API TS Config"
 Cohesion: 0.08
 Nodes (23): compilerOptions, allowSyntheticDefaultImports, baseUrl, declaration, emitDecoratorMetadata, esModuleInterop, experimentalDecorators, forceConsistentCasingInFileNames (+15 more)
 
-### Community 24 - "Storefront Package Dependencies"
+### Community 25 - "Apps\storefront"
 Cohesion: 0.08
 Nodes (23): dependencies, @linq/secure-api, @linq/site-config, next, react, react-dom, devDependencies, eslint (+15 more)
 
-### Community 25 - "Storefront Product Components"
-Cohesion: 0.17
-Nodes (16): Props, ProductCard(), Props, Props, fetchProductsPage, ApiCategory, ApiProduct, getLowestPrice (storefront catalog-map) (+8 more)
-
-### Community 26 - "API Runtime Dependencies"
+### Community 26 - "Apps\api"
 Cohesion: 0.09
 Nodes (23): dependencies, bcrypt, class-transformer, class-validator, cookie-parser, dotenv, ioredis, js-yaml (+15 more)
 
-### Community 27 - "Cache Backend Implementations"
+### Community 27 - "Apps\api\src\common\rbac"
 Cohesion: 0.16
-Nodes (13): createCacheRedisClient(), describeRedisConnection(), getCacheRedisOptions(), getQueueRedisOptions(), parseDb(), parsePort(), RedisConnectionConfig, RedisConnectionSource (+5 more)
+Nodes (7): AccessController, Body, Controller, Get, Param, Patch, PermissionsAuth
 
-### Community 28 - "Customer Module"
+### Community 28 - "Apps\storefront\src\components"
 Cohesion: 0.16
-Nodes (10): Delete, CustomerRepo, Injectable, CustomerService, Injectable, CreateCustomerDto, IsEmail, IsOptional (+2 more)
+Nodes (14): metadata, metadata, useCart(), CartView, CheckoutForm(), PlacedOrder, checkCartStock(), StockCheckItem (+6 more)
 
-### Community 29 - "Storefront Cart & Checkout Pages"
-Cohesion: 0.16
-Nodes (13): metadata, metadata, useCart(), CartView, CheckoutForm(), PlacedOrder, checkCartStock(), StockCheckItem (+5 more)
+### Community 29 - "Apps\storefront\src\components"
+Cohesion: 0.13
+Nodes (18): generateMetadata, generateStaticParams, ProductPage (PDP), Props, ProductBuyBox, Props, ProductImageGallery, Props (+10 more)
 
-### Community 30 - "Storefront TypeScript Config"
+### Community 30 - "Apps\storefront"
 Cohesion: 0.09
 Nodes (21): compilerOptions, allowJs, esModuleInterop, incremental, isolatedModules, jsx, lib, module (+13 more)
 
-### Community 31 - "Cache Admin Service & Controller"
+### Community 31 - "Apps\api\src\module\core\user"
 Cohesion: 0.17
-Nodes (12): CacheAdminService, Injectable, CacheController, Controller, Delete, Get, Param, Post (+4 more)
+Nodes (9): PermissionsAuth decorator, RequirePermissions decorator, RoleService, Injectable, Controller, UserController, UserModule, Injectable (+1 more)
 
-### Community 32 - "Cache Interceptor & Key Builder"
-Cohesion: 0.17
-Nodes (10): CacheInterceptor, Injectable, CacheKeyBuilder, CacheKeyOptions, stableSerialize(), CacheUtils, ContextUser, GlobalContext (+2 more)
+### Community 32 - "Apps\api\src\common\caching"
+Cohesion: 0.19
+Nodes (11): fingerprintRequest(), ResolvedRouteCache, CacheKeyBuilder, CacheKeyOptions, stableSerialize(), CACHE_TYPES, WRITE_HTTP_METHODS, CheckStatus (+3 more)
 
-### Community 33 - "Search & Pagination Utilities"
-Cohesion: 0.15
-Nodes (9): PageQuery, PageResult, buildContainsOr, ContainsFilter, normalizeSearchQuery(), Query, Query, Query (+1 more)
-
-### Community 34 - "User Repository"
+### Community 33 - "Apps\api\src\common\caching"
 Cohesion: 0.18
-Nodes (4): Injectable, UserRepo, Injectable, UserService
+Nodes (10): CacheAdminService, Injectable, CacheController, Controller, Delete, Get, Param, Post (+2 more)
 
-### Community 35 - "Root Monorepo Config"
+### Community 34 - "Apps\api\src\module\core\user\role"
+Cohesion: 0.14
+Nodes (10): RoleController, Body, Controller, Delete, Get, Param, Patch, PermissionsAuth (+2 more)
+
+### Community 35 - "Misc"
 Cohesion: 0.10
 Nodes (19): dependencies, class-transformer, class-validator, name, private, scripts, build:admin, build:api (+11 more)
 
-### Community 36 - "Search/Pagination/Port Concepts"
+### Community 36 - "Apps\api\src\common\caching\utils"
+Cohesion: 0.19
+Nodes (5): CacheInterceptor, isSuccessResponse(), Injectable, CacheUtils, isSuccessResponse
+
+### Community 37 - "Apps\api\src\common\health"
+Cohesion: 0.15
+Nodes (9): HealthController, Controller, Get, HealthService, Injectable, RateLimitStore.initRedis, createCacheRedisClient, describeRedisConnection (+1 more)
+
+### Community 38 - "Packages\secure Api\src"
 Cohesion: 0.17
-Nodes (19): Admin app README, Customer list ?q= search (email/name/phoneNumber), Order list ?q= search (orderNumber/customerEmail/shippingFullName/shippingPhone), Dev server port reassignment (API 3001->4000, Storefront 3000->4001, Admin 3002->4002), crypto Module Config (module.yml), CustomerService.findAll (with q search), docker-compose.yml service definitions, Docker README (+11 more)
+Nodes (15): apiGet(), apiPost(), client(), ApiResponse, b64ToBytes(), bytesToB64(), createSecureApi(), decryptPayload() (+7 more)
 
-### Community 37 - "Cache Config Service"
-Cohesion: 0.22
-Nodes (9): CacheConfigService, fingerprintRequest(), joinPaths(), normalizePath(), pathMatches(), ResolvedRouteCache, ModuleRouteCacheConfig, ModuleRouteConfig (+1 more)
-
-### Community 38 - "API NPM Scripts"
+### Community 39 - "Apps\api"
 Cohesion: 0.12
 Nodes (17): scripts, build, crypto:keys, format, lint, prisma:generate, prisma:migrate, prisma:studio (+9 more)
 
-### Community 40 - "User Controller Decorators"
-Cohesion: 0.16
-Nodes (10): Body, Controller, Delete, Get, Param, Patch, Post, Query (+2 more)
+### Community 40 - "Apps\api\src\module\meta\order\utility"
+Cohesion: 0.24
+Nodes (11): optionalUtcDate(), toUtcDate(), toUtcIso(), utcNow(), mapCatalogCategoryToCreateInput(), mapCatalogProductToCreateInput(), createOrderNumber(), computeLineTotal() (+3 more)
 
-### Community 41 - "User & UserType Module"
+### Community 41 - "Apps\api\src\module\meta\review"
+Cohesion: 0.22
+Nodes (6): ReviewModule, Module, ReviewRepo, Injectable, ReviewService, Injectable
+
+### Community 42 - "Apps\admin\src\components\access"
 Cohesion: 0.23
-Nodes (6): Module, UserModule, Injectable, UserTypeRepo, Injectable, UserTypeService
+Nodes (12): GroupRows, MatrixGroup, MatrixPermission, MatrixRole, PermissionMatrixData, PermissionsMatrix, Props, PermissionRow (+4 more)
 
-### Community 42 - "Storefront Layout & Cart Provider"
+### Community 43 - "Apps\api\src\common\caching"
+Cohesion: 0.14
+Nodes (16): CacheConfigService.ensureLoaded, CacheConfigService.findModuleConfigs, CacheConfigService.getInstance, CacheConfigService.getModule, CacheConfigService.isCacheEnabled, CacheConfigService.listModules, CacheConfigService.resolveByHttp, CacheConfigService.resolveModuleByPath (+8 more)
+
+### Community 44 - "Apps\storefront\src\components"
+Cohesion: 0.16
+Nodes (11): CollectionPage, generateMetadata(), Props, metadata, ShopPage, Props, ShopCatalog(), fetchCollectionBySlug (+3 more)
+
+### Community 45 - "Apps\storefront\src\components"
 Cohesion: 0.16
 Nodes (13): figtree, metadata, RootLayout(), syne, CartContext, CartContextValue, CartLine, CartProvider() (+5 more)
 
-### Community 43 - "Admin Login, Shell & Category Form"
-Cohesion: 0.21
-Nodes (9): nav, CategoryForm(), QueryStatusForm(), statuses, apiDelete(), apiGet(), apiPatch(), apiPost() (+1 more)
+### Community 46 - "Apps\admin\src\components\layout"
+Cohesion: 0.26
+Nodes (10): Category type (categories page), Category type (edit product page), Category type (new product page), AdminShell, nav, BackButton, Props, Breadcrumbs (+2 more)
 
-### Community 44 - "Admin TypeScript Config"
+### Community 47 - "Apps\admin"
 Cohesion: 0.13
 Nodes (15): compilerOptions, allowJs, esModuleInterop, incremental, isolatedModules, jsx, lib, module (+7 more)
 
-### Community 46 - "Admin Page Concepts"
-Cohesion: 0.36
-Nodes (14): AdminShell, apiGet, CategoriesPage, CategoryForm, CustomersPage, emptyPage, formatInr, getSessionUser (+6 more)
+### Community 49 - "Docs"
+Cohesion: 0.14
+Nodes (15): Review Module Config, CreateReviewDto, IsInt, IsOptional, IsString, Max, MaxLength, Min (+7 more)
 
-### Community 47 - "UserType Controller Decorators"
+### Community 50 - "Apps\storefront\src\lib"
+Cohesion: 0.24
+Nodes (12): fetchProductBySlug, fetchProducts, fetchProductsPage, ApiCategory, ApiProduct, mapApiCategory, mapApiProduct, StoreCollection (+4 more)
+
+### Community 51 - "Apps\admin\src\app"
+Cohesion: 0.14
+Nodes (6): figtree, metadata, syne, nav, config, brand
+
+### Community 52 - "Apps\api\src\module\security\auth"
+Cohesion: 0.16
+Nodes (10): AuthController, Body, Controller, Post, Res, LoginDto, IsEmail, IsString (+2 more)
+
+### Community 53 - "Apps\storefront\src\components"
 Cohesion: 0.20
-Nodes (8): Body, Controller, Delete, Get, Param, Patch, Post, UserTypeController
+Nodes (10): HomePage, Hero(), ProductCard(), Props, ProductGrid(), Props, getLowestPrice (storefront catalog-map), StoreProduct (+2 more)
 
-### Community 48 - "Site-Config Package Manifest"
+### Community 54 - "Packages\site Config"
 Cohesion: 0.15
 Nodes (13): default, devDependencies, typescript, exports, import, main, name, private (+5 more)
 
-### Community 49 - "Redis Cache Operations"
-Cohesion: 0.17
-Nodes (3): apps/api package.json dependencies, RedisCache, DragonflyCache
+### Community 55 - "Apps\api\src\common\device"
+Cohesion: 0.27
+Nodes (7): DeviceModule, Global, Module, DeviceTrackingMiddleware, Injectable, AuthModule, Module
 
-### Community 50 - "Health Check Service"
+### Community 56 - "Apps\api\src\common\caching"
+Cohesion: 0.28
+Nodes (4): CacheConfigService, joinPaths(), normalizePath(), pathMatches()
+
+### Community 58 - "Apps\api\src\common\device"
+Cohesion: 0.18
+Nodes (7): ClientDeviceController, Controller, Get, PermissionsAuth, Query, ClientDeviceService, Injectable
+
+### Community 59 - "Apps\api\src\common\device"
+Cohesion: 0.35
+Nodes (7): UpsertInput, RequestWithDevice, DeviceTrackingMiddleware.use, buildDeviceFingerprint, extractClientIp, ParsedUserAgent, parseUserAgent
+
+### Community 60 - "Apps\api\src\module\meta\review"
 Cohesion: 0.23
-Nodes (6): HealthService, REQUIRED_SCHEMAS, Injectable, createCacheRedisClient, describeRedisConnection, getCacheRedisOptions
+Nodes (8): ReviewController, Body, Controller, Delete, Param, Patch, Post, StaffAuth
 
-### Community 51 - "Role DTO Validation"
-Cohesion: 0.24
-Nodes (9): CreateRoleDto, IsOptional, IsString, Matches, MinLength, IsBoolean, IsOptional, UpdateRoleDto (+1 more)
+### Community 61 - "Apps\api\src\common\rbac\dto"
+Cohesion: 0.23
+Nodes (9): RolePermissionGrantDto, SetPermissionMatrixDto, IsArray, IsString, SetRolePermissionsDto, IsArray, IsString, Type (+1 more)
 
-### Community 52 - "Customer Query Creation Flow"
+### Community 62 - "Apps\api\src\module\meta\customer Query\dto"
 Cohesion: 0.18
 Nodes (8): Body, Post, CreateCustomerQueryDto, IsEmail, IsEnum, IsOptional, IsString, MinLength
 
-### Community 53 - "Site-Config TypeScript Config"
+### Community 63 - "Apps\api\src\module\meta\review\dto"
+Cohesion: 0.23
+Nodes (8): IsInt, IsOptional, IsString, Max, MaxLength, Min, UpdateReviewDto, IsBoolean
+
+### Community 64 - "Packages\site Config"
 Cohesion: 0.17
 Nodes (11): compilerOptions, declaration, esModuleInterop, lib, module, outDir, rootDir, skipLibCheck (+3 more)
 
-### Community 54 - "Base Service & New Modules"
+### Community 65 - "Apps\api\src"
 Cohesion: 0.24
-Nodes (6): BaseService, DEFAULT_USER_TYPES, IsEnum, IsOptional, IsString, UpdateCustomerQueryDto
+Nodes (9): AppModule, Module, HealthModule, PrismaModule, bootstrap(), AddressModule, CartModule, CustomerModule (+1 more)
 
-### Community 55 - "User DTO Validation"
-Cohesion: 0.27
-Nodes (8): CreateUserDto, IsEmail, IsOptional, IsString, MinLength, IsOptional, IsString, UpdateUserDto
-
-### Community 56 - "Storefront Collection & Shop Pages"
-Cohesion: 0.22
-Nodes (9): CollectionPage, generateMetadata(), Props, metadata, ShopPage, ShopCatalog(), fetchCollectionBySlug, brand (dist.bak declaration) (+1 more)
-
-### Community 57 - "Site-Config Dist Catalog"
+### Community 67 - "Packages\site Config\dist.bak"
 Cohesion: 0.33
 Nodes (7): sku(), withBrandName(), brand_1, getCollectionBySlug(), getLowestPrice(), getProductBySlug(), getProductsByCollection()
 
-### Community 58 - "API Build Config"
+### Community 68 - "Apps\api"
 Cohesion: 0.20
 Nodes (8): compilerOptions, incremental, tsBuildInfoFile, exclude, extends, include, AppController (e2e) test suite, jest-e2e config
 
-### Community 59 - "UserType DTO Validation"
+### Community 69 - "Apps\api\src\module\core\user\dto"
 Cohesion: 0.24
-Nodes (8): CreateUserTypeDto, IsOptional, IsString, Matches, MinLength, IsBoolean, IsOptional, UpdateUserTypeDto
+Nodes (8): CreateUserDto, IsEmail, IsOptional, IsString, MinLength, IsOptional, IsString, UpdateUserDto
 
-### Community 60 - "Storefront Home Page & Hero"
-Cohesion: 0.27
-Nodes (7): HomePage, generateStaticParams(), Hero(), ProductGrid(), Props, fetchProducts, products (dist.bak declaration)
-
-### Community 61 - "Storefront Size Guide & Policies"
+### Community 70 - "Packages\site Config\src"
 Cohesion: 0.31
 Nodes (6): metadata, contactTopics, PolicySection, returnsPolicy, shippingPolicy, sizeGuide
 
-### Community 62 - "Admin Layout & Middleware"
-Cohesion: 0.22
-Nodes (5): figtree, metadata, syne, config, brand
+### Community 71 - "D:\sanjay"
+Cohesion: 0.25
+Nodes (9): Admin app README, Dev server port reassignment (API 3001->4000, Storefront 3000->4001, Admin 3002->4002), crypto Module Config (module.yml), docker-compose.yml service definitions, Docker README, Repo root README, resolveApiBaseUrl (secure-api default base URL), storefront package.json (dev/start on port 4001) (+1 more)
 
-### Community 63 - "API Jest Config"
+### Community 72 - "Apps\admin\src\app"
+Cohesion: 0.28
+Nodes (7): Order type (orders list), AdminHomePage(), groupPaymentStatus, Order type (dashboard), QuerySummary, recentRevenueBars, Summary
+
+### Community 73 - "Apps\admin\src\components\queries"
+Cohesion: 0.31
+Nodes (6): CustomerQuery type (dashboard), CustomerQuery type (query detail page), Props, CustomerQuery type (queries page), QueryStatusForm, statuses
+
+### Community 74 - "Apps\api"
 Cohesion: 0.22
 Nodes (9): jest, collectCoverageFrom, coverageDirectory, moduleFileExtensions, rootDir, testEnvironment, testRegex, transform (+1 more)
 
-### Community 64 - "Site-Config Catalog Collections"
+### Community 75 - "Apps\api\src\common\rate Limit"
+Cohesion: 0.31
+Nodes (3): MemoryBucket, RateLimitHit, RateLimitStore
+
+### Community 76 - "Apps\api\src\module\meta\address\dto"
+Cohesion: 0.47
+Nodes (5): CreateAddressDto, IsBoolean, IsOptional, IsString, UpdateAddressDto
+
+### Community 77 - "Packages\site Config\src"
 Cohesion: 0.33
 Nodes (7): collections array, Collection, collections, Product, products, ProductVariant, getCollectionBySlug()
 
-### Community 65 - "Admin Search Components"
+### Community 78 - "Apps\admin\src\components\overview"
 Cohesion: 0.36
-Nodes (4): DebouncedSearch(), Props, Props, useDebounce()
+Nodes (6): BarPoint, Donut, OverviewCharts, Props, QuerySlice, RevenueBars
 
-### Community 66 - "Storefront Product Detail Page"
-Cohesion: 0.32
-Nodes (7): generateMetadata(), ProductPage, Props, ProductBuyBox(), fetchProductBySlug, apiGet (client), getProductBySlug (dist.bak declaration)
+### Community 79 - "Apps\api\src\common\rate Limit"
+Cohesion: 0.25
+Nodes (5): RateLimitGuard, Injectable, RateLimitModule, Global, Module
 
-### Community 67 - "Storefront Returns & Shipping Pages"
+### Community 80 - "Apps\storefront\src\app\returns"
 Cohesion: 0.32
 Nodes (3): metadata, metadata, PolicyPage()
 
-### Community 68 - "Package Manifests (Brand/Distbak)"
+### Community 81 - "D:\sanjay\packages\site Config\src"
 Cohesion: 0.29
 Nodes (8): brand config object, dist.bak brand.js/d.ts (compiled brand), Root package.json (npm workspaces e-commerce monorepo), @linq/secure-api package.json, @linq/site-config package.json, site-config tsconfig.json, src/brand.d.ts (checked-in declaration artifact), src/brand.js (checked-in compiled artifact)
 
-### Community 69 - "Live Stock Verification Flow"
-Cohesion: 0.25
-Nodes (8): CheckoutForm, CheckoutForm onSubmit, Stock verified before order placement (rationale), verifyStock, ProductBuyBox refresh (stock poll), product module config, checkCartStock, stockIssueMessage
-
-### Community 70 - "Storefront Layout Concepts"
+### Community 82 - "D:\sanjay\apps\storefront\src\components"
 Cohesion: 0.43
 Nodes (7): RootLayout, SiteFooter(), CartLine type, CartProvider, useCart, Hero, SiteHeader
 
-### Community 71 - "NestJS CLI Config"
+### Community 83 - "Apps\admin\src\components"
+Cohesion: 0.33
+Nodes (3): DebouncedSearch(), Props, Props
+
+### Community 84 - "Apps\api"
 Cohesion: 0.29
 Nodes (6): collection, compilerOptions, assets, deleteOutDir, $schema, sourceRoot
 
-### Community 72 - "API Package Meta"
+### Community 85 - "Apps\api"
 Cohesion: 0.29
 Nodes (6): author, description, license, name, private, version
 
-### Community 73 - "Site-Config Catalog Functions"
+### Community 86 - "Apps\api\src\common\crypto"
+Cohesion: 0.29
+Nodes (3): CryptoController, Controller, Get
+
+### Community 87 - "Apps\api\src\module\security\auth\guards"
+Cohesion: 0.33
+Nodes (4): AuthGuard, Injectable, AuthController.me, Auth (admin) + RBAC
+
+### Community 88 - "D:\sanjay\packages\site Config\src"
 Cohesion: 0.33
 Nodes (7): products catalog array, dist.bak catalog.js/d.ts (compiled catalog), getLowestPrice(), getProductBySlug(), getProductsByCollection(), src/catalog.d.ts (checked-in declaration artifact), src/catalog.js (checked-in compiled artifact)
 
-### Community 74 - "Postman Collection Generator"
+### Community 89 - "D:\sanjay\apps\storefront\src\components"
 Cohesion: 0.29
-Nodes (4): collection, __dirname, env, Postgres init.sql (schema creation)
+Nodes (7): CheckoutForm, CheckoutForm onSubmit, Stock verified before order placement (rationale), verifyStock, product module config, checkCartStock, stockIssueMessage
 
-### Community 75 - "Secure-API Package Manifest"
+### Community 90 - "Docs"
+Cohesion: 0.38
+Nodes (7): Admin Auth Schema CMS Doc, generate-collection script, RushCulture Postman Collection, RushCulture Postman Environment, Docs Index (README), What's Done Status Doc, Postman collection/environment tooling
+
+### Community 91 - "Docs\postman"
+Cohesion: 0.29
+Nodes (6): collection, __dirname, env, folder() grouping helper, req() request-builder helper, Postgres init.sql (schema creation)
+
+### Community 92 - "Packages\secure Api"
 Cohesion: 0.29
 Nodes (6): exports, main, name, private, types, version
 
-### Community 78 - "Storefront Policy Pages"
+### Community 93 - "Apps\admin\src\components\categories"
+Cohesion: 0.40
+Nodes (4): CategoryForm, apiPost (client), client() (client-side), LoginPage.onSubmit
+
+### Community 98 - "D:\sanjay\apps\storefront\src\components"
 Cohesion: 0.40
 Nodes (6): ContactPage, PolicyPage, ReturnsPage, ShippingPage, SiteFooter, SizeGuidePage
 
-### Community 80 - "Admin Dashboard & DataTable"
-Cohesion: 0.40
-Nodes (5): AdminHomePage Component, Stat Component, DataTable Component, DataTableCell Component, DataTableRow Component
+### Community 100 - "Apps\admin\src\components"
+Cohesion: 0.60
+Nodes (4): buildHref(), pageWindow(), PaginationNav(), Props
 
-### Community 81 - "Workspace Path Aliases"
+### Community 101 - "Apps\admin"
 Cohesion: 0.40
 Nodes (5): paths, @/*, @linq/secure-api, @linq/site-config, tsconfig-paths
 
-### Community 82 - "Encryption Key Generator Script"
+### Community 102 - "Apps\api\scripts"
 Cohesion: 0.40
 Nodes (4): { generateKeyPairSync }, priv, { privateKey, publicKey }, pub
 
-### Community 83 - "App Module & Main Bootstrap"
-Cohesion: 0.50
-Nodes (3): AppModule, Module, bootstrap()
-
-### Community 84 - "Product Form Initial Helpers"
-Cohesion: 0.40
-Nodes (5): emptyImage, emptyVariant, imagesFromUrls, variantsFromProduct, EditProductPage
-
-### Community 85 - "Admin/Storefront Agent Rules Docs"
+### Community 103 - "D:\sanjay\apps\admin"
 Cohesion: 0.50
 Nodes (4): Admin Next.js Agent Rules Override, Admin CLAUDE.md → AGENTS.md Import, Storefront Next.js Agent Rules Override, Storefront CLAUDE.md → AGENTS.md Import
 
-### Community 86 - "Admin Search Components (Concepts)"
-Cohesion: 0.50
-Nodes (4): DebouncedSearch Component, ListToolbar Component, SearchFallback Component, useDebounce Hook
+### Community 104 - "D:\sanjay\apps\api\src\module\meta\order"
+Cohesion: 0.83
+Nodes (4): Order list ?q= search (orderNumber/customerEmail/shippingFullName/shippingPhone), OrderController.findAll (added ?q= query param), OrderRepo.findAllWithItems (with q search), OrderService.findAll (passes q through)
 
-### Community 87 - "Site-Config Catalog Type Defs"
-Cohesion: 0.50
-Nodes (3): Collection, Product, ProductVariant
-
-### Community 89 - "Site-Config Catalog Type Defs (Src)"
+### Community 105 - "Packages\site Config\dist.bak"
 Cohesion: 0.50
 Nodes (3): Collection, Product, ProductVariant
 
-### Community 95 - "Date Utility Functions"
+### Community 107 - "Packages\site Config\src"
+Cohesion: 0.50
+Nodes (3): Collection, Product, ProductVariant
+
+### Community 111 - "Apps\admin\src\components\reviews"
+Cohesion: 1.00
+Nodes (3): remove (review), remove (delete action button), apiDelete (client)
+
+### Community 117 - "D:\sanjay\apps\api\src\module\security\auth\guards"
+Cohesion: 0.67
+Nodes (3): RolesGuard.canActivate, Roles decorator factory, ROLES_KEY constant
+
+### Community 119 - "D:\sanjay\apps\api\src\common\utility"
 Cohesion: 0.67
 Nodes (3): optionalUtcDate, toUtcDate, toUtcIso
 
-### Community 96 - "Order Totals Utility"
+### Community 120 - "D:\sanjay\apps\api\src\module\meta\order\utility"
 Cohesion: 0.67
 Nodes (3): computeLineTotal, computeOrderTotals, computeShipping
 
 ## Ambiguous Edges - Review These
-- `OrdersPage()` → `CheckoutSuccessPage`  [AMBIGUOUS]
-  D:/sanjay/apps/storefront/src/app/checkout/success/page.tsx · relation: conceptually_related_to
 - `UserEntity` → `AccountEntity`  [AMBIGUOUS]
   D:/sanjay/apps/api/src/database/entity/core/user/user.entity.ts · relation: references
 - `UserEntity` → `SessionEntity`  [AMBIGUOUS]
   D:/sanjay/apps/api/src/database/entity/core/user/user.entity.ts · relation: references
 - `CustomerController` → `buildContainsOr Function`  [AMBIGUOUS]
   D:/sanjay/apps/api/src/module/meta/customer/customer.controller.ts · relation: conceptually_related_to
-- `CustomerService` → `CreateReviewDto`  [AMBIGUOUS]
-  D:/sanjay/apps/api/src/module/meta/review/dto/create-review.dto.ts · relation: shares_data_with
 - `ShopPage` → `brand (dist.bak declaration)`  [AMBIGUOUS]
   apps/storefront/src/app/shop/page.tsx · relation: references
-- `Customer list ?q= search (email/name/phoneNumber)` → `RushCulture Postman collection`  [AMBIGUOUS]
-  D:/sanjay/docs/postman/RushCulture.postman_collection.json · relation: conceptually_related_to
-- `Order list ?q= search (orderNumber/customerEmail/shippingFullName/shippingPhone)` → `RushCulture Postman collection`  [AMBIGUOUS]
-  D:/sanjay/docs/postman/RushCulture.postman_collection.json · relation: conceptually_related_to
+- `CheckoutSuccessPage` → `OrdersPage`  [AMBIGUOUS]
+  D:/sanjay/apps/storefront/src/app/checkout/success/page.tsx · relation: conceptually_related_to
 - `dist.bak brand.js/d.ts (compiled brand)` → `site-config tsconfig.json`  [AMBIGUOUS]
   D:/sanjay/packages/site-config/tsconfig.json · relation: conceptually_related_to
 - `site-config dist.bak barrel` → `site-config src barrel`  [AMBIGUOUS]
   packages/site-config/src/index.ts · relation: conceptually_related_to
 
 ## Knowledge Gaps
-- **480 isolated node(s):** `eslintConfig`, `monorepoRoot`, `nextConfig`, `name`, `version` (+475 more)
+- **536 isolated node(s):** `eslintConfig`, `name`, `version`, `private`, `dev` (+531 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **86 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **127 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **What is the exact relationship between `OrdersPage()` and `CheckoutSuccessPage`?**
-  _Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low._
 - **What is the exact relationship between `UserEntity` and `AccountEntity`?**
   _Edge tagged AMBIGUOUS (relation: references) - confidence is low._
 - **What is the exact relationship between `UserEntity` and `SessionEntity`?**
   _Edge tagged AMBIGUOUS (relation: references) - confidence is low._
 - **What is the exact relationship between `CustomerController` and `buildContainsOr Function`?**
   _Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low._
-- **What is the exact relationship between `CustomerService` and `CreateReviewDto`?**
-  _Edge tagged AMBIGUOUS (relation: shares_data_with) - confidence is low._
 - **What is the exact relationship between `ShopPage` and `brand (dist.bak declaration)`?**
   _Edge tagged AMBIGUOUS (relation: references) - confidence is low._
-- **What is the exact relationship between `Customer list ?q= search (email/name/phoneNumber)` and `RushCulture Postman collection`?**
+- **What is the exact relationship between `CheckoutSuccessPage` and `OrdersPage`?**
+  _Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low._
+- **What is the exact relationship between `dist.bak brand.js/d.ts (compiled brand)` and `site-config tsconfig.json`?**
+  _Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low._
+- **What is the exact relationship between `site-config dist.bak barrel` and `site-config src barrel`?**
   _Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low._

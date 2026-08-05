@@ -1,5 +1,5 @@
 import { Suspense, type ReactNode } from "react";
-import { DebouncedSearch } from "@/components/debounced-search";
+import { DebouncedSearch } from "@/components/ui/debounced-search";
 
 type Props = {
   total: number;

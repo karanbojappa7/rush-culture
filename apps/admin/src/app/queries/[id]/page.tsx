@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
-import { AdminShell } from "@/components/admin-shell";
-import { QueryStatusForm } from "@/components/query-status-form";
+import { AdminShell } from "@/components/layout/admin-shell";
+import { QueryStatusForm } from "@/components/queries/query-status-form";
 import { apiGet } from "@/lib/api-server";
 import { getSessionUser, sessionLabel } from "@/lib/session";
 
@@ -34,6 +34,7 @@ export default async function QueryDetailPage({ params }: Props) {
       title={query.subject}
       userLabel={sessionLabel(user)}
       roleCode={user?.roleCode}
+      permissions={user?.permissions}
       backHref="/queries"
       backLabel="Back to queries"
       breadcrumbs={[

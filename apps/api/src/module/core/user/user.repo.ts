@@ -78,4 +78,12 @@ export class UserRepo extends BaseRepo<
       include: identityInclude,
     });
   }
+
+  async countByRoleCode(roleCode: string): Promise<number> {
+    return this.prisma.user.count({
+      where: this.notDeletedWhere({
+        role: { code: roleCode.toUpperCase() },
+      }),
+    });
+  }
 }

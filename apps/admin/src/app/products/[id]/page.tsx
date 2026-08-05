@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
-import { AdminShell } from "@/components/admin-shell";
-import { ProductForm } from "@/components/product-form";
+import { AdminShell } from "@/components/layout/admin-shell";
+import { ProductForm } from "@/components/products/product-form";
 import { apiGet } from "@/lib/api-server";
 import {
   imagesFromUrls,
@@ -46,6 +46,7 @@ export default async function EditProductPage({ params }: Props) {
       title="Edit product"
       userLabel={sessionLabel(user)}
       roleCode={user?.roleCode}
+      permissions={user?.permissions}
       backHref="/products"
       backLabel="Back to products"
       breadcrumbs={[

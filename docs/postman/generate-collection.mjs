@@ -51,7 +51,7 @@ const collection = {
   info: {
     name: "RushCulture",
     description:
-      "Rush Culture API — folders by Postgres schema (Core / Master / Meta / Security) plus Common health. Use {{url}} as API base. Staff write/list routes need cookie rc_admin_token from Security/auth/Login. List endpoints support ?page=&limit=.",
+      "Rush Culture API — folders by Postgres schema (Core / Master / Meta / Security) plus Common health. Use {{url}} as API base. Staff routes need cookie rc_admin_token from Security/auth/Login (bootstrap user is SUPER_ADMIN). List endpoints support ?page=&limit=. RBAC: Core/access matrix + role permissions; GetMe returns permissions[].",
     schema:
       "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
   },
@@ -64,6 +64,8 @@ const collection = {
     { key: "itemId", value: "" },
     { key: "variantId", value: "" },
     { key: "service", value: "product" },
+    { key: "roleId", value: "" },
+    { key: "permissionCode", value: "devices.read" },
   ],
   item: [
     folder("Common", [
@@ -102,14 +104,15 @@ const collection = {
         req("UpdateUser", "PATCH", "/api/users/{{id}}", {
           name: "Updated Staff",
           phoneNumber: "9000000002",
+          roleCode: "ADMIN",
         }),
         req("DeleteUser", "DELETE", "/api/users/{{id}}"),
       ]),
       folder("role", [
         req("CreateRole", "POST", "/api/roles", {
-          code: "STAFF",
-          name: "Staff",
-          description: "Staff role",
+          code: "OPS_LEAD",
+          name: "Ops lead",
+          description: "Custom staff role",
         }),
         req("GetRoles", "GET", "/api/roles", undefined, [
           { key: "page", value: "1" },
@@ -118,10 +121,52 @@ const collection = {
         req("GetRoleByCode", "GET", "/api/roles/code/{{code}}"),
         req("GetRoleById", "GET", "/api/roles/{{id}}"),
         req("UpdateRole", "PATCH", "/api/roles/{{id}}", {
-          name: "Staff Updated",
+          name: "Ops lead Updated",
           description: "Updated",
+          isActive: true,
         }),
         req("DeleteRole", "DELETE", "/api/roles/{{id}}"),
+      ]),
+      folder("access", [
+        req("AccessDashboard", "GET", "/api/access/dashboard"),
+        req("GetPermissionMatrix", "GET", "/api/access/matrix"),
+        req("SetPermissionMatrix", "PATCH", "/api/access/matrix", {
+          grants: [
+            {
+              roleId: "{{roleId}}",
+              permissionCodes: [
+                "overview.read",
+                "orders.read",
+                "products.manage",
+                "categories.manage",
+                "customers.read",
+                "queries.manage",
+                "reviews.manage",
+              ],
+            },
+          ],
+        }),
+        req("ListPermissions", "GET", "/api/access/permissions"),
+        req("GetPermissionCatalog", "GET", "/api/access/catalog"),
+        req(
+          "GetRolePermissions",
+          "GET",
+          "/api/access/roles/{{roleId}}/permissions",
+        ),
+        req(
+          "SetRolePermissions",
+          "PATCH",
+          "/api/access/roles/{{roleId}}/permissions",
+          {
+            permissionCodes: [
+              "overview.read",
+              "orders.read",
+              "products.manage",
+              "devices.read",
+            ],
+          },
+        ),
+        req("GetMyPermissions", "GET", "/api/access/me/permissions"),
       ]),
       folder("user-type", [
         req("CreateUserType", "POST", "/api/user-types", {
@@ -384,15 +429,25 @@ const collection = {
       folder("review", [
         req("CreateReview", "POST", "/api/reviews", {
           productId: "{{id}}",
-          customerId: "{{id}}",
+          name: "Sam Guest",
+          email: "guest.reviewer@example.com",
           rating: 5,
           title: "Great fit",
           body: "Loved the fabric",
-          isApproved: false,
         }),
         req("GetReviews", "GET", "/api/reviews", undefined, [
           { key: "page", value: "1" },
           { key: "limit", value: "20" },
+          { key: "productId", value: "{{id}}", disabled: true },
+        ]),
+        req("GetReviewSummary", "GET", "/api/reviews/summary", undefined, [
+          { key: "productId", value: "{{id}}" },
+        ]),
+        req("GetReviewsAdmin", "GET", "/api/reviews/admin", undefined, [
+          { key: "page", value: "1" },
+          { key: "limit", value: "20" },
+          { key: "status", value: "pending" },
+          { key: "q", value: "", disabled: true },
         ]),
         req("GetReviewById", "GET", "/api/reviews/{{id}}"),
         req("ApproveReview", "PATCH", "/api/reviews/{{id}}/approve", {}),
@@ -419,6 +474,7 @@ const collection = {
           { key: "limit", value: "20" },
           { key: "status", value: "OPEN", disabled: true },
           { key: "topic", value: "SHIPPING", disabled: true },
+          { key: "q", value: "", disabled: true },
         ]),
         req("GetCustomerQueryById", "GET", "/api/customer-queries/{{id}}"),
         req("UpdateCustomerQuery", "PATCH", "/api/customer-queries/{{id}}", {
@@ -436,6 +492,14 @@ const collection = {
         }),
         req("Logout", "POST", "/api/auth/logout"),
         req("GetMe", "GET", "/api/auth/me"),
+      ]),
+      folder("client-device", [
+        req("GetClientDevices", "GET", "/api/client-devices", undefined, [
+          { key: "page", value: "1" },
+          { key: "limit", value: "20" },
+          { key: "q", value: "", disabled: true },
+          { key: "deviceType", value: "DESKTOP", disabled: true },
+        ]),
       ]),
       folder("crypto", [
         req("GetPublicKey", "GET", "/api/crypto/public-key"),
@@ -461,6 +525,13 @@ const env = {
     { key: "itemId", value: "", type: "default", enabled: true },
     { key: "variantId", value: "", type: "default", enabled: true },
     { key: "service", value: "product", type: "default", enabled: true },
+    { key: "roleId", value: "", type: "default", enabled: true },
+    {
+      key: "permissionCode",
+      value: "devices.read",
+      type: "default",
+      enabled: true,
+    },
   ],
   _postman_variable_scope: "environment",
 };

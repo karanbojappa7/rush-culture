@@ -4,18 +4,20 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { brand } from "@linq/site-config";
 import { apiPost } from "@/lib/api";
-import { BackButton } from "@/components/back-button";
-import { Breadcrumbs, type Crumb } from "@/components/breadcrumbs";
+import { BackButton } from "@/components/layout/back-button";
+import { Breadcrumbs, type Crumb } from "@/components/layout/breadcrumbs";
+import { hasPermission } from "@/lib/session-shared";
 
 const nav = [
-  { href: "/", label: "Overview" },
-  { href: "/orders", label: "Orders" },
-  { href: "/products", label: "Products" },
-  { href: "/categories", label: "Categories" },
-  { href: "/customers", label: "Customers" },
-  { href: "/queries", label: "Queries" },
-  { href: "/reviews", label: "Reviews" },
-  { href: "/devices", label: "Devices", adminOnly: true },
+  { href: "/", label: "Overview", permission: "overview.read" },
+  { href: "/orders", label: "Orders", permission: "orders.read" },
+  { href: "/products", label: "Products", permission: "products.manage" },
+  { href: "/categories", label: "Categories", permission: "categories.manage" },
+  { href: "/customers", label: "Customers", permission: "customers.read" },
+  { href: "/queries", label: "Queries", permission: "queries.manage" },
+  { href: "/reviews", label: "Reviews", permission: "reviews.manage" },
+  { href: "/devices", label: "Devices", permission: "devices.read" },
+  { href: "/access", label: "Access", permission: "access.dashboard" },
 ];
 
 export function AdminShell({
@@ -23,6 +25,7 @@ export function AdminShell({
   title,
   userLabel,
   roleCode,
+  permissions = [],
   breadcrumbs,
   backHref,
   backLabel = "Back",
@@ -31,6 +34,7 @@ export function AdminShell({
   title: string;
   userLabel?: string;
   roleCode?: string;
+  permissions?: string[];
   breadcrumbs?: Crumb[];
   backHref?: string;
   backLabel?: string;
@@ -38,8 +42,8 @@ export function AdminShell({
   const pathname = usePathname();
   const router = useRouter();
   const showBack = Boolean(backHref) || (breadcrumbs?.length ?? 0) > 1;
-  const items = nav.filter(
-    (item) => !item.adminOnly || roleCode === "ADMIN",
+  const items = nav.filter((item) =>
+    hasPermission({ roleCode: roleCode ?? "", permissions }, item.permission),
   );
 
   async function logout() {

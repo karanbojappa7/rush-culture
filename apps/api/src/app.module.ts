@@ -5,6 +5,7 @@ import { DeviceModule } from './common/device/device.module';
 import { HealthModule } from './common/health/health.module';
 import { PrismaModule } from './common/prisma/prisma.module';
 import { RateLimitModule } from './common/rate-limit/rate-limit.module';
+import { RbacModule } from './common/rbac/rbac.module';
 import { AppConfigModule } from './module/core/app-config/app-config.module';
 import { DiscountModule } from './module/core/discount/discount.module';
 import { UserModule } from './module/core/user/user.module';
@@ -26,6 +27,7 @@ import { ReviewModule } from './module/meta/review/review.module';
     RateLimitModule,
     HealthModule,
     PrismaModule,
+    RbacModule,
     AppConfigModule,
     DiscountModule,
     AuthModule,

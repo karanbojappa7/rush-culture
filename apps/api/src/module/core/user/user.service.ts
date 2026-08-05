@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -118,8 +119,24 @@ export class UserService extends BaseService {
     return this.userRepo.update(payload.id, data);
   }
 
-  async softDelete(payload: { id: string }): Promise<User> {
-    await this.findById(payload);
+  async softDelete(payload: {
+    id: string;
+    actorUserId?: string;
+  }): Promise<User> {
+    const user = await this.findById({ id: payload.id });
+    if (payload.actorUserId && payload.actorUserId === payload.id) {
+      throw new BadRequestException('You cannot delete your own account');
+    }
+    const roleCode =
+      (user as User & { role?: { code: string } }).role?.code ?? null;
+    if (roleCode === 'SUPER_ADMIN') {
+      const remaining = await this.userRepo.countByRoleCode('SUPER_ADMIN');
+      if (remaining <= 1) {
+        throw new BadRequestException(
+          'Cannot delete the last Super Admin account',
+        );
+      }
+    }
     return this.userRepo.softDelete(payload.id);
   }
 }

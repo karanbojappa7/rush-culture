@@ -1,5 +1,5 @@
-import { AdminShell } from "@/components/admin-shell";
-import { ProductForm } from "@/components/product-form";
+import { AdminShell } from "@/components/layout/admin-shell";
+import { ProductForm } from "@/components/products/product-form";
 import { apiGet } from "@/lib/api-server";
 import { type PageResult } from "@/lib/pagination";
 import { getSessionUser, sessionLabel } from "@/lib/session";
@@ -17,6 +17,7 @@ export default async function NewProductPage() {
       title="New product"
       userLabel={sessionLabel(user)}
       roleCode={user?.roleCode}
+      permissions={user?.permissions}
       backHref="/products"
       backLabel="Back to products"
       breadcrumbs={[

@@ -49,6 +49,7 @@ model Role {
   name        String
   description String?
   isActive    Boolean @default(true) @map("is_active")
+  isSystem    Boolean @default(false) @map("is_system")
 
   userId    String?  @map("user_id")
   createdAt DateTime @default(now()) @db.Timestamptz(3) @map("created_at")
@@ -57,11 +58,58 @@ model Role {
   updatedBy String?  @map("updated_by")
   isDeleted Boolean  @default(false) @map("is_deleted")
 
-  users User[]
+  users           User[]
+  rolePermissions RolePermission[]
 
   @@index([isDeleted])
   @@index([isActive])
   @@map("role")
+  @@schema("core")
+}
+
+model Permission {
+  id          String  @id @default(cuid())
+  code        String  @unique
+  name        String
+  description String?
+  module      String
+  isActive    Boolean @default(true) @map("is_active")
+
+  userId    String?  @map("user_id")
+  createdAt DateTime @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt DateTime @updatedAt @db.Timestamptz(3) @map("updated_at")
+  createdBy String?  @map("created_by")
+  updatedBy String?  @map("updated_by")
+  isDeleted Boolean  @default(false) @map("is_deleted")
+
+  rolePermissions RolePermission[]
+
+  @@index([module])
+  @@index([isDeleted])
+  @@index([isActive])
+  @@map("permission")
+  @@schema("core")
+}
+
+model RolePermission {
+  id           String @id @default(cuid())
+  roleId       String @map("role_id")
+  role         Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permissionId String @map("permission_id")
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  userId    String?  @map("user_id")
+  createdAt DateTime @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt DateTime @updatedAt @db.Timestamptz(3) @map("updated_at")
+  createdBy String?  @map("created_by")
+  updatedBy String?  @map("updated_by")
+  isDeleted Boolean  @default(false) @map("is_deleted")
+
+  @@unique([roleId, permissionId])
+  @@index([roleId])
+  @@index([permissionId])
+  @@index([isDeleted])
+  @@map("role_permission")
   @@schema("core")
 }
 

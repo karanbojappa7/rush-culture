@@ -8,19 +8,24 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 
 import { brand } from '@linq/site-config';
+import { PrismaService } from '../../../../common/prisma/prisma.service';
 
 export type AuthUser = {
   id: string;
   email: string;
   name: string | null;
   roleCode: string;
+  permissions?: string[];
 };
 
 export const AUTH_COOKIE = brand.adminAuthCookie;
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly prisma: PrismaService,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request & { user?: AuthUser }>();
@@ -35,14 +40,22 @@ export class AuthGuard implements CanActivate {
         name: string | null;
         roleCode: string;
       }>(token);
+      const user = await this.prisma.user.findFirst({
+        where: { id: payload.sub, isDeleted: false },
+        include: { role: true },
+      });
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
       request.user = {
-        id: payload.sub,
-        email: payload.email,
-        name: payload.name,
-        roleCode: payload.roleCode,
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        roleCode: user.role.code,
       };
       return true;
-    } catch {
+    } catch (error) {
+      if (error instanceof UnauthorizedException) throw error;
       throw new UnauthorizedException('Invalid or expired session');
     }
   }

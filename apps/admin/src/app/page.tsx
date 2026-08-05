@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { AdminShell } from "@/components/admin-shell";
+import { AdminShell } from "@/components/layout/admin-shell";
 import {
   DataTable,
   DataTableCell,
   DataTableRow,
-} from "@/components/data-table";
-import { OverviewCharts } from "@/components/overview-charts";
+} from "@/components/ui/data-table";
+import { OverviewCharts } from "@/components/overview/overview-charts";
 import { apiGet, formatInr } from "@/lib/api-server";
 import { emptyPage, type PageResult } from "@/lib/pagination";
 import { getSessionUser, sessionLabel } from "@/lib/session";
@@ -109,6 +109,7 @@ export default async function AdminHomePage() {
       title="Overview"
       userLabel={sessionLabel(user)}
       roleCode={user?.roleCode}
+      permissions={user?.permissions}
       breadcrumbs={[{ label: "Overview" }]}
     >
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

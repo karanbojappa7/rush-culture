@@ -182,7 +182,7 @@ export function ProductBuyBox({ product: initial }: Props) {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="min-w-0 space-y-8">
       <div>
         <p className="text-[12px] font-medium tracking-[0.14em] uppercase text-mute">
           {product.collection}
@@ -306,95 +306,89 @@ export function ProductBuyBox({ product: initial }: Props) {
           })}
         </div>
         {sizes.length > 0 && sizes.every((s) => s.stock === 0) ? (
-          <p className="mt-3 text-sm text-mute">
+          <p className="mt-3 min-h-5 text-sm text-mute">
             Out of stock in {color}. Pick another color if available.
           </p>
         ) : activeSize && activeSize.stock === 0 ? (
-          <p className="mt-3 text-sm text-mute">
+          <p className="mt-3 min-h-5 text-sm text-mute">
             Size {activeSize.size} is out of stock.
           </p>
         ) : activeSize && remaining > 0 && remaining <= 3 ? (
-          <p className="mt-3 text-sm text-mute">
+          <p className="mt-3 min-h-5 text-sm text-mute">
             Low stock — only {remaining} left for this size/color.
           </p>
-        ) : null}
+        ) : (
+          <p className="mt-3 min-h-5 text-sm text-mute" aria-hidden>
+            {"\u00a0"}
+          </p>
+        )}
       </div>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch">
-        {inCartQty > 0 ? (
-          <div className="flex flex-1 items-stretch border border-ink">
-            <button
-              type="button"
-              aria-label="Decrease quantity"
-              className="cursor-pointer px-4 text-lg font-medium text-ink transition-opacity hover:opacity-70"
-              onClick={() => bumpCart(-1)}
-            >
-              −
-            </button>
-            <div className="flex flex-1 flex-col items-center justify-center bg-volt px-4 py-3 text-volt-ink">
-              <span className="text-[13px] font-bold tracking-[0.14em] uppercase">
-                In bag
-              </span>
-              <span className="text-sm font-semibold tabular-nums">
-                {inCartQty}
-              </span>
-            </div>
-            <button
-              type="button"
-              aria-label="Increase quantity"
-              disabled={remaining <= 0}
-              className="cursor-pointer px-4 text-lg font-medium text-ink transition-opacity hover:enabled:opacity-70 disabled:cursor-not-allowed disabled:opacity-30"
-              onClick={() => {
+      <div className="grid w-full gap-3 sm:grid-cols-[minmax(0,1fr)_10rem]">
+        <div className="grid h-14 w-full min-w-0 grid-cols-[3rem_2.75rem_3rem_minmax(0,1fr)] border border-ink">
+          <button
+            type="button"
+            aria-label="Decrease quantity"
+            disabled={inCartQty > 0 ? false : !canBuy || addQty <= 1}
+            className="flex items-center justify-center border-r border-ink text-xl font-medium text-ink transition-opacity enabled:cursor-pointer hover:enabled:opacity-70 disabled:cursor-not-allowed disabled:opacity-30"
+            onClick={() => {
+              if (inCartQty > 0) {
+                bumpCart(-1);
+                return;
+              }
+              setQty((prev) => Math.max(1, prev - 1));
+            }}
+          >
+            −
+          </button>
+          <span className="flex items-center justify-center border-r border-ink text-sm font-semibold tabular-nums text-ink">
+            {inCartQty > 0 ? inCartQty : canBuy ? addQty : 0}
+          </span>
+          <button
+            type="button"
+            aria-label="Increase quantity"
+            disabled={
+              inCartQty > 0
+                ? remaining <= 0
+                : !canBuy || addQty >= remaining
+            }
+            className="flex items-center justify-center border-r border-ink text-xl font-medium text-ink transition-opacity enabled:cursor-pointer hover:enabled:opacity-70 disabled:cursor-not-allowed disabled:opacity-30"
+            onClick={() => {
+              if (inCartQty > 0) {
                 if (remaining <= 0) return;
                 void handleAdd(1);
-              }}
-            >
-              +
-            </button>
-          </div>
-        ) : (
-          <div className="flex flex-1 items-stretch gap-0">
-            <div className="flex items-stretch border border-ink">
-              <button
-                type="button"
-                aria-label="Decrease quantity"
-                disabled={!canBuy || addQty <= 1}
-                className="cursor-pointer px-3.5 text-lg font-medium text-ink transition-opacity hover:enabled:opacity-70 disabled:cursor-not-allowed disabled:opacity-30"
-                onClick={() => setQty((prev) => Math.max(1, prev - 1))}
-              >
-                −
-              </button>
-              <span className="flex min-w-10 items-center justify-center text-sm font-semibold tabular-nums text-ink">
-                {canBuy ? addQty : 0}
+                return;
+              }
+              setQty((prev) => Math.min(remaining, prev + 1));
+            }}
+          >
+            +
+          </button>
+          {inCartQty > 0 ? (
+            <div className="flex min-w-0 items-center justify-center bg-volt px-3 text-volt-ink">
+              <span className="truncate text-[12px] font-bold tracking-[0.1em] uppercase sm:text-[13px] sm:tracking-[0.12em]">
+                In bag
               </span>
-              <button
-                type="button"
-                aria-label="Increase quantity"
-                disabled={!canBuy || addQty >= remaining}
-                className="cursor-pointer px-3.5 text-lg font-medium text-ink transition-opacity hover:enabled:opacity-70 disabled:cursor-not-allowed disabled:opacity-30"
-                onClick={() =>
-                  setQty((prev) => Math.min(remaining, prev + 1))
-                }
-              >
-                +
-              </button>
             </div>
+          ) : (
             <button
               type="button"
               disabled={!canBuy}
               onClick={() => void handleAdd()}
-              className="flex-1 bg-volt px-6 py-4 text-[13px] font-bold tracking-[0.14em] uppercase text-volt-ink transition-opacity disabled:cursor-not-allowed disabled:bg-mist disabled:text-mute/60 disabled:opacity-100 hover:enabled:opacity-90"
+              className="flex min-w-0 items-center justify-center bg-volt px-3 text-[12px] font-bold tracking-[0.1em] uppercase text-volt-ink transition-opacity disabled:cursor-not-allowed disabled:bg-mist disabled:text-mute/60 disabled:opacity-100 enabled:cursor-pointer hover:enabled:opacity-90 sm:text-[13px] sm:tracking-[0.12em]"
             >
-              {!productInStock || (activeSize?.stock ?? 0) === 0
-                ? "Out of stock"
-                : remaining === 0
+              <span className="truncate">
+                {!productInStock || (activeSize?.stock ?? 0) === 0
                   ? "Out of stock"
-                  : added
-                    ? "Added"
-                    : "Add to bag"}
+                  : remaining === 0
+                    ? "Out of stock"
+                    : added
+                      ? "Added"
+                      : "Add to bag"}
+              </span>
             </button>
-          </div>
-        )}
+          )}
+        </div>
         <button
           type="button"
           disabled={!canBuy && inCartQty === 0}
@@ -407,7 +401,7 @@ export function ProductBuyBox({ product: initial }: Props) {
               if (remaining > 0) router.push("/cart");
             });
           }}
-          className="flex-1 bg-ink px-6 py-4 text-[13px] font-bold tracking-[0.14em] uppercase text-paper transition-opacity disabled:cursor-not-allowed disabled:bg-mist disabled:text-mute/60 disabled:opacity-100 hover:enabled:opacity-90"
+          className="h-14 w-full border border-ink bg-ink text-[13px] font-bold tracking-[0.12em] uppercase text-paper transition-opacity disabled:cursor-not-allowed disabled:border-mist disabled:bg-mist disabled:text-mute/60 disabled:opacity-100 enabled:cursor-pointer hover:enabled:opacity-90 sm:w-full"
         >
           {!canBuy && inCartQty === 0 ? "Unavailable" : "Buy now"}
         </button>

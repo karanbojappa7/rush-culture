@@ -36,7 +36,7 @@ export default async function ProductPage({ params }: Props) {
           <div className="relative z-20 min-w-0">
             <ProductImageGallery images={product.images} alt={product.name} />
           </div>
-          <div className="relative z-10 flex flex-col gap-10 md:sticky md:top-28 md:self-start">
+          <div className="relative z-10 flex min-w-0 flex-col gap-10 md:sticky md:top-28 md:self-start">
             <ProductBuyBox product={product} />
             <section className="border-t border-line pt-8">
               <h2 className="font-display text-xl font-bold tracking-tight md:text-2xl">

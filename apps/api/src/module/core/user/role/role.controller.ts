@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { BaseController } from '../../../../common/base/base.controller';
 import { parsePageQuery } from '../../../../common/pagination/pagination.utility';
+import { PermissionsAuth } from '../../../../common/rbac/permissions.decorator';
 import { ResponseBuilder } from '../../../../common/response/response.builder';
 import { ResponseVm } from '../../../../common/response/response.vm';
 import { CreateRoleDto } from '../dto/create-role.dto';
@@ -17,6 +18,7 @@ import { UpdateRoleDto } from '../dto/update-role.dto';
 import { RoleService } from './role.service';
 
 @Controller('api/roles')
+@PermissionsAuth('roles.manage')
 export class RoleController extends BaseController {
   constructor(
     private readonly roleService: RoleService,
@@ -35,6 +37,7 @@ export class RoleController extends BaseController {
   }
 
   @Get()
+  @PermissionsAuth('roles.manage', 'users.manage')
   findAll(
     @Query('page') page?: string,
     @Query('limit') limit?: string,
@@ -77,6 +80,7 @@ export class RoleController extends BaseController {
   }
 
   @Delete(':id')
+  @PermissionsAuth('roles.delete')
   softDelete(@Param('id') id: string): Promise<ResponseVm> {
     return this.executeMethod(
       (payload) => this.roleService.softDelete(payload),

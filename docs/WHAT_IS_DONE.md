@@ -32,7 +32,7 @@ Workspaces: npm (`apps/*`, `packages/*`).
 | Schema | Owns |
 |---|---|
 | `master` | Category, Product, ProductVariant, ProductImage |
-| `core` | Role, UserType, User (staff), AppConfig, Discount |
+| `core` | Role, Permission, RolePermission, UserType, User (staff), AppConfig, Discount |
 | `security` | Account, Session, VerificationToken, ClientDevice |
 | `meta` | Customer, Address, Cart, CartItem, Order, OrderItem, Review, CustomerQuery |
 
@@ -61,14 +61,16 @@ Controller → executeMethod → Service → Repo (Prisma) → Postgres
 
 | Area | Prefix | Notes |
 |---|---|---|
-| Auth | `/api/auth` | login / logout / me |
-| Users / Roles / UserTypes | `/api/users` etc. | staff |
+| Auth | `/api/auth` | login / logout / me (`permissions[]`) |
+| Access / RBAC | `/api/access/*` | Super Admin: matrix, catalog, role maps |
+| Users / Roles / UserTypes | `/api/users`, `/api/roles`, `/api/user-types` | permission-gated |
 | Categories | `/api/categories` | public reads |
 | Products | `/api/products` | stock-check, variants/images patch |
 | Customers / Addresses | `/api/customers`, `/api/addresses` | meta |
 | Carts / Orders / Reviews | `/api/carts` etc. | meta; reviews: guest POST (email), approved GET, staff approve |
 | Customer queries | `/api/customer-queries` | public POST; staff list/update |
 | App configs / Discounts | `/api/app-configs` etc. | core |
+| Client devices | `/api/client-devices` | `devices.read` (Super Admin by default) |
 | Health | `/api/health` | connectivity |
 | Cache admin | `/api/cache` | staff flush |
 
@@ -77,7 +79,7 @@ Controller → executeMethod → Service → Repo (Prisma) → Postgres
 - Guest submit: `POST /api/reviews` with `productId`, `name`, `email`, `rating` (1–5), optional `title`/`body`
 - Find-or-create `Customer` by email; `displayName` stored on review; starts `isApproved: false`
 - Public list/summary: approved only (`GET /api/reviews`, `GET /api/reviews/summary?productId=`)
-- Staff: `PATCH /:id/approve`, update, soft-delete
+- Staff: `GET /api/reviews/admin`, `PATCH /:id/approve`, update, soft-delete
 
 ### Rate limiting
 
@@ -90,6 +92,7 @@ Controller → executeMethod → Service → Repo (Prisma) → Postgres
 
 - `ClientDevice`: fingerprint (IP+UA hash), IP, userAgent, deviceType, OS, browser, last path/method, hit/blocked counts
 - Middleware on all routes; DB upsert **debounced** (5 minutes) unless rate-limited (immediate)
+- Staff list: `GET /api/client-devices?page=&limit=&q=&deviceType=` requires `devices.read`
 
 ### Pagination & search
 
@@ -98,12 +101,71 @@ Controller → executeMethod → Service → Repo (Prisma) → Postgres
 - Shared helpers: `parsePageQuery` / `PageResult` / `BaseRepo.findPage` / `buildContainsOr`
 - Admin: shared `DebouncedSearch` + `ListToolbar` + `DataTable` + `PaginationNav` (URL `q` + `page`)
 
-### Auth (admin)
+### Auth (admin) + RBAC
+
+**Code layout:** `apps/api/src/common/rbac/`  
+**Catalog (source of truth for codes):** `apps/api/src/common/rbac/permissions.yml`  
+**Schema:** `core.role` (`isSystem`), `core.permission`, `core.role_permission`
+
+| Role | Purpose | Default access |
+|---|---|---|
+| `SUPER_ADMIN` | Full platform + access control | All permission codes (`*`) |
+| `ADMIN` | Store operations | Overview, orders/revenue, products, categories, customers, queries, reviews — not devices/access |
+| `STAFF` | Day-to-day ops | Like ADMIN without reviews |
+| `CUSTOMER` | Storefront (non-staff) | No admin access |
+
+**Boot behaviour**
+
+- Sync YAML → `core.permission` rows
+- Seed system roles (`isSystem: true`)
+- Seed default `role_permission` maps only when a role has **zero** mappings (does not overwrite manual matrix edits)
+- Bootstrap `ADMIN_EMAIL` / `ADMIN_PASSWORD` → **SUPER_ADMIN** (upgrades that email if it already exists)
+
+**Auth / guards**
 
 - JWT in httpOnly cookie (`brand.adminAuthCookie`)
-- `@StaffAuth()` on staff routes; public catalog reads + order create + contact query create
-- Bootstrap admin from `ADMIN_EMAIL` / `ADMIN_PASSWORD`
-- Admin app: `/login` + Next middleware/proxy
+- `AuthGuard` loads current `roleCode` from DB (role changes do not require re-login)
+- `@StaffAuth()` default: `SUPER_ADMIN` \| `ADMIN` \| `STAFF`
+- `@PermissionsAuth('code')` — fine-grained; multiple codes = **any-of (OR)**
+- `GET /api/auth/me` → `{ id, email, name, roleCode, permissions[] }`
+
+**Access APIs** (`permissions.manage` / related unless noted)
+
+| Method | Path | Permission | Purpose |
+|---|---|---|---|
+| `GET` | `/api/access/dashboard` | `access.dashboard` | Counts + modules |
+| `GET` | `/api/access/matrix` | `permissions.manage` | Roles × permissions grants |
+| `PATCH` | `/api/access/matrix` | `permissions.manage` | Bulk save grants |
+| `GET` | `/api/access/permissions` | `permissions.manage` | Flat permission list |
+| `GET` | `/api/access/catalog` | `permissions.manage` | YAML catalog as loaded |
+| `GET` | `/api/access/roles/:id/permissions` | `permissions.manage` | One role’s map |
+| `PATCH` | `/api/access/roles/:id/permissions` | `permissions.manage` | Set one role’s codes |
+| `GET` | `/api/access/me/permissions` | authenticated | Current user’s codes |
+
+**Roles / users**
+
+| Method | Path | Permission | Notes |
+|---|---|---|---|
+| CRUD | `/api/roles` | `roles.manage` | List also allowed with `users.manage` |
+| `DELETE` | `/api/roles/:id` | `roles.delete` | System roles blocked |
+| CRUD | `/api/users` | `users.manage` | Staff create / assign role |
+| `DELETE` | `/api/users/:id` | `users.delete` | Not self; not last Super Admin |
+
+**Permission codes (catalog modules)**
+
+| Module | Codes |
+|---|---|
+| overview | `overview.read` |
+| orders | `orders.read` |
+| products | `products.manage` |
+| categories | `categories.manage` |
+| customers | `customers.read` |
+| queries | `queries.manage` |
+| reviews | `reviews.manage` |
+| devices | `devices.read` |
+| access | `access.dashboard`, `roles.manage`, `roles.delete`, `permissions.manage`, `users.manage`, `users.delete` |
+
+Add/edit codes in **YAML only**, restart API to sync. Grant via matrix for non–Super Admin roles. Super Admin always all codes (matrix column locked).
 
 ---
 
@@ -158,11 +220,20 @@ Overall `status`: `ok` | `degraded` | `error` (HTTP **503** if Postgres down).
 
 ## Admin CMS
 
-- Login, overview (orders + open query stats)
+- Login (staff roles only); session from `GET /api/auth/me` includes `roleCode` + `permissions[]`
+- Overview (orders, revenue charts, open query stats)
 - Products: structured variants (size, color, ₹ price, Auto SKU), image URL rows, edit/create
-- Categories, customers, orders, **Queries**, **Reviews** (approve/delete pending comments), **Devices** (IP/UA/OS traffic)
-- Product form mappers live in `@/lib/product-form-initial` (safe for server pages)
-- Client vs server API split: `@/lib/api` vs `@/lib/api-server`
+- Categories, customers, orders, **Queries**, **Reviews** (approve/delete)
+- **Devices** — IP/UA telemetry; nav + page require `devices.read` (default Super Admin only)
+- **Access** (`/access`, requires access permissions):
+  - Tabs: Overview · Permissions · Roles · Users
+  - **Permissions** — Drupal-style matrix (roles as columns, module groups as rows); filter; save grants; Super Admin column locked
+  - **Roles** — create custom roles; delete custom roles if `roles.delete`
+  - **Users** — create staff, assign roles; delete if `users.delete` (not self)
+- Sidebar nav filtered by permission (not hardcoded role)
+- Shared components: `apps/admin/src/components/{layout,ui,access,products,categories,reviews,queries,overview}`; `session-shared.ts` (`hasPermission`); `session.ts` + `api-server` for server
+- Product form mappers: `@/lib/product-form-initial`
+- Client vs server API: `@/lib/api` vs `@/lib/api-server`
 
 ---
 
@@ -180,8 +251,8 @@ Overall `status`: `ok` | `degraded` | `error` (HTTP **503** if Postgres down).
 - Collection: `docs/postman/RushCulture.postman_collection.json`
 - Environment: `docs/postman/RushCulture.postman_environment.json`
 - Generator: `docs/postman/generate-collection.mjs` (`node generate-collection.mjs`)
-- Includes Common (health + cache), Core, Master, Meta (incl. customer-query), Security
-- Vars: `url`, `id`, `slug`, `code`, `key`, `itemId`, `variantId`, `service`
+- Includes Common (health + cache), Core (users, roles, **access RBAC**, configs, discounts), Master, Meta (reviews admin, customer-query), Security (auth, **client-devices**, crypto)
+- Vars: `url`, `id`, `slug`, `code`, `key`, `itemId`, `variantId`, `service`, `roleId`, `permissionCode`
 
 ---
 
@@ -224,6 +295,7 @@ Redis required only when `ENABLE_CACHING=true`.
 
 ## Related docs
 
-- `docs/admin_auth_schema_cms.md` — schema ownership + CMS notes
+- `docs/admin_auth_schema_cms.md` — schema ownership + admin auth (incl. RBAC tables)
 - `docs/README.md` — docs index
-- `docs/postman/` — API collection
+- `docs/postman/` — API collection (regenerate: `node docs/postman/generate-collection.mjs`)
+- `apps/api/src/common/rbac/permissions.yml` — permission catalog source of truth

@@ -7,18 +7,20 @@ import {
   Patch,
   Post,
   Query,
+  Req,
 } from '@nestjs/common';
 import { BaseController } from '../../../common/base/base.controller';
 import { parsePageQuery } from '../../../common/pagination/pagination.utility';
 import { ResponseBuilder } from '../../../common/response/response.builder';
 import { ResponseVm } from '../../../common/response/response.vm';
-import { StaffAuth } from '../../security/auth/guards/staff-auth.decorator';
+import { PermissionsAuth } from '../../../common/rbac/permissions.decorator';
+import { AuthUser } from '../../security/auth/guards/auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
 
 @Controller('api/users')
-@StaffAuth()
+@PermissionsAuth('users.manage')
 export class UserController extends BaseController {
   constructor(
     private readonly userService: UserService,
@@ -70,10 +72,14 @@ export class UserController extends BaseController {
   }
 
   @Delete(':id')
-  softDelete(@Param('id') id: string): Promise<ResponseVm> {
+  @PermissionsAuth('users.delete')
+  softDelete(
+    @Param('id') id: string,
+    @Req() req: { user: AuthUser },
+  ): Promise<ResponseVm> {
     return this.executeMethod(
       (payload) => this.userService.softDelete(payload),
-      { id },
+      { id, actorUserId: req.user.id },
       'User deleted',
     );
   }

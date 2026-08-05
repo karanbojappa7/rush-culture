@@ -1,8 +1,8 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
-  OnModuleInit,
 } from '@nestjs/common';
 import { Role } from '@prisma/client';
 import { BaseService } from '../../../../common/base/base.service';
@@ -14,25 +14,10 @@ import { CreateRoleDto } from '../dto/create-role.dto';
 import { UpdateRoleDto } from '../dto/update-role.dto';
 import { RoleRepo } from './role.repo';
 
-const DEFAULT_ROLES = [
-  { code: 'CUSTOMER', name: 'Customer', description: 'Storefront shopper' },
-  { code: 'STAFF', name: 'Staff', description: 'Store operations staff' },
-  { code: 'ADMIN', name: 'Admin', description: 'Full platform access' },
-] as const;
-
 @Injectable()
-export class RoleService extends BaseService implements OnModuleInit {
+export class RoleService extends BaseService {
   constructor(private readonly roleRepo: RoleRepo) {
     super(RoleService.name);
-  }
-
-  async onModuleInit() {
-    for (const role of DEFAULT_ROLES) {
-      const existing = await this.roleRepo.findByCode(role.code);
-      if (!existing) {
-        await this.roleRepo.create({ ...role });
-      }
-    }
   }
 
   async create(payload: CreateRoleDto): Promise<Role> {
@@ -44,6 +29,8 @@ export class RoleService extends BaseService implements OnModuleInit {
       code: payload.code.toUpperCase(),
       name: payload.name,
       description: payload.description,
+      isSystem: false,
+      isActive: true,
     });
   }
 
@@ -67,7 +54,10 @@ export class RoleService extends BaseService implements OnModuleInit {
   }
 
   async update(payload: { id: string; data: UpdateRoleDto }): Promise<Role> {
-    await this.findById({ id: payload.id });
+    const role = await this.findById({ id: payload.id });
+    if (role.isSystem && payload.data.code && payload.data.code !== role.code) {
+      throw new BadRequestException('System role code cannot be changed');
+    }
     if (payload.data.code) {
       const existing = await this.roleRepo.findByCode(payload.data.code);
       if (existing && existing.id !== payload.id) {
@@ -83,7 +73,10 @@ export class RoleService extends BaseService implements OnModuleInit {
   }
 
   async softDelete(payload: { id: string }): Promise<Role> {
-    await this.findById(payload);
+    const role = await this.findById(payload);
+    if (role.isSystem) {
+      throw new BadRequestException('System roles cannot be deleted');
+    }
     return this.roleRepo.softDelete(payload.id);
   }
 }

@@ -3,7 +3,7 @@ import type {
   ImageDraft,
   ProductFormValues,
   VariantDraft,
-} from "@/components/product-form-types";
+} from "@/components/products/product-form-types";
 
 export function newKey() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;

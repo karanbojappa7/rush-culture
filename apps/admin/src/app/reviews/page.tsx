@@ -1,13 +1,13 @@
 import Link from "next/link";
-import { AdminShell } from "@/components/admin-shell";
+import { AdminShell } from "@/components/layout/admin-shell";
 import {
   DataTable,
   DataTableCell,
   DataTableRow,
-} from "@/components/data-table";
-import { ListToolbar } from "@/components/list-toolbar";
-import { PaginationNav } from "@/components/pagination-nav";
-import { ReviewModerationActions } from "@/components/review-moderation-actions";
+} from "@/components/ui/data-table";
+import { ListToolbar } from "@/components/ui/list-toolbar";
+import { PaginationNav } from "@/components/ui/pagination-nav";
+import { ReviewModerationActions } from "@/components/reviews/review-moderation-actions";
 import { apiGet } from "@/lib/api-server";
 import { emptyPage, pageQuery, type PageResult } from "@/lib/pagination";
 import { getSessionUser, sessionLabel } from "@/lib/session";
@@ -49,6 +49,7 @@ export default async function ReviewsAdminPage({ searchParams }: Props) {
       title="Reviews"
       userLabel={sessionLabel(user)}
       roleCode={user?.roleCode}
+      permissions={user?.permissions}
       breadcrumbs={[
         { label: "Overview", href: "/" },
         { label: "Reviews" },

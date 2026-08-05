@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { AdminShell } from "@/components/admin-shell";
+import { AdminShell } from "@/components/layout/admin-shell";
 import { apiGet, formatInr } from "@/lib/api-server";
 import { getSessionUser, sessionLabel } from "@/lib/session";
 
@@ -49,6 +49,7 @@ export default async function OrderDetailPage({ params }: Props) {
       title={order.orderNumber}
       userLabel={sessionLabel(user)}
       roleCode={user?.roleCode}
+      permissions={user?.permissions}
       backHref="/orders"
       backLabel="Back to orders"
       breadcrumbs={[

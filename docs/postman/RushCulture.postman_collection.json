@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "RushCulture",
-    "description": "Rush Culture API — folders by Postgres schema (Core / Master / Meta / Security) plus Common health. Use {{url}} as API base. Staff write/list routes need cookie rc_admin_token from Security/auth/Login. List endpoints support ?page=&limit=.",
+    "description": "Rush Culture API — folders by Postgres schema (Core / Master / Meta / Security) plus Common health. Use {{url}} as API base. Staff routes need cookie rc_admin_token from Security/auth/Login (bootstrap user is SUPER_ADMIN). List endpoints support ?page=&limit=. RBAC: Core/access matrix + role permissions; GetMe returns permissions[].",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -36,6 +36,14 @@
     {
       "key": "service",
       "value": "product"
+    },
+    {
+      "key": "roleId",
+      "value": ""
+    },
+    {
+      "key": "permissionCode",
+      "value": "devices.read"
     }
   ],
   "item": [
@@ -302,7 +310,7 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"name\": \"Updated Staff\",\n  \"phoneNumber\": \"9000000002\"\n}",
+                  "raw": "{\n  \"name\": \"Updated Staff\",\n  \"phoneNumber\": \"9000000002\",\n  \"roleCode\": \"ADMIN\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -356,7 +364,7 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"code\": \"STAFF\",\n  \"name\": \"Staff\",\n  \"description\": \"Staff role\"\n}",
+                  "raw": "{\n  \"code\": \"OPS_LEAD\",\n  \"name\": \"Ops lead\",\n  \"description\": \"Custom staff role\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -452,7 +460,7 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"name\": \"Staff Updated\",\n  \"description\": \"Updated\"\n}",
+                  "raw": "{\n  \"name\": \"Ops lead Updated\",\n  \"description\": \"Updated\",\n  \"isActive\": true\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -475,6 +483,188 @@
                     "api",
                     "roles",
                     "{{id}}"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "access",
+          "item": [
+            {
+              "name": "AccessDashboard",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{url}}/api/access/dashboard",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "access",
+                    "dashboard"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "GetPermissionMatrix",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{url}}/api/access/matrix",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "access",
+                    "matrix"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "SetPermissionMatrix",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{url}}/api/access/matrix",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "access",
+                    "matrix"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"grants\": [\n    {\n      \"roleId\": \"{{roleId}}\",\n      \"permissionCodes\": [\n        \"overview.read\",\n        \"orders.read\",\n        \"products.manage\",\n        \"categories.manage\",\n        \"customers.read\",\n        \"queries.manage\",\n        \"reviews.manage\"\n      ]\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "name": "ListPermissions",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{url}}/api/access/permissions",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "access",
+                    "permissions"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "GetPermissionCatalog",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{url}}/api/access/catalog",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "access",
+                    "catalog"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "GetRolePermissions",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{url}}/api/access/roles/{{roleId}}/permissions",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "access",
+                    "roles",
+                    "{{roleId}}",
+                    "permissions"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "SetRolePermissions",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{url}}/api/access/roles/{{roleId}}/permissions",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "access",
+                    "roles",
+                    "{{roleId}}",
+                    "permissions"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"permissionCodes\": [\n    \"overview.read\",\n    \"orders.read\",\n    \"products.manage\",\n    \"devices.read\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "name": "GetMyPermissions",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{url}}/api/access/me/permissions",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "access",
+                    "me",
+                    "permissions"
                   ]
                 }
               }
@@ -2028,7 +2218,7 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"productId\": \"{{id}}\",\n  \"customerId\": \"{{id}}\",\n  \"rating\": 5,\n  \"title\": \"Great fit\",\n  \"body\": \"Loved the fabric\",\n  \"isApproved\": false\n}",
+                  "raw": "{\n  \"productId\": \"{{id}}\",\n  \"name\": \"Sam Guest\",\n  \"email\": \"guest.reviewer@example.com\",\n  \"rating\": 5,\n  \"title\": \"Great fit\",\n  \"body\": \"Loved the fabric\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -2059,6 +2249,72 @@
                     {
                       "key": "limit",
                       "value": "20"
+                    },
+                    {
+                      "key": "productId",
+                      "value": "{{id}}",
+                      "disabled": true
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "GetReviewSummary",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{url}}/api/reviews/summary?productId={{id}}",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reviews",
+                    "summary"
+                  ],
+                  "query": [
+                    {
+                      "key": "productId",
+                      "value": "{{id}}"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "GetReviewsAdmin",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{url}}/api/reviews/admin?page=1&limit=20&status=pending",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reviews",
+                    "admin"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    },
+                    {
+                      "key": "status",
+                      "value": "pending"
+                    },
+                    {
+                      "key": "q",
+                      "value": "",
+                      "disabled": true
                     }
                   ]
                 }
@@ -2251,6 +2507,11 @@
                       "key": "topic",
                       "value": "SHIPPING",
                       "disabled": true
+                    },
+                    {
+                      "key": "q",
+                      "value": "",
+                      "disabled": true
                     }
                   ]
                 }
@@ -2398,6 +2659,48 @@
                     "api",
                     "auth",
                     "me"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "client-device",
+          "item": [
+            {
+              "name": "GetClientDevices",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{url}}/api/client-devices?page=1&limit=20",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "client-devices"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    },
+                    {
+                      "key": "q",
+                      "value": "",
+                      "disabled": true
+                    },
+                    {
+                      "key": "deviceType",
+                      "value": "DESKTOP",
+                      "disabled": true
+                    }
                   ]
                 }
               }

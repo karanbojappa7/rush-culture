@@ -1,0 +1,89 @@
+modules:
+  - key: overview
+    name: Overview
+    permissions:
+      - code: overview.read
+        name: View overview dashboard
+        description: See KPI cards and recent activity
+  - key: orders
+    name: Orders
+    permissions:
+      - code: orders.read
+        name: View orders and revenue
+        description: Order list, detail, and revenue totals
+  - key: products
+    name: Products
+    permissions:
+      - code: products.manage
+        name: Manage products
+        description: Create, edit, and list catalog products
+  - key: categories
+    name: Categories
+    permissions:
+      - code: categories.manage
+        name: Manage categories
+        description: Create and list categories
+  - key: customers
+    name: Customers
+    permissions:
+      - code: customers.read
+        name: View customers
+        description: Customer directory access
+  - key: queries
+    name: Customer queries
+    permissions:
+      - code: queries.manage
+        name: Manage customer queries
+        description: View and update support queries
+  - key: reviews
+    name: Reviews
+    permissions:
+      - code: reviews.manage
+        name: Moderate reviews
+        description: Approve and delete product reviews
+  - key: devices
+    name: Devices
+    permissions:
+      - code: devices.read
+        name: View device intelligence
+        description: IP, UA, and rate-limit block telemetry
+  - key: access
+    name: Access control
+    permissions:
+      - code: access.dashboard
+        name: Access control dashboard
+        description: RBAC overview for super admins
+      - code: roles.manage
+        name: Manage roles
+        description: Create and edit roles
+      - code: roles.delete
+        name: Delete roles
+        description: Soft-delete custom roles (system roles protected)
+      - code: permissions.manage
+        name: Map role permissions
+        description: Assign permissions to roles
+      - code: users.manage
+        name: Manage staff users
+        description: Create staff and assign roles
+      - code: users.delete
+        name: Delete staff users
+        description: Soft-delete staff accounts
+
+role_defaults:
+  SUPER_ADMIN:
+    - "*"
+  ADMIN:
+    - overview.read
+    - orders.read
+    - products.manage
+    - categories.manage
+    - customers.read
+    - queries.manage
+    - reviews.manage
+  STAFF:
+    - overview.read
+    - orders.read
+    - products.manage
+    - categories.manage
+    - customers.read
+    - queries.manage

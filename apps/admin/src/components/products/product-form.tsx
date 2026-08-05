@@ -16,14 +16,14 @@ import type {
   ImageDraft,
   ProductFormValues,
   VariantDraft,
-} from "@/components/product-form-types";
+} from "@/components/products/product-form-types";
 
 export type {
   CategoryOption,
   ImageDraft,
   ProductFormValues,
   VariantDraft,
-} from "@/components/product-form-types";
+} from "@/components/products/product-form-types";
 
 const SIZE_OPTIONS = [
   "XS",

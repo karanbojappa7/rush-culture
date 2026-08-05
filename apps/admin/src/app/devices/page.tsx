@@ -1,16 +1,20 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { AdminShell } from "@/components/admin-shell";
+import { AdminShell } from "@/components/layout/admin-shell";
 import {
   DataTable,
   DataTableCell,
   DataTableRow,
-} from "@/components/data-table";
-import { ListToolbar } from "@/components/list-toolbar";
-import { PaginationNav } from "@/components/pagination-nav";
+} from "@/components/ui/data-table";
+import { ListToolbar } from "@/components/ui/list-toolbar";
+import { PaginationNav } from "@/components/ui/pagination-nav";
 import { apiGet } from "@/lib/api-server";
 import { emptyPage, pageQuery, type PageResult } from "@/lib/pagination";
-import { getSessionUser, sessionLabel } from "@/lib/session";
+import {
+  getSessionUser,
+  hasPermission,
+  sessionLabel,
+} from "@/lib/session";
 
 type ClientDevice = {
   id: string;
@@ -35,7 +39,7 @@ type Props = {
 export default async function DevicesAdminPage({ searchParams }: Props) {
   const { page = "1", q, deviceType } = await searchParams;
   const user = await getSessionUser();
-  if (user?.roleCode !== "ADMIN") {
+  if (!hasPermission(user, "devices.read")) {
     redirect("/");
   }
 
@@ -57,6 +61,7 @@ export default async function DevicesAdminPage({ searchParams }: Props) {
       title="Devices"
       userLabel={sessionLabel(user)}
       roleCode={user?.roleCode}
+      permissions={user?.permissions}
       breadcrumbs={[
         { label: "Overview", href: "/" },
         { label: "Devices" },
