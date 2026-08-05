@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
-import { fetchCollections, fetchProducts } from "@/lib/catalog";
-import { fetchSeoSettings } from "@/lib/seo";
+import { fetchCollections, fetchProducts } from "@/base/catalog";
+import { fetchSeoSettings } from "@/base/seo";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const seo = await fetchSeoSettings();

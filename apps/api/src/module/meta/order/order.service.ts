@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { Order, PaymentStatus } from '@prisma/client';
 import { BASE_ENTITY_DEFAULTS } from '../../../common/entities/base.entity';
 import { BaseService } from '../../../common/base/base.service';
-import { EmailService } from '../../../common/email/email.service';
+import { EmailService } from '../../communication/email/email.service';
 import { PrismaService } from '../../../common/prisma/prisma.service';
 import { utcNow } from '../../../common/utility/date.utility';
 import { CustomerService } from '../customer/customer.service';

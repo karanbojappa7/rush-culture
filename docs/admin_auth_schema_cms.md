@@ -60,7 +60,7 @@ flowchart LR
 - **`Customer` (meta)** = storefront buyers; owns addresses, carts, orders, reviews.
 
 Nest modules: `apps/api/src/module/{master|core|meta|security}/`.  
-Shared RBAC: `apps/api/src/common/rbac/`.
+Shared RBAC: `apps/api/src/module/core/rbac/`.
 
 ---
 
@@ -74,7 +74,7 @@ Shared RBAC: `apps/api/src/common/rbac/`.
 | `CUSTOMER` | yes | Non-staff; no admin JWT paths |
 | *(custom)* | no | Created in admin; soft-deletable with `roles.delete` |
 
-**Permission catalog:** `apps/api/src/common/rbac/permissions.yml`  
+**Permission catalog:** `apps/api/src/module/core/rbac/permissions.yml`  
 Synced to `core.permission` on API boot. Role grants in `core.role_permission`.
 
 **Bootstrap:** `ADMIN_EMAIL` + `ADMIN_PASSWORD` create/upgrade that user as `SUPER_ADMIN`.

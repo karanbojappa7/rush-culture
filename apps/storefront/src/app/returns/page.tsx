@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { returnsPolicy } from "@linq/site-config";
-import { PolicyPage } from "@/components/policy-page";
-import { fetchSeoSettings, seoToPageMetadata } from "@/lib/seo";
+import { PolicyPage } from "@/components/common/site/policy-page";
+import { fetchSeoSettings, seoToPageMetadata } from "@/base/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await fetchSeoSettings();

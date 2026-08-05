@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { sizeGuide } from "@linq/site-config";
 import Link from "next/link";
-import { fetchSeoSettings, seoToPageMetadata } from "@/lib/seo";
+import { fetchSeoSettings, seoToPageMetadata } from "@/base/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await fetchSeoSettings();

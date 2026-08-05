@@ -3,7 +3,7 @@
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { brand } from "@linq/site-config";
-import { apiPost } from "@/lib/api";
+import { apiPost } from "@/base/api";
 
 export default function LoginPage() {
   const router = useRouter();

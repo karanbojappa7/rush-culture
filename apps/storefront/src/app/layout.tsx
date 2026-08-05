@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import { Figtree, Syne } from "next/font/google";
 import { brand } from "@linq/site-config";
-import { CartProvider } from "@/components/cart-provider";
-import { SiteJsonLd } from "@/components/seo/site-json-ld";
-import { SiteFooter } from "@/components/site-footer";
-import { SiteHeader } from "@/components/site-header";
-import { ThemeBootstrap } from "@/components/theme/theme-bootstrap";
-import { ThemeProvider } from "@/components/theme/theme-provider";
-import { fetchCollections } from "@/lib/catalog";
-import { fetchSeoSettings, seoToRootMetadata } from "@/lib/seo";
+import { CartProvider } from "@/components/common/cart/cart-provider";
+import { SiteJsonLd } from "@/components/core/seo/site-json-ld";
+import { SiteFooter } from "@/components/common/site/site-footer";
+import { SiteHeader } from "@/components/common/site/site-header";
+import { ThemeBootstrap } from "@/components/core/theme/theme-bootstrap";
+import { ThemeProvider } from "@/components/core/theme/theme-provider";
+import { fetchCollections } from "@/base/catalog";
+import { fetchSeoSettings, seoToRootMetadata } from "@/base/seo";
 import "./globals.css";
 
 const syne = Syne({

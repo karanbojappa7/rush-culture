@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { CartView } from "@/components/cart-view";
-import { fetchSeoSettings, seoToPageMetadata } from "@/lib/seo";
+import { CartView } from "@/components/common/cart/cart-view";
+import { fetchSeoSettings, seoToPageMetadata } from "@/base/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await fetchSeoSettings();

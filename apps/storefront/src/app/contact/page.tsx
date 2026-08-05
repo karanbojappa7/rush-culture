@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { ContactForm } from "@/components/contact-form";
-import { fetchSeoSettings, seoToPageMetadata } from "@/lib/seo";
+import { ContactForm } from "@/components/common/site/contact-form";
+import { fetchSeoSettings, seoToPageMetadata } from "@/base/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await fetchSeoSettings();

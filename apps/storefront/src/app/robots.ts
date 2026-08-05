@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { absoluteSeoUrl } from "@linq/site-config";
-import { fetchSeoSettings } from "@/lib/seo";
+import { fetchSeoSettings } from "@/base/seo";
 
 export default async function robots(): Promise<MetadataRoute.Robots> {
   const seo = await fetchSeoSettings();

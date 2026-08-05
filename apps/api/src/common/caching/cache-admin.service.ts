@@ -3,6 +3,7 @@ import {
   Injectable,
   ServiceUnavailableException,
 } from '@nestjs/common';
+import { BaseService } from '../base/base.service';
 import { CACHE_KEY_PREFIX } from '../constants/cache.constants';
 import { CacheConfigService } from './cache-config.service';
 import { CacheHandler } from './cache.handler';
@@ -10,7 +11,11 @@ import { CacheKeyBuilder } from './utils/cache-key.builder';
 import { CacheUtils } from './utils/cache.utils';
 
 @Injectable()
-export class CacheAdminService {
+export class CacheAdminService extends BaseService {
+  constructor() {
+    super(CacheAdminService.name);
+  }
+
   status() {
     const cache = CacheHandler.getInstance();
     const services = CacheConfigService.getInstance().listModules();

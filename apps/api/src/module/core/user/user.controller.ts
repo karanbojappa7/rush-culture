@@ -13,7 +13,7 @@ import { BaseController } from '../../../common/base/base.controller';
 import { parsePageQuery } from '../../../common/pagination/pagination.utility';
 import { ResponseBuilder } from '../../../common/response/response.builder';
 import { ResponseVm } from '../../../common/response/response.vm';
-import { PermissionsAuth } from '../../../common/rbac/permissions.decorator';
+import { PermissionsAuth } from '../../core/rbac/permissions.decorator';
 import { AuthUser } from '../../security/auth/guards/auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';

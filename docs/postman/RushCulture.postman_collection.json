@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "RushCulture",
-    "description": "Rush Culture API — folders by Postgres schema (Core / Master / Meta / Security) plus Common health. Use {{url}} as API base. Staff routes need cookie rc_admin_token from Security/auth/Login (bootstrap user is SUPER_ADMIN). List endpoints support ?page=&limit=. RBAC: Core/access matrix + role permissions; GetMe returns permissions[].",
+    "description": "Rush Culture API — folders by Postgres schema: Common (platform) / Core / Master / Meta / Security / Communication. Staff routes need cookie rc_admin_token from Security/auth/Login.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -198,189 +198,6 @@
                     "services",
                     "{{service}}"
                   ]
-                }
-              }
-            }
-          ]
-        },
-        {
-          "name": "seo-settings",
-          "item": [
-            {
-              "name": "GetSeoSettings",
-              "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{url}}/api/seo-settings",
-                  "host": [
-                    "{{url}}"
-                  ],
-                  "path": [
-                    "api",
-                    "seo-settings"
-                  ]
-                }
-              }
-            },
-            {
-              "name": "UpdateSeoSettings",
-              "request": {
-                "method": "PUT",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{url}}/api/seo-settings",
-                  "host": [
-                    "{{url}}"
-                  ],
-                  "path": [
-                    "api",
-                    "seo-settings"
-                  ]
-                },
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"titleDefault\": \"Rush Culture — Youth clothing\",\n  \"titleTemplate\": \"%s · Rush Culture\",\n  \"description\": \"Street-ready youth clothing. Oversized tees, cargos, and limited drops.\",\n  \"shortDescription\": \"Street-ready fits for Gen Z — oversized tees, cargos, and limited drops.\",\n  \"shopDescription\": \"Browse all Rush Culture clothing.\",\n  \"contactDescription\": \"Ask Rush Culture about shipping or orders.\",\n  \"homeTitle\": \"\",\n  \"homeDescription\": \"\",\n  \"keywords\": \"streetwear, cargos, oversized\",\n  \"siteName\": \"Rush Culture\",\n  \"applicationName\": \"Rush Culture\",\n  \"robotsIndex\": true,\n  \"robotsFollow\": true,\n  \"robotsNoArchive\": false,\n  \"robotsNoSnippet\": false,\n  \"robotsNoImageIndex\": false,\n  \"maxImagePreview\": \"large\",\n  \"maxSnippet\": -1,\n  \"maxVideoPreview\": -1,\n  \"canonicalBaseUrl\": \"https://www.example.com\",\n  \"robotsSitemapUrl\": \"\",\n  \"locale\": \"en-IN\",\n  \"ogTitle\": \"Rush Culture — Youth clothing\",\n  \"ogDescription\": \"Street-ready youth clothing. Oversized tees, cargos, and limited drops.\",\n  \"ogImageUrl\": \"\",\n  \"ogImageAlt\": \"Rush Culture\",\n  \"ogType\": \"website\",\n  \"twitterCard\": \"summary_large_image\",\n  \"twitterHandle\": \"\",\n  \"twitterCreator\": \"\",\n  \"twitterTitle\": \"Rush Culture — Youth clothing\",\n  \"twitterDescription\": \"Street-ready youth clothing. Oversized tees, cargos, and limited drops.\",\n  \"twitterImageUrl\": \"\",\n  \"enableOrganizationSchema\": true,\n  \"organizationType\": \"OnlineStore\",\n  \"organizationName\": \"Rush Culture\",\n  \"organizationLogoUrl\": \"\",\n  \"organizationEmail\": \"support@rushculture.example\",\n  \"organizationPhone\": \"\",\n  \"organizationUrl\": \"\",\n  \"sameAs\": [],\n  \"enableWebsiteSchema\": true,\n  \"siteSearchUrlTemplate\": \"/shop?q={search_term_string}\",\n  \"enableProductSchema\": true,\n  \"googleSiteVerification\": \"\",\n  \"bingSiteVerification\": \"\",\n  \"yandexSiteVerification\": \"\",\n  \"pinterestSiteVerification\": \"\",\n  \"facebookAppId\": \"\",\n  \"faviconUrl\": \"\",\n  \"appleTouchIconUrl\": \"\",\n  \"noIndexPaths\": [\n    \"/cart\",\n    \"/checkout\"\n  ],\n  \"sitemapIncludeStatic\": true,\n  \"sitemapIncludeProducts\": true,\n  \"sitemapIncludeCollections\": true,\n  \"sitemapStaticPaths\": [\n    \"\",\n    \"/shop\",\n    \"/contact\",\n    \"/shipping\",\n    \"/returns\",\n    \"/size-guide\"\n  ],\n  \"sitemapAdditionalPaths\": []\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                }
-              }
-            }
-          ]
-        },
-        {
-          "name": "theme-settings",
-          "item": [
-            {
-              "name": "GetThemeSettings",
-              "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{url}}/api/theme-settings",
-                  "host": [
-                    "{{url}}"
-                  ],
-                  "path": [
-                    "api",
-                    "theme-settings"
-                  ]
-                }
-              }
-            },
-            {
-              "name": "GetStorefrontTheme",
-              "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{url}}/api/theme-settings?surface=storefront",
-                  "host": [
-                    "{{url}}"
-                  ],
-                  "path": [
-                    "api",
-                    "theme-settings"
-                  ],
-                  "query": [
-                    {
-                      "key": "surface",
-                      "value": "storefront"
-                    }
-                  ]
-                }
-              }
-            },
-            {
-              "name": "GetAdminTheme",
-              "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{url}}/api/theme-settings?surface=admin",
-                  "host": [
-                    "{{url}}"
-                  ],
-                  "path": [
-                    "api",
-                    "theme-settings"
-                  ],
-                  "query": [
-                    {
-                      "key": "surface",
-                      "value": "admin"
-                    }
-                  ]
-                }
-              }
-            },
-            {
-              "name": "UpdateStorefrontTheme",
-              "request": {
-                "method": "PUT",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{url}}/api/theme-settings",
-                  "host": [
-                    "{{url}}"
-                  ],
-                  "path": [
-                    "api",
-                    "theme-settings"
-                  ]
-                },
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"surface\": \"storefront\",\n  \"themeId\": \"rush-volt\",\n  \"colorMode\": \"day\",\n  \"fontScale\": \"md\",\n  \"fontSizePx\": 16,\n  \"displayFont\": \"Syne\",\n  \"bodyFont\": \"Figtree\",\n  \"colors\": {\n    \"ink\": \"#0e0e0e\",\n    \"paper\": \"#f4f1ea\",\n    \"mist\": \"#e8e3d8\",\n    \"mute\": \"#6a655c\",\n    \"accent\": \"#d4ff4a\",\n    \"accentInk\": \"#142000\",\n    \"panel\": \"#fffcf8\",\n    \"line\": \"rgba(14, 14, 14, 0.12)\"\n  }\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                }
-              }
-            },
-            {
-              "name": "UpdateAdminTheme",
-              "request": {
-                "method": "PUT",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{url}}/api/theme-settings",
-                  "host": [
-                    "{{url}}"
-                  ],
-                  "path": [
-                    "api",
-                    "theme-settings"
-                  ]
-                },
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"surface\": \"admin\",\n  \"themeId\": \"rush-volt\",\n  \"colorMode\": \"night\",\n  \"fontScale\": \"md\",\n  \"fontSizePx\": 16,\n  \"displayFont\": \"Syne\",\n  \"bodyFont\": \"Figtree\",\n  \"colors\": {\n    \"ink\": \"#0e0e0e\",\n    \"paper\": \"#f4f1ea\",\n    \"mist\": \"#e8e3d8\",\n    \"mute\": \"#6a655c\",\n    \"accent\": \"#d4ff4a\",\n    \"accentInk\": \"#142000\",\n    \"panel\": \"#fffcf8\",\n    \"line\": \"rgba(14, 14, 14, 0.12)\"\n  }\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
                 }
               }
             }
@@ -1299,6 +1116,189 @@
                     "discounts",
                     "{{id}}"
                   ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "theme",
+          "item": [
+            {
+              "name": "GetThemeSettings",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{url}}/api/theme-settings",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "theme-settings"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "GetStorefrontTheme",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{url}}/api/theme-settings?surface=storefront",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "theme-settings"
+                  ],
+                  "query": [
+                    {
+                      "key": "surface",
+                      "value": "storefront"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "GetAdminTheme",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{url}}/api/theme-settings?surface=admin",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "theme-settings"
+                  ],
+                  "query": [
+                    {
+                      "key": "surface",
+                      "value": "admin"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "UpdateStorefrontTheme",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{url}}/api/theme-settings",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "theme-settings"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"surface\": \"storefront\",\n  \"themeId\": \"rush-volt\",\n  \"colorMode\": \"day\",\n  \"fontScale\": \"md\",\n  \"fontSizePx\": 16,\n  \"displayFont\": \"Syne\",\n  \"bodyFont\": \"Figtree\",\n  \"colors\": {\n    \"ink\": \"#0e0e0e\",\n    \"paper\": \"#f4f1ea\",\n    \"mist\": \"#e8e3d8\",\n    \"mute\": \"#6a655c\",\n    \"accent\": \"#d4ff4a\",\n    \"accentInk\": \"#142000\",\n    \"panel\": \"#fffcf8\",\n    \"line\": \"rgba(14, 14, 14, 0.12)\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "name": "UpdateAdminTheme",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{url}}/api/theme-settings",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "theme-settings"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"surface\": \"admin\",\n  \"themeId\": \"rush-volt\",\n  \"colorMode\": \"night\",\n  \"fontScale\": \"md\",\n  \"fontSizePx\": 16,\n  \"displayFont\": \"Syne\",\n  \"bodyFont\": \"Figtree\",\n  \"colors\": {\n    \"ink\": \"#0e0e0e\",\n    \"paper\": \"#f4f1ea\",\n    \"mist\": \"#e8e3d8\",\n    \"mute\": \"#6a655c\",\n    \"accent\": \"#d4ff4a\",\n    \"accentInk\": \"#142000\",\n    \"panel\": \"#fffcf8\",\n    \"line\": \"rgba(14, 14, 14, 0.12)\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "seo",
+          "item": [
+            {
+              "name": "GetSeoSettings",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{url}}/api/seo-settings",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "seo-settings"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "UpdateSeoSettings",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{url}}/api/seo-settings",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "seo-settings"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"titleDefault\": \"Rush Culture — Youth clothing\",\n  \"titleTemplate\": \"%s · Rush Culture\",\n  \"description\": \"Street-ready youth clothing. Oversized tees, cargos, and limited drops.\",\n  \"shortDescription\": \"Street-ready fits for Gen Z — oversized tees, cargos, and limited drops.\",\n  \"shopDescription\": \"Browse all Rush Culture clothing.\",\n  \"contactDescription\": \"Ask Rush Culture about shipping or orders.\",\n  \"homeTitle\": \"\",\n  \"homeDescription\": \"\",\n  \"keywords\": \"streetwear, cargos, oversized\",\n  \"siteName\": \"Rush Culture\",\n  \"applicationName\": \"Rush Culture\",\n  \"robotsIndex\": true,\n  \"robotsFollow\": true,\n  \"robotsNoArchive\": false,\n  \"robotsNoSnippet\": false,\n  \"robotsNoImageIndex\": false,\n  \"maxImagePreview\": \"large\",\n  \"maxSnippet\": -1,\n  \"maxVideoPreview\": -1,\n  \"canonicalBaseUrl\": \"https://www.example.com\",\n  \"robotsSitemapUrl\": \"\",\n  \"locale\": \"en-IN\",\n  \"ogTitle\": \"Rush Culture — Youth clothing\",\n  \"ogDescription\": \"Street-ready youth clothing. Oversized tees, cargos, and limited drops.\",\n  \"ogImageUrl\": \"\",\n  \"ogImageAlt\": \"Rush Culture\",\n  \"ogType\": \"website\",\n  \"twitterCard\": \"summary_large_image\",\n  \"twitterHandle\": \"\",\n  \"twitterCreator\": \"\",\n  \"twitterTitle\": \"Rush Culture — Youth clothing\",\n  \"twitterDescription\": \"Street-ready youth clothing. Oversized tees, cargos, and limited drops.\",\n  \"twitterImageUrl\": \"\",\n  \"enableOrganizationSchema\": true,\n  \"organizationType\": \"OnlineStore\",\n  \"organizationName\": \"Rush Culture\",\n  \"organizationLogoUrl\": \"\",\n  \"organizationEmail\": \"support@rushculture.example\",\n  \"organizationPhone\": \"\",\n  \"organizationUrl\": \"\",\n  \"sameAs\": [],\n  \"enableWebsiteSchema\": true,\n  \"siteSearchUrlTemplate\": \"/shop?q={search_term_string}\",\n  \"enableProductSchema\": true,\n  \"googleSiteVerification\": \"\",\n  \"bingSiteVerification\": \"\",\n  \"yandexSiteVerification\": \"\",\n  \"pinterestSiteVerification\": \"\",\n  \"facebookAppId\": \"\",\n  \"faviconUrl\": \"\",\n  \"appleTouchIconUrl\": \"\",\n  \"noIndexPaths\": [\n    \"/cart\",\n    \"/checkout\"\n  ],\n  \"sitemapIncludeStatic\": true,\n  \"sitemapIncludeProducts\": true,\n  \"sitemapIncludeCollections\": true,\n  \"sitemapStaticPaths\": [\n    \"\",\n    \"/shop\",\n    \"/contact\",\n    \"/shipping\",\n    \"/returns\",\n    \"/size-guide\"\n  ],\n  \"sitemapAdditionalPaths\": []\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
                 }
               }
             }
@@ -2849,7 +2849,7 @@
           ]
         },
         {
-          "name": "client-device",
+          "name": "device",
           "item": [
             {
               "name": "GetClientDevices",

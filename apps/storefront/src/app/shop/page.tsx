@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { ShopCatalog } from "@/components/shop-catalog";
-import { fetchCollections } from "@/lib/catalog";
-import { fetchSeoSettings, seoToPageMetadata } from "@/lib/seo";
+import { ShopCatalog } from "@/components/meta/shop/shop-catalog";
+import { fetchCollections } from "@/base/catalog";
+import { fetchSeoSettings, seoToPageMetadata } from "@/base/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await fetchSeoSettings();

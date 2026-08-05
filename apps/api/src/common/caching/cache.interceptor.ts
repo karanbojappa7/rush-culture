@@ -9,8 +9,8 @@ import { Request } from 'express';
 import { Observable, from, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { WRITE_HTTP_METHODS } from '../constants/cache.constants';
-import { CryptoService } from '../crypto/crypto.service';
-import { isEncryptedResponseBody } from '../crypto/crypto.types';
+import { CryptoService } from '../../module/security/crypto/crypto.service';
+import { isEncryptedResponseBody } from '../../module/security/crypto/crypto.types';
 import { ResponseVm } from '../response/response.vm';
 import { CacheHandler } from './cache.handler';
 import {

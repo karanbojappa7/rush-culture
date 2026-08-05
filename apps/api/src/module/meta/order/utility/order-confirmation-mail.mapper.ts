@@ -1,4 +1,4 @@
-import { OrderConfirmationMailData } from '../../../../common/email/mail.types';
+import { OrderConfirmationMailData } from '../../../communication/email/mail.types';
 
 type OrderWithItems = {
   id: string;

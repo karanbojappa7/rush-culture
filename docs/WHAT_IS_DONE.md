@@ -19,8 +19,15 @@ Workspaces: npm (`apps/*`, `packages/*`).
 ## White-label / DRY
 
 - Brand name, cart storage key, order prefix, admin auth cookie → `@linq/site-config` (`brand`)
-- Theme settings (palette, **custom colors**, Google fonts, custom font size, day/night) → `packages/site-config/src/themes.ts`; API `GET/PUT /api/theme-settings` (`AppConfig` key `ui.theme` stores `{ storefront, admin }`; `?surface=` for one app); Super Admin **Theming** (`theming.manage`) toggle **Storefront | Admin**; each surface has independent settings
-- Storefront SEO → `packages/site-config/src/seo.ts`; API `GET/PUT /api/seo-settings` (`AppConfig` key `ui.seo`); Super Admin **SEO** (`seo.manage`): titles/home-shop-contact copy, robots + Googlebot preview rules, noindex paths, sitemap toggles/paths, Open Graph, Twitter, icons, multi-engine verification, Organization / WebSite / Product JSON-LD; storefront `generateMetadata` on all public pages, `robots.ts`, `sitemap.ts`
+- Theme settings (palette, **custom colors**, Google fonts, custom font size, day/night) → `packages/site-config/src/themes.ts`; API module `apps/api/src/module/core/theme` (`GET/PUT /api/theme-settings`, AppConfig `ui.theme` with `{ storefront, admin }`); Super Admin **Theming** (`theming.manage`)
+- Storefront SEO → `packages/site-config/src/seo.ts`; API module `apps/api/src/module/core/seo`; Super Admin **SEO** (`seo.manage`)
+- RBAC → `apps/api/src/module/core/rbac` (`permissions.yml`, access APIs)
+- Device / crypto / rate-limit → `apps/api/src/module/security/{device,crypto,rate-limit}`
+- Email → `apps/api/src/module/communication/email` (public schema EmailLog)
+- Platform glue (not schema-owned) → `apps/api/src/common/{base,prisma,caching,health,response,pagination,utility,config}`
+- Entities mirror schemas → `apps/api/src/database/entity/{core,master,meta,security,public}`
+- Admin UI groups by schema route folders → `apps/admin/src/app/(core|master|meta|security|common)` + components under same schema names; client hub → `apps/admin/src/base`
+- Frontend architecture (mirrors API): `@linq/app-layer` — **sole HTTP entry** is `BaseRepo` / `CachedApi` (never raw Nest fetch). Flow: Controller → Service → Repo. **Read:** cache hit → return; miss → API → store → return. **Write:** API then auto-invalidate resource prefix `api:{resource}` (all scopes). Shared process L1 (`MemoryCacheStore`) reduces Nest load under scale. Keys: `api:{resource}:{scope?}{METHOD}:{path}`. Ephemeral paths (`/api/auth/*`, health, cache admin, stock-check) skip cache. Admin server scopes by auth cookie; browser uses `browser` / storefront `storefront`. App helpers `@/base/api` + `api-server` are thin `CachedApi` wrappers so every call site is cache-first. Domain modules under `module/{schema}/{domain}`.
 - SKU helpers → `sku` / `withBrandName` from site-config (no hardcoded prefixes)
 - Money → `formatInr` from site-config
 - Policies (shipping / returns / size guide topics) → `packages/site-config/src/policies.ts`
@@ -108,8 +115,8 @@ Controller → executeMethod → Service → Repo (Prisma) → Postgres
 
 ### Auth (admin) + RBAC
 
-**Code layout:** `apps/api/src/common/rbac/`  
-**Catalog (source of truth for codes):** `apps/api/src/common/rbac/permissions.yml`  
+**Code layout:** `apps/api/src/module/core/rbac/`  
+**Catalog (source of truth for codes):** `apps/api/src/module/core/rbac/permissions.yml`  
 **Schema:** `core.role` (`isSystem`), `core.permission`, `core.role_permission`
 
 | Role | Purpose | Default access |
@@ -217,7 +224,7 @@ Overall `status`: `ok` | `degraded` | `error` (HTTP **503** if Postgres down).
 
 ## Transactional email (SMTP)
 
-Location: `apps/api/src/common/email`
+Location: `apps/api/src/module/communication/email`
 
 - `ENABLE_EMAIL=true` + `SMTP_HOST` (optional user/pass, port 587)
 - Branded HTML layout + order confirmation template (`@linq/site-config` brand/copy/money)
@@ -323,4 +330,4 @@ Redis required only when `ENABLE_CACHING=true`.
 - `docs/admin_auth_schema_cms.md` — schema ownership + admin auth (incl. RBAC tables)
 - `docs/README.md` — docs index
 - `docs/postman/` — API collection (regenerate: `node docs/postman/generate-collection.mjs`)
-- `apps/api/src/common/rbac/permissions.yml` — permission catalog source of truth
+- `apps/api/src/module/core/rbac/permissions.yml` — permission catalog source of truth

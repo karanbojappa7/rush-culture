@@ -1,0 +1,37 @@
+import type { ApiResponse } from "@linq/secure-api";
+import { formatInr } from "@linq/site-config";
+import { getBrowserCachedApi } from "@/base/runtime";
+
+export type { ApiResponse };
+export { formatInr };
+
+const api = getBrowserCachedApi();
+
+export async function apiGet<T>(path: string): Promise<ApiResponse<T>> {
+  return api.get<T>(path);
+}
+
+export async function apiPost<T>(
+  path: string,
+  body?: unknown,
+): Promise<ApiResponse<T>> {
+  return api.post<T>(path, body);
+}
+
+export async function apiPut<T>(
+  path: string,
+  body?: unknown,
+): Promise<ApiResponse<T>> {
+  return api.put<T>(path, body);
+}
+
+export async function apiPatch<T>(
+  path: string,
+  body?: unknown,
+): Promise<ApiResponse<T>> {
+  return api.patch<T>(path, body);
+}
+
+export async function apiDelete<T>(path: string): Promise<ApiResponse<T>> {
+  return api.delete<T>(path);
+}

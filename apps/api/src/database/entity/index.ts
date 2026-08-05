@@ -5,9 +5,11 @@ export {
   UserEntity,
   UserTypeEntity,
   RoleEntity,
-  AccountEntity,
-  SessionEntity,
 } from './core/user/user.entity';
+export {
+  PermissionEntity,
+  RolePermissionEntity,
+} from './core/rbac/rbac.entity';
 export {
   ProductEntity,
   ProductVariantEntity,
@@ -21,3 +23,8 @@ export { CustomerEntity } from './meta/customer/customer.entity';
 export { OrderEntity, OrderItemEntity } from './meta/order/order.entity';
 export { CartEntity, CartItemEntity } from './meta/cart/cart.entity';
 export { ReviewEntity } from './meta/review/review.entity';
+export { AccountEntity } from './security/account/account.entity';
+export { SessionEntity } from './security/session/session.entity';
+export { VerificationTokenEntity } from './security/verification-token/verification-token.entity';
+export { ClientDeviceEntity } from './security/client-device/client-device.entity';
+export { EmailLogEntity } from './public/email-log/email-log.entity';

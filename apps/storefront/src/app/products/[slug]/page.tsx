@@ -1,11 +1,11 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { ProductBuyBox } from "@/components/product-buy-box";
-import { ProductImageGallery } from "@/components/product-image-gallery";
-import { ProductReviews } from "@/components/product-reviews";
-import { ProductJsonLd } from "@/components/seo/product-json-ld";
-import { fetchProductBySlug, fetchProducts } from "@/lib/catalog";
-import { fetchSeoSettings, seoToPageMetadata } from "@/lib/seo";
+import { ProductBuyBox } from "@/components/meta/shop/product-buy-box";
+import { ProductImageGallery } from "@/components/meta/shop/product-image-gallery";
+import { ProductReviews } from "@/components/meta/shop/product-reviews";
+import { ProductJsonLd } from "@/components/core/seo/product-json-ld";
+import { fetchProductBySlug, fetchProducts } from "@/base/catalog";
+import { fetchSeoSettings, seoToPageMetadata } from "@/base/seo";
 
 type Props = {
   params: Promise<{ slug: string }>;

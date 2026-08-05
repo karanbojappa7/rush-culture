@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { BaseController } from '../../../common/base/base.controller';
-import { sealToken } from '../../../common/crypto/token-seal';
+import { sealToken } from '../crypto/token-seal';
 import { ResponseBuilder } from '../../../common/response/response.builder';
 import { ResponseVm } from '../../../common/response/response.vm';
 import { AuthService } from './auth.service';

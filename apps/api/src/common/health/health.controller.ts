@@ -18,19 +18,23 @@ export class HealthController extends BaseController {
   live(): Promise<ResponseVm> {
     return this.executeMethod(
       () => this.healthService.live(),
-      undefined,
+      undefined as never,
       'API live',
     );
   }
 
   @Get()
-  async check(@Res({ passthrough: true }) res: Response): Promise<ResponseVm> {
-    const report = await this.healthService.check();
-    if (report.status === 'error') {
-      res.status(503);
-    } else if (report.status === 'degraded') {
-      res.status(200);
-    }
-    return this.responseBuilder.success('Health check', report);
+  check(@Res({ passthrough: true }) res: Response): Promise<ResponseVm> {
+    return this.executeMethod(
+      async () => {
+        const report = await this.healthService.check();
+        if (report.status === 'error') {
+          res.status(503);
+        }
+        return report;
+      },
+      undefined as never,
+      'Health check',
+    );
   }
 }

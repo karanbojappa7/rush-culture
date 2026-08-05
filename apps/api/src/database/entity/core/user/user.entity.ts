@@ -24,14 +24,3 @@ export class UserEntity extends BaseEntity {
   roleId!: string;
   userTypeId!: string;
 }
-
-export class AccountEntity extends BaseEntity {
-  type!: string;
-  provider!: string;
-  providerAccountId!: string;
-}
-
-export class SessionEntity extends BaseEntity {
-  sessionToken!: string;
-  expires!: Date;
-}

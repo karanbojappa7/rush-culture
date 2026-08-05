@@ -1,0 +1,58 @@
+---
+description: CS/R base stack + frontend cache-first ethics — always enforce
+alwaysApply: true
+---
+
+# Base-layer ethics (API + storefront + admin)
+
+Every data path goes through the base layers. No ad-hoc bypasses.
+
+## Nest API (`apps/api`)
+
+```
+Controller → executeMethod → Service → Repo → Prisma
+                ↓
+         ResponseBuilder (200 | 401 | 403 | 1000)
+```
+
+- Controllers: `BaseController` + `executeMethod` only. Never return raw bodies or call `ResponseBuilder` outside it.
+- Services: `BaseService`. Business rules live here; no Prisma in controllers.
+- Repos: `BaseRepo`. Only repos touch Prisma for domain data.
+- Platform glue only (crypto middleware, encrypt interceptor, cache interceptor, rate-limit, health internals) may sit outside C→S→R. Domain HTTP routes must not.
+
+## Frontend (`apps/admin`, `apps/storefront`)
+
+```
+UI → Controller (optional) / thin api helper → Service → Repo / CachedApi
+```
+
+Package: `@linq/app-layer` (`BaseController`, `BaseService`, `BaseRepo`, `CachedApi`, `MemoryCacheStore`).
+
+### Repository contract (non-negotiable)
+
+- **Repo never hits the API “raw” as the only path.** Reads are cache-first:
+  1. Check process cache
+  2. On miss → call API
+  3. Store response → return (preferably from cache semantics)
+- **Writes:** call API, then **auto-invalidate** resource prefix `api:{resource}` (all scopes) so lists/details stay in sync.
+- Entry points for HTTP are `BaseRepo` / `CachedApi` or domain repos extending them.
+- `@/base/api` and `@/base/api-server` must wrap `CachedApi` only — never `createSecureApi` / bare `fetch` for app data.
+- Do not introduce parallel fetch clients or page-level direct Nest calls.
+
+### Cache keys
+
+- Shape: `api:{resource}:{scope?}{METHOD}:{path}`
+- Ephemeral (skip cache): `/api/auth/*`, health, cache admin, stock-check
+- Admin server scope: auth cookie hash; browser: `browser`; storefront: `storefront`
+- Shared L1: `MemoryCacheStore` on `globalThis` per process
+
+### Domain modules
+
+- Prefer `module/{schema}/{domain}` (controller → service → repo).
+- New endpoints or pages: wire through these layers first; do not grow direct API usage.
+
+## When adding features
+
+- API handler → BaseController path
+- FE data load/mutation → CachedApi or domain `BaseRepo`
+- Never “just for now” fetch past the stack

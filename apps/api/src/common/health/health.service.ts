@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { BaseService } from '../base/base.service';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   createCacheRedisClient,
@@ -39,10 +40,12 @@ const REQUIRED_SCHEMAS = [
 ] as const;
 
 @Injectable()
-export class HealthService {
+export class HealthService extends BaseService {
   private readonly startedAt = Date.now();
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {
+    super(HealthService.name);
+  }
 
   async check(): Promise<HealthReport> {
     const [postgres, redis, cache, encryption] = await Promise.all([

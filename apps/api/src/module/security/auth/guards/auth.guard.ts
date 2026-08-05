@@ -9,7 +9,7 @@ import { Request } from 'express';
 
 import { brand } from '@linq/site-config';
 import { PrismaService } from '../../../../common/prisma/prisma.service';
-import { openToken } from '../../../../common/crypto/token-seal';
+import { openToken } from '../../crypto/token-seal';
 
 export type AuthUser = {
   id: string;

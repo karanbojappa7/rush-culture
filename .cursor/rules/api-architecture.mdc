@@ -16,9 +16,10 @@ Controller → executeMethod → Service → Repo → Prisma
          ResponseBuilder
 ```
 
-- Controllers extend `BaseController` and return `ResponseVm` via `executeMethod`.
+- Controllers extend `BaseController` and return `ResponseVm` via `executeMethod` only (no direct `ResponseBuilder` / raw returns).
 - Services extend `BaseService`; business rules and NotFound/Conflict live here.
-- Repos extend `BaseRepo`; audit + soft delete live here. Do not query Prisma from controllers.
+- Repos extend `BaseRepo`; audit + soft delete live here. Do not query Prisma from controllers or services when a repo method exists.
+- Every domain HTTP route must go through this stack (see always-on rule `base-layer-ethics.mdc`).
 - Wire `MODULE_CONFIG` with `loadModuleConfig(__dirname)` and keep `config/module.yml`.
 - DTOs: `create-*.dto.ts` + `update-*.dto.ts` (`PartialType` from `@nestjs/mapped-types`). Validate with `class-validator`.
 

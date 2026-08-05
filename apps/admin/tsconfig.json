@@ -20,6 +20,7 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
+      "@linq/app-layer": ["../../packages/app-layer/src/index.ts"],
       "@linq/secure-api": ["../../packages/secure-api/src/index.ts"],
       "@linq/site-config": ["../../packages/site-config/src/index.ts"]
     }

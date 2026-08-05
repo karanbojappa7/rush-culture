@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Figtree, Syne } from "next/font/google";
 import { brand } from "@linq/site-config";
-import { ThemeBootstrap } from "@/components/theme/theme-bootstrap";
-import { ThemeProvider } from "@/components/theme/theme-provider";
+import { ThemeBootstrap } from "@/components/core/theme/theme-bootstrap";
+import { ThemeProvider } from "@/components/core/theme/theme-provider";
 import "./globals.css";
 
 const syne = Syne({

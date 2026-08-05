@@ -7,7 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../../../common/prisma/prisma.service';
 import { BaseService } from '../../../common/base/base.service';
-import { RbacService } from '../../../common/rbac/rbac.service';
+import { RbacService } from '../../core/rbac/rbac.service';
 import { RoleService } from '../../core/user/role/role.service';
 import { UserTypeService } from '../../core/user/user-type/user-type.service';
 import { LoginDto } from './dto/login.dto';

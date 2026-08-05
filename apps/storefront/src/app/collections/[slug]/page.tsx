@@ -1,9 +1,9 @@
-import { ShopCatalog } from "@/components/shop-catalog";
+import { ShopCatalog } from "@/components/meta/shop/shop-catalog";
 import {
   fetchCollectionBySlug,
   fetchCollections,
-} from "@/lib/catalog";
-import { fetchSeoSettings, seoToPageMetadata } from "@/lib/seo";
+} from "@/base/catalog";
+import { fetchSeoSettings, seoToPageMetadata } from "@/base/seo";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 

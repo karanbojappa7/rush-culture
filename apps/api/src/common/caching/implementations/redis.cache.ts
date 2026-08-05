@@ -2,7 +2,7 @@ import Redis from 'ioredis';
 import {
   openCachePayload,
   sealCachePayload,
-} from '../../crypto/token-seal';
+} from '../../../module/security/crypto/token-seal';
 import { ICache } from '../cache.interface';
 import {
   createCacheRedisClient,

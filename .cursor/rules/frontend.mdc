@@ -7,8 +7,9 @@ alwaysApply: false
 # Frontend conventions
 
 - Next.js App Router under `src/app`. Reuse existing components and tokens before adding new UI kits.
-- Call the API through `@/lib/api` / `@linq/secure-api` — do not fork ad-hoc fetch wrappers.
+- **Data access:** only via `@linq/app-layer` (`BaseRepo` / `CachedApi`) or domain `module/{schema}/{domain}` CS/R. Thin wrappers: `@/base/api`, `@/base/api-server`. Never bare `fetch` / direct `createSecureApi` for app data.
+- **Cache ethics:** repo read = cache → else API → store → return; write = API + auto-invalidate `api:{resource}`. See always-on rule `base-layer-ethics.mdc`.
 - Brand text from `@linq/site-config` (`brand`), not hardcoded names.
 - Storefront design: one clear composition per viewport; brand-first hero; Syne + Figtree; paper/ink/volt atmosphere. Avoid purple-gradient / cream-serif AI clichés, card spam in heroes, and cluttered first viewports.
 - Prefer matching existing layout patterns in admin (shell + pages) over new dashboard frameworks.
-- `transpilePackages` must include `@linq/site-config` and `@linq/secure-api` when those packages are used.
+- `transpilePackages` must include `@linq/site-config`, `@linq/secure-api`, and `@linq/app-layer` when used.

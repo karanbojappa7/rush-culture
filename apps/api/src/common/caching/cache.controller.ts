@@ -1,5 +1,5 @@
 import { Controller, Delete, Get, Param, Post } from '@nestjs/common';
-import { PermissionsAuth } from '../rbac/permissions.decorator';
+import { PermissionsAuth } from '../../module/core/rbac/permissions.decorator';
 import { BaseController } from '../base/base.controller';
 import { ResponseBuilder } from '../response/response.builder';
 import { ResponseVm } from '../response/response.vm';

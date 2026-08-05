@@ -1,16 +1,16 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import { AdminShell } from "@/components/layout/admin-shell";
+import { AdminShell } from "@/components/common/layout/admin-shell";
 import {
   DataTable,
   DataTableCell,
   DataTableRow,
-} from "@/components/ui/data-table";
-import { DateRangeFilter } from "@/components/ui/date-range-filter";
-import { OverviewCharts } from "@/components/overview/overview-charts";
-import { apiGet, formatInr } from "@/lib/api-server";
-import { emptyPage, pageQuery, type PageResult } from "@/lib/pagination";
-import { getSessionUser, sessionLabel } from "@/lib/session";
+} from "@/components/common/ui/data-table";
+import { DateRangeFilter } from "@/components/common/ui/date-range-filter";
+import { OverviewCharts } from "@/components/meta/overview/overview-charts";
+import { apiGet, formatInr } from "@/base/api-server";
+import { emptyPage, pageQuery, type PageResult } from "@/base/pagination";
+import { getSessionUser, sessionLabel } from "@/base/session";
 
 type Summary = {
   orders: number;
