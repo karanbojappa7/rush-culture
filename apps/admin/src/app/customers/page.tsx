@@ -1,5 +1,7 @@
 import { AdminShell } from "@/components/admin-shell";
+import { PaginationNav } from "@/components/pagination-nav";
 import { apiGet } from "@/lib/api-server";
+import { emptyPage, type PageResult } from "@/lib/pagination";
 import { getSessionUser, sessionLabel } from "@/lib/session";
 
 type Customer = {
@@ -10,12 +12,15 @@ type Customer = {
   createdAt: string;
 };
 
-export default async function CustomersPage() {
+type Props = { searchParams: Promise<{ page?: string }> };
+
+export default async function CustomersPage({ searchParams }: Props) {
+  const { page = "1" } = await searchParams;
   const [user, customersRes] = await Promise.all([
     getSessionUser(),
-    apiGet<Customer[]>("/api/customers"),
+    apiGet<PageResult<Customer>>(`/api/customers?page=${page}&limit=20`),
   ]);
-  const customers = customersRes.data ?? [];
+  const data = customersRes.data ?? emptyPage<Customer>();
 
   return (
     <AdminShell title="Customers" userLabel={sessionLabel(user)}>
@@ -30,8 +35,11 @@ export default async function CustomersPage() {
             </tr>
           </thead>
           <tbody>
-            {customers.map((customer) => (
-              <tr key={customer.id} className="border-b border-line last:border-0">
+            {data.items.map((customer) => (
+              <tr
+                key={customer.id}
+                className="border-b border-line last:border-0"
+              >
                 <td className="px-4 py-3 font-medium">
                   {customer.name ?? "—"}
                 </td>
@@ -44,7 +52,7 @@ export default async function CustomersPage() {
                 </td>
               </tr>
             ))}
-            {customers.length === 0 ? (
+            {data.items.length === 0 ? (
               <tr>
                 <td className="px-4 py-8 text-mute" colSpan={4}>
                   No customers yet.
@@ -54,6 +62,12 @@ export default async function CustomersPage() {
           </tbody>
         </table>
       </div>
+      <PaginationNav
+        page={data.page}
+        totalPages={data.totalPages}
+        total={data.total}
+        basePath="/customers"
+      />
     </AdminShell>
   );
 }

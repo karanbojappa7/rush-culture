@@ -1,6 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Customer } from '@prisma/client';
 import { BaseService } from '../../../common/base/base.service';
+import {
+  PageQuery,
+  PageResult,
+} from '../../../common/pagination/pagination.utility';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
 import { CustomerRepo } from './customer.repo';
@@ -52,8 +56,10 @@ export class CustomerService extends BaseService {
     return customer;
   }
 
-  async findAll(): Promise<Customer[]> {
-    return this.customerRepo.findAll({ orderBy: { createdAt: 'desc' } });
+  async findAll(pageQuery: PageQuery): Promise<PageResult<Customer>> {
+    return this.customerRepo.findPage(pageQuery, {
+      orderBy: { createdAt: 'desc' },
+    });
   }
 
   async update(payload: {

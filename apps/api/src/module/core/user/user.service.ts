@@ -61,8 +61,12 @@ export class UserService extends BaseService {
     return user;
   }
 
-  async findAll(_payload: Record<string, never> = {}): Promise<User[]> {
-    return this.userRepo.findAllWithIdentity();
+  async findAll(pageQuery: {
+    page: number;
+    limit: number;
+    skip: number;
+  }) {
+    return this.userRepo.findAllWithIdentity(pageQuery);
   }
 
   async update(payload: { id: string; data: UpdateUserDto }): Promise<User> {

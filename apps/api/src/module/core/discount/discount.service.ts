@@ -5,6 +5,10 @@ import {
 } from '@nestjs/common';
 import { Discount } from '@prisma/client';
 import { BaseService } from '../../../common/base/base.service';
+import {
+  PageQuery,
+  PageResult,
+} from '../../../common/pagination/pagination.utility';
 import { CreateDiscountDto } from './dto/create-discount.dto';
 import { UpdateDiscountDto } from './dto/update-discount.dto';
 import { DiscountRepo } from './discount.repo';
@@ -63,8 +67,8 @@ export class DiscountService extends BaseService {
     return discount;
   }
 
-  async findAll(): Promise<Discount[]> {
-    return this.discountRepo.findAll({
+  async findAll(pageQuery: PageQuery): Promise<PageResult<Discount>> {
+    return this.discountRepo.findPage(pageQuery, {
       orderBy: { createdAt: 'desc' },
     });
   }

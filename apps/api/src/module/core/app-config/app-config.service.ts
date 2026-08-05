@@ -5,6 +5,10 @@ import {
 } from '@nestjs/common';
 import { AppConfig } from '@prisma/client';
 import { BaseService } from '../../../common/base/base.service';
+import {
+  PageQuery,
+  PageResult,
+} from '../../../common/pagination/pagination.utility';
 import { CreateAppConfigDto } from './dto/create-app-config.dto';
 import { UpdateAppConfigDto } from './dto/update-app-config.dto';
 import { AppConfigRepo } from './app-config.repo';
@@ -48,8 +52,8 @@ export class AppConfigService extends BaseService {
     return appConfig;
   }
 
-  async findAll(): Promise<AppConfig[]> {
-    return this.appConfigRepo.findAll({
+  async findAll(pageQuery: PageQuery): Promise<PageResult<AppConfig>> {
+    return this.appConfigRepo.findPage(pageQuery, {
       orderBy: { key: 'asc' },
     });
   }

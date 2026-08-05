@@ -40,12 +40,29 @@ export class CartRepo extends BaseRepo<Cart, Prisma.CartCreateInput, Prisma.Cart
     });
   }
 
-  async findAllWithItems() {
-    return this.prisma.cart.findMany({
-      where: this.notDeletedWhere(),
-      include: cartInclude,
-      orderBy: { updatedAt: 'desc' },
-    });
+  async findAllWithItems(pageQuery: {
+    page: number;
+    limit: number;
+    skip: number;
+  }) {
+    const where = this.notDeletedWhere();
+    const [items, total] = await Promise.all([
+      this.prisma.cart.findMany({
+        where,
+        include: cartInclude,
+        orderBy: { updatedAt: 'desc' },
+        skip: pageQuery.skip,
+        take: pageQuery.limit,
+      }),
+      this.prisma.cart.count({ where }),
+    ]);
+    return {
+      items,
+      page: pageQuery.page,
+      limit: pageQuery.limit,
+      total,
+      totalPages: total === 0 ? 0 : Math.ceil(total / pageQuery.limit),
+    };
   }
 }
 

@@ -6,8 +6,10 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { BaseController } from '../../../../common/base/base.controller';
+import { parsePageQuery } from '../../../../common/pagination/pagination.utility';
 import { ResponseBuilder } from '../../../../common/response/response.builder';
 import { ResponseVm } from '../../../../common/response/response.vm';
 import { CreateRoleDto } from '../dto/create-role.dto';
@@ -33,10 +35,13 @@ export class RoleController extends BaseController {
   }
 
   @Get()
-  findAll(): Promise<ResponseVm> {
+  findAll(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ): Promise<ResponseVm> {
     return this.executeMethod(
-      (_data: Record<string, never>) => this.roleService.findAll(),
-      {},
+      (data) => this.roleService.findAll(data),
+      parsePageQuery(page, limit),
       'Roles fetched',
     );
   }

@@ -2,7 +2,6 @@ import { ShopCatalog } from "@/components/shop-catalog";
 import {
   fetchCollectionBySlug,
   fetchCollections,
-  fetchProducts,
 } from "@/lib/catalog";
 import { notFound } from "next/navigation";
 
@@ -22,9 +21,8 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function CollectionPage({ params }: Props) {
   const { slug } = await params;
-  const [collection, products, collections] = await Promise.all([
+  const [collection, collections] = await Promise.all([
     fetchCollectionBySlug(slug),
-    fetchProducts(),
     fetchCollections(),
   ]);
   if (!collection) notFound();
@@ -41,7 +39,6 @@ export default async function CollectionPage({ params }: Props) {
         <p className="mt-3 max-w-lg text-mute">{collection.tagline}</p>
       </div>
       <ShopCatalog
-        products={products}
         collections={collections}
         initialCollection={slug}
         title="Browse"

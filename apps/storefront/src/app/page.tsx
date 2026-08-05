@@ -7,7 +7,7 @@ import { fetchCollections, fetchProducts } from "@/lib/catalog";
 export default async function HomePage() {
   const [collections, products] = await Promise.all([
     fetchCollections(),
-    fetchProducts(),
+    fetchProducts(4),
   ]);
 
   return (
@@ -55,7 +55,7 @@ export default async function HomePage() {
       </section>
 
       <ProductGrid
-        products={products.slice(0, 4)}
+        products={products}
         title="Fresh in"
         subtitle="Pieces shipping now — sizes move quick."
       />

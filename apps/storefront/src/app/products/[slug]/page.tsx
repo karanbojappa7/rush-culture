@@ -8,7 +8,7 @@ type Props = {
 };
 
 export async function generateStaticParams() {
-  const products = await fetchProducts();
+  const products = await fetchProducts(100);
   return products.map((product) => ({ slug: product.slug }));
 }
 

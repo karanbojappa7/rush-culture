@@ -9,6 +9,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { BaseController } from '../../../common/base/base.controller';
+import { parsePageQuery } from '../../../common/pagination/pagination.utility';
 import { ResponseBuilder } from '../../../common/response/response.builder';
 import { ResponseVm } from '../../../common/response/response.vm';
 import { AddressService } from './address.service';
@@ -34,10 +35,14 @@ export class AddressController extends BaseController {
   }
 
   @Get()
-  findAll(@Query('customerId') customerId?: string): Promise<ResponseVm> {
+  findAll(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('customerId') customerId?: string,
+  ): Promise<ResponseVm> {
     return this.executeMethod(
       (data) => this.addressService.findAll(data),
-      { customerId },
+      { ...parsePageQuery(page, limit), customerId },
       'Addresses fetched',
     );
   }

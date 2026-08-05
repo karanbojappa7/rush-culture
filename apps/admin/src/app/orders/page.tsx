@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { AdminShell } from "@/components/admin-shell";
+import { PaginationNav } from "@/components/pagination-nav";
 import { apiGet, formatInr } from "@/lib/api-server";
+import { emptyPage, type PageResult } from "@/lib/pagination";
 import { getSessionUser, sessionLabel } from "@/lib/session";
 
 type OrderItem = {
@@ -31,20 +33,23 @@ type Order = {
   items: OrderItem[];
 };
 
-export default async function OrdersPage() {
+type Props = { searchParams: Promise<{ page?: string }> };
+
+export default async function OrdersPage({ searchParams }: Props) {
+  const { page = "1" } = await searchParams;
   const [user, res] = await Promise.all([
     getSessionUser(),
-    apiGet<Order[]>("/api/orders"),
+    apiGet<PageResult<Order>>(`/api/orders?page=${page}&limit=10`),
   ]);
-  const orders = res.data ?? [];
+  const data = res.data ?? emptyPage<Order>(10);
 
   return (
     <AdminShell title="Orders" userLabel={sessionLabel(user)}>
       <div className="space-y-4">
-        {orders.length === 0 ? (
+        {data.items.length === 0 ? (
           <p className="text-mute">No orders yet.</p>
         ) : (
-          orders.map((order) => (
+          data.items.map((order) => (
             <article
               key={order.id}
               className="border border-line bg-panel p-5 md:p-6"
@@ -91,7 +96,7 @@ export default async function OrdersPage() {
                   <p className="text-[11px] tracking-[0.12em] uppercase text-mute">
                     Payment captured
                   </p>
-                  <p className="mt-1 uppercase font-medium">
+                  <p className="mt-1 font-medium uppercase">
                     {order.paymentMethod ?? "—"}
                   </p>
                   <p className="text-mute">{order.paymentDetails || "—"}</p>
@@ -116,6 +121,12 @@ export default async function OrdersPage() {
           ))
         )}
       </div>
+      <PaginationNav
+        page={data.page}
+        totalPages={data.totalPages}
+        total={data.total}
+        basePath="/orders"
+      />
     </AdminShell>
   );
 }

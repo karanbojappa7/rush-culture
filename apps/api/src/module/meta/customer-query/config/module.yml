@@ -1,0 +1,9 @@
+name: customer-query
+version: 1.0.0
+enabled: true
+prefix: /api/customer-queries
+description: Customer support queries tracked in meta schema
+schema: meta
+
+security:
+  encrypt: true

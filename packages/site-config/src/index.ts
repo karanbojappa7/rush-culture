@@ -9,3 +9,10 @@ export {
   getLowestPrice,
 } from "./catalog";
 export type { Product, ProductVariant, Collection } from "./catalog";
+export {
+  shippingPolicy,
+  returnsPolicy,
+  sizeGuide,
+  contactTopics,
+} from "./policies";
+export type { PolicySection } from "./policies";

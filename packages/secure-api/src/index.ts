@@ -135,45 +135,79 @@ export function createSecureApi(
 
   async function resolveCrypto() {
     if (cached) return cached;
-    const res = await fetch(`${baseUrl}/api/crypto/public-key`, {
-      cache: "no-store",
-    });
-    const json = (await res.json()) as ApiResponse<PublicKeyPayload>;
-    const payload = json.data;
-    if (!payload?.enabled || !payload.publicKey) {
+    try {
+      const res = await fetch(`${baseUrl}/api/crypto/public-key`, {
+        cache: "no-store",
+      });
+      if (!res.ok) {
+        cached = { enabled: false };
+        return cached;
+      }
+      const json = (await res.json()) as ApiResponse<PublicKeyPayload>;
+      const payload = json.data;
+      if (!payload?.enabled || !payload.publicKey) {
+        cached = { enabled: false };
+        return cached;
+      }
+      cached = {
+        enabled: true,
+        publicKey: await importPublicKey(payload.publicKey),
+      };
+      return cached;
+    } catch {
       cached = { enabled: false };
       return cached;
     }
-    cached = {
-      enabled: true,
-      publicKey: await importPublicKey(payload.publicKey),
-    };
-    return cached;
   }
 
   async function request<T>(
     path: string,
     init?: RequestInit & { json?: unknown },
   ): Promise<ApiResponse<T>> {
-    const mode = await resolveCrypto();
-    const headers = new Headers(init?.headers);
-    if (options.headers) {
-      new Headers(options.headers).forEach((value, key) => {
-        headers.set(key, value);
-      });
-    }
-    const cookieHeader = options.getCookieHeader
-      ? await options.getCookieHeader()
-      : undefined;
-    if (cookieHeader) headers.set("Cookie", cookieHeader);
-
-    let body = init?.body;
-
-    if (!mode.enabled) {
-      if (init?.json !== undefined) {
-        headers.set("Content-Type", "application/json");
-        body = JSON.stringify(init.json);
+    try {
+      const mode = await resolveCrypto();
+      const headers = new Headers(init?.headers);
+      if (options.headers) {
+        new Headers(options.headers).forEach((value, key) => {
+          headers.set(key, value);
+        });
       }
+      const cookieHeader = options.getCookieHeader
+        ? await options.getCookieHeader()
+        : undefined;
+      if (cookieHeader) headers.set("Cookie", cookieHeader);
+
+      let body = init?.body;
+
+      if (!mode.enabled) {
+        if (init?.json !== undefined) {
+          headers.set("Content-Type", "application/json");
+          body = JSON.stringify(init.json);
+        }
+        const res = await fetch(`${baseUrl}${path}`, {
+          ...init,
+          headers,
+          body,
+          cache: "no-store",
+          credentials: options.credentials,
+        });
+        return res.json() as Promise<ApiResponse<T>>;
+      }
+
+      const aesKey = await createAesKey();
+      const ek = await wrapAesKey(mode.publicKey, aesKey);
+      headers.set(ENCRYPTION_HEADER, ek);
+
+      if (init?.json !== undefined) {
+        const sealed = await encryptPayload(aesKey, init.json);
+        headers.set("Content-Type", "application/json");
+        body = JSON.stringify({
+          enc: true,
+          ek,
+          ...sealed,
+        });
+      }
+
       const res = await fetch(`${baseUrl}${path}`, {
         ...init,
         headers,
@@ -181,35 +215,17 @@ export function createSecureApi(
         cache: "no-store",
         credentials: options.credentials,
       });
-      return res.json() as Promise<ApiResponse<T>>;
+      const raw = await res.json();
+      if (isEncryptedResponse(raw)) {
+        return decryptPayload<ApiResponse<T>>(aesKey, raw);
+      }
+      return raw as ApiResponse<T>;
+    } catch {
+      return {
+        status_code: 1000,
+        message: "Unable to reach API. Check that the server is running.",
+      };
     }
-
-    const aesKey = await createAesKey();
-    const ek = await wrapAesKey(mode.publicKey, aesKey);
-    headers.set(ENCRYPTION_HEADER, ek);
-
-    if (init?.json !== undefined) {
-      const sealed = await encryptPayload(aesKey, init.json);
-      headers.set("Content-Type", "application/json");
-      body = JSON.stringify({
-        enc: true,
-        ek,
-        ...sealed,
-      });
-    }
-
-    const res = await fetch(`${baseUrl}${path}`, {
-      ...init,
-      headers,
-      body,
-      cache: "no-store",
-      credentials: options.credentials,
-    });
-    const raw = await res.json();
-    if (isEncryptedResponse(raw)) {
-      return decryptPayload<ApiResponse<T>>(aesKey, raw);
-    }
-    return raw as ApiResponse<T>;
   }
 
   return {

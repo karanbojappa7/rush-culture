@@ -2,6 +2,11 @@ import { notFound } from "next/navigation";
 import { AdminShell } from "@/components/admin-shell";
 import { ProductForm } from "@/components/product-form";
 import { apiGet } from "@/lib/api-server";
+import {
+  imagesFromUrls,
+  variantsFromProduct,
+} from "@/lib/product-form-initial";
+import { type PageResult } from "@/lib/pagination";
 import { getSessionUser, sessionLabel } from "@/lib/session";
 
 type Category = { id: string; name: string; slug: string };
@@ -31,7 +36,7 @@ export default async function EditProductPage({ params }: Props) {
   const [user, productRes, categoriesRes] = await Promise.all([
     getSessionUser(),
     apiGet<Product>(`/api/products/id/${id}`),
-    apiGet<Category[]>("/api/categories"),
+    apiGet<PageResult<Category>>("/api/categories?page=1&limit=100"),
   ]);
   const product = productRes.data;
   if (!product) notFound();
@@ -40,7 +45,7 @@ export default async function EditProductPage({ params }: Props) {
     <AdminShell title="Edit product" userLabel={sessionLabel(user)}>
       <ProductForm
         productId={product.id}
-        categories={categoriesRes.data ?? []}
+        categories={categoriesRes.data?.items ?? []}
         initial={{
           name: product.name,
           slug: product.slug,
@@ -48,13 +53,8 @@ export default async function EditProductPage({ params }: Props) {
           brand: product.brand ?? "",
           categoryId: product.categoryId ?? "",
           isActive: product.isActive,
-          imageUrls: product.images.map((image) => image.url).join("\n"),
-          variantsText: product.variants
-            .map(
-              (variant) =>
-                `${variant.sku},${variant.size},${variant.color},${variant.colorHex ?? ""},${variant.priceInPaise},${variant.stock}`,
-            )
-            .join("\n"),
+          images: imagesFromUrls(product.images.map((image) => image.url)),
+          variants: variantsFromProduct(product.variants),
         }}
       />
     </AdminShell>

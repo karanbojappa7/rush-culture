@@ -1,5 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { BaseController } from '../../../common/base/base.controller';
+import { parsePageQuery } from '../../../common/pagination/pagination.utility';
 import { ResponseBuilder } from '../../../common/response/response.builder';
 import { ResponseVm } from '../../../common/response/response.vm';
 import { StaffAuth } from '../../security/auth/guards/staff-auth.decorator';
@@ -27,10 +28,13 @@ export class OrderController extends BaseController {
 
   @Get()
   @StaffAuth()
-  findAll(): Promise<ResponseVm> {
+  findAll(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ): Promise<ResponseVm> {
     return this.executeMethod(
-      (_data: Record<string, never>) => this.orderService.findAll(),
-      {},
+      (data) => this.orderService.findAll(data),
+      parsePageQuery(page, limit),
       'Orders fetched',
     );
   }

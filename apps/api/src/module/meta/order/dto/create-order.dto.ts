@@ -10,9 +10,8 @@ import {
 import { Type } from 'class-transformer';
 
 export class CreateOrderItemDto {
-  @IsOptional()
   @IsString()
-  variantId?: string;
+  variantId!: string;
 
   @IsOptional()
   @IsString()

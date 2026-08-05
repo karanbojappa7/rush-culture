@@ -6,6 +6,10 @@ import {
 } from '@nestjs/common';
 import { Role } from '@prisma/client';
 import { BaseService } from '../../../../common/base/base.service';
+import {
+  PageQuery,
+  PageResult,
+} from '../../../../common/pagination/pagination.utility';
 import { CreateRoleDto } from '../dto/create-role.dto';
 import { UpdateRoleDto } from '../dto/update-role.dto';
 import { RoleRepo } from './role.repo';
@@ -55,8 +59,8 @@ export class RoleService extends BaseService implements OnModuleInit {
     return role;
   }
 
-  async findAll(): Promise<Role[]> {
-    return this.roleRepo.findAll({
+  async findAll(pageQuery: PageQuery): Promise<PageResult<Role>> {
+    return this.roleRepo.findPage(pageQuery, {
       where: { isActive: true },
       orderBy: { code: 'asc' },
     });

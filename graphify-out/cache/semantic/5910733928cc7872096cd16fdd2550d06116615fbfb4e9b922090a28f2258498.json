@@ -1,0 +1,1 @@
+{"nodes": [{"id": "utility_product_slug_utility_resolveproductslug", "label": "resolveProductSlug", "file_type": "code", "source_file": "apps/api/src/module/master/product/utility/product-slug.utility.ts", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}], "edges": [], "hyperedges": []}

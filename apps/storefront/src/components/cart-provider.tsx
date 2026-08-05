@@ -23,16 +23,26 @@ export type CartLine = {
   colorHex: string;
   unitPriceInPaise: number;
   quantity: number;
+  maxStock?: number;
+};
+
+export type StockSyncSummary = {
+  removed: string[];
+  adjusted: string[];
 };
 
 type CartContextValue = {
   items: CartLine[];
   count: number;
   subtotalInPaise: number;
+  ready: boolean;
   addItem: (item: Omit<CartLine, "key" | "quantity">, quantity?: number) => void;
   updateQuantity: (key: string, quantity: number) => void;
   removeItem: (key: string) => void;
   clear: () => void;
+  applyStock: (
+    stocks: Array<{ variantId: string; stock: number }>,
+  ) => StockSyncSummary;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
@@ -60,16 +70,31 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const addItem = useCallback(
     (item: Omit<CartLine, "key" | "quantity">, quantity = 1) => {
       const key = `${item.variantId}`;
+      const max =
+        typeof item.maxStock === "number" && item.maxStock >= 0
+          ? item.maxStock
+          : Number.POSITIVE_INFINITY;
       setItems((prev) => {
         const existing = prev.find((line) => line.key === key);
         if (existing) {
+          const nextQty = Math.min(existing.quantity + quantity, max);
+          if (nextQty === existing.quantity) return prev;
           return prev.map((line) =>
             line.key === key
-              ? { ...line, quantity: line.quantity + quantity }
+              ? {
+                  ...line,
+                  quantity: nextQty,
+                  maxStock: item.maxStock ?? line.maxStock,
+                }
               : line,
           );
         }
-        return [...prev, { ...item, key, quantity }];
+        const nextQty = Math.min(quantity, max);
+        if (nextQty <= 0) return prev;
+        return [
+          ...prev,
+          { ...item, key, quantity: nextQty, maxStock: item.maxStock },
+        ];
       });
     },
     [],
@@ -78,7 +103,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const updateQuantity = useCallback((key: string, quantity: number) => {
     setItems((prev) =>
       prev
-        .map((line) => (line.key === key ? { ...line, quantity } : line))
+        .map((line) => {
+          if (line.key !== key) return line;
+          const max =
+            typeof line.maxStock === "number" && line.maxStock >= 0
+              ? line.maxStock
+              : Number.POSITIVE_INFINITY;
+          return { ...line, quantity: Math.min(quantity, max) };
+        })
         .filter((line) => line.quantity > 0),
     );
   }, []);
@@ -88,6 +120,35 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const clear = useCallback(() => setItems([]), []);
+
+  const applyStock = useCallback(
+    (stocks: Array<{ variantId: string; stock: number }>) => {
+      const byId = new Map(stocks.map((row) => [row.variantId, row.stock]));
+      const removed: string[] = [];
+      const adjusted: string[] = [];
+
+      setItems((prev) =>
+        prev
+          .map((line) => {
+            if (!byId.has(line.variantId)) return line;
+            const stock = byId.get(line.variantId) ?? 0;
+            if (stock <= 0) {
+              removed.push(line.productName);
+              return null;
+            }
+            if (line.quantity > stock) {
+              adjusted.push(line.productName);
+              return { ...line, maxStock: stock, quantity: stock };
+            }
+            return { ...line, maxStock: stock };
+          })
+          .filter((line): line is CartLine => line !== null),
+      );
+
+      return { removed, adjusted };
+    },
+    [],
+  );
 
   const value = useMemo<CartContextValue>(() => {
     const subtotalInPaise = items.reduce(
@@ -99,12 +160,22 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       items,
       count,
       subtotalInPaise,
+      ready,
       addItem,
       updateQuantity,
       removeItem,
       clear,
+      applyStock,
     };
-  }, [items, addItem, updateQuantity, removeItem, clear]);
+  }, [
+    items,
+    ready,
+    addItem,
+    updateQuantity,
+    removeItem,
+    clear,
+    applyStock,
+  ]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

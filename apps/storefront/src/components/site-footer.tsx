@@ -41,9 +41,26 @@ export function SiteFooter({ collections = [] }: { collections?: Collection[] })
             Help
           </p>
           <ul className="mt-4 space-y-2 text-sm text-paper/80">
-            <li>Shipping</li>
-            <li>Returns</li>
-            <li>Size guide</li>
+            <li>
+              <Link href="/shipping" className="hover:text-volt">
+                Shipping
+              </Link>
+            </li>
+            <li>
+              <Link href="/returns" className="hover:text-volt">
+                Returns
+              </Link>
+            </li>
+            <li>
+              <Link href="/size-guide" className="hover:text-volt">
+                Size guide
+              </Link>
+            </li>
+            <li>
+              <Link href="/contact" className="hover:text-volt">
+                Contact
+              </Link>
+            </li>
           </ul>
         </div>
       </div>

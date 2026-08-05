@@ -36,6 +36,7 @@ model Customer {
   carts     Cart[]
   orders    Order[]
   reviews   Review[]
+  queries   CustomerQuery[]
 
   @@index([isDeleted])
   @@map("customer")
@@ -203,5 +204,55 @@ model Review {
   @@index([customerId])
   @@index([isDeleted])
   @@map("review")
+  @@schema("meta")
+}
+
+enum CustomerQueryStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+
+  @@schema("meta")
+}
+
+enum CustomerQueryTopic {
+  SHIPPING
+  RETURNS
+  ORDER
+  PRODUCT
+  OTHER
+
+  @@schema("meta")
+}
+
+model CustomerQuery {
+  id          String              @id @default(cuid())
+  name        String
+  email       String
+  phone       String?
+  topic       CustomerQueryTopic
+  subject     String
+  message     String              @db.Text
+  orderNumber String?             @map("order_number")
+  status      CustomerQueryStatus @default(OPEN)
+  adminNote   String?             @map("admin_note") @db.Text
+  customerId  String?             @map("customer_id")
+  customer    Customer?           @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  userId    String?  @map("user_id")
+  createdAt DateTime @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt DateTime @updatedAt @db.Timestamptz(3) @map("updated_at")
+  createdBy String?  @map("created_by")
+  updatedBy String?  @map("updated_by")
+  isDeleted Boolean  @default(false) @map("is_deleted")
+
+  @@index([status])
+  @@index([topic])
+  @@index([email])
+  @@index([customerId])
+  @@index([isDeleted])
+  @@index([createdAt])
+  @@map("customer_query")
   @@schema("meta")
 }

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Order, PaymentStatus } from '@prisma/client';
 import { BASE_ENTITY_DEFAULTS } from '../../../common/entities/base.entity';
 import { BaseService } from '../../../common/base/base.service';
@@ -57,37 +57,63 @@ export class OrderService extends BaseService {
     const { subtotalInPaise, shippingInPaise, totalInPaise } =
       computeOrderTotals(items);
 
-    return this.prisma.order.create({
-      data: {
-        orderNumber: createOrderNumber(),
-        customerId: customer.id,
-        customerEmail: payload.customerEmail,
-        shippingFullName: payload.shippingFullName,
-        shippingPhone: payload.shippingPhone,
-        shippingLine1: payload.shippingLine1,
-        shippingLine2: payload.shippingLine2,
-        shippingCity: payload.shippingCity,
-        shippingState: payload.shippingState,
-        shippingPostalCode: payload.shippingPostalCode,
-        shippingCountry: payload.shippingCountry ?? 'IN',
-        paymentMethod: payload.paymentMethod,
-        paymentDetails: payload.paymentDetails,
-        paymentStatus: PaymentStatus.PENDING,
-        subtotalInPaise,
-        shippingInPaise,
-        totalInPaise,
-        idempotencyKey: payload.idempotencyKey,
-        ...BASE_ENTITY_DEFAULTS,
-        createdAt: stamp,
-        updatedAt: stamp,
-        items: { create: items },
-      },
-      include: { items: { where: { isDeleted: false } } },
+    return this.prisma.$transaction(async (tx) => {
+      for (const item of payload.items) {
+        if (!item.variantId) {
+          throw new BadRequestException(
+            `Missing variant for ${item.productName}`,
+          );
+        }
+        const reserved = await tx.productVariant.updateMany({
+          where: {
+            id: item.variantId,
+            isDeleted: false,
+            stock: { gte: item.quantity },
+          },
+          data: {
+            stock: { decrement: item.quantity },
+            updatedAt: stamp,
+          },
+        });
+        if (reserved.count === 0) {
+          throw new BadRequestException(
+            `${item.productName} (${item.size} / ${item.color}) is out of stock`,
+          );
+        }
+      }
+
+      return tx.order.create({
+        data: {
+          orderNumber: createOrderNumber(),
+          customerId: customer.id,
+          customerEmail: payload.customerEmail,
+          shippingFullName: payload.shippingFullName,
+          shippingPhone: payload.shippingPhone,
+          shippingLine1: payload.shippingLine1,
+          shippingLine2: payload.shippingLine2,
+          shippingCity: payload.shippingCity,
+          shippingState: payload.shippingState,
+          shippingPostalCode: payload.shippingPostalCode,
+          shippingCountry: payload.shippingCountry ?? 'IN',
+          paymentMethod: payload.paymentMethod,
+          paymentDetails: payload.paymentDetails,
+          paymentStatus: PaymentStatus.PENDING,
+          subtotalInPaise,
+          shippingInPaise,
+          totalInPaise,
+          idempotencyKey: payload.idempotencyKey,
+          ...BASE_ENTITY_DEFAULTS,
+          createdAt: stamp,
+          updatedAt: stamp,
+          items: { create: items },
+        },
+        include: { items: { where: { isDeleted: false } } },
+      });
     });
   }
 
-  async findAll() {
-    return this.orderRepo.findAllWithItems();
+  async findAll(pageQuery: { page: number; limit: number; skip: number }) {
+    return this.orderRepo.findAllWithItems(pageQuery);
   }
 
   async findById(payload: { id: string }) {

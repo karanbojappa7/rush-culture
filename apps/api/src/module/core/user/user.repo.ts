@@ -43,12 +43,29 @@ export class UserRepo extends BaseRepo<
     });
   }
 
-  async findAllWithIdentity() {
-    return this.prisma.user.findMany({
-      where: this.notDeletedWhere(),
-      include: identityInclude,
-      orderBy: { createdAt: 'desc' },
-    });
+  async findAllWithIdentity(pageQuery: {
+    page: number;
+    limit: number;
+    skip: number;
+  }) {
+    const where = this.notDeletedWhere();
+    const [items, total] = await Promise.all([
+      this.prisma.user.findMany({
+        where,
+        include: identityInclude,
+        orderBy: { createdAt: 'desc' },
+        skip: pageQuery.skip,
+        take: pageQuery.limit,
+      }),
+      this.prisma.user.count({ where }),
+    ]);
+    return {
+      items,
+      page: pageQuery.page,
+      limit: pageQuery.limit,
+      total,
+      totalPages: total === 0 ? 0 : Math.ceil(total / pageQuery.limit),
+    };
   }
 
   async updateByPhoneNumber(

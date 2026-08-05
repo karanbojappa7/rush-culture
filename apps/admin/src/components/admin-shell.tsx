@@ -11,6 +11,7 @@ const nav = [
   { href: "/products", label: "Products" },
   { href: "/categories", label: "Categories" },
   { href: "/customers", label: "Customers" },
+  { href: "/queries", label: "Queries" },
 ];
 
 export function AdminShell({

@@ -6,8 +6,10 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { BaseController } from '../../../common/base/base.controller';
+import { parsePageQuery } from '../../../common/pagination/pagination.utility';
 import { ResponseBuilder } from '../../../common/response/response.builder';
 import { ResponseVm } from '../../../common/response/response.vm';
 import { CartService } from './cart.service';
@@ -30,8 +32,15 @@ export class CartController extends BaseController {
   }
 
   @Get()
-  findAll(): Promise<ResponseVm> {
-    return this.executeMethod(() => this.cartService.findAll(), {}, 'Carts fetched');
+  findAll(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ): Promise<ResponseVm> {
+    return this.executeMethod(
+      (data) => this.cartService.findAll(data),
+      parsePageQuery(page, limit),
+      'Carts fetched',
+    );
   }
 
   @Get(':id')

@@ -1,72 +1,102 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Collection,
   Product,
-  getLowestPrice,
+  fetchProductsPage,
+  type PageResult,
 } from "@/lib/catalog";
 import { ProductCard } from "./product-card";
 
 type Props = {
-  products: Product[];
   collections: Collection[];
   initialCollection?: string;
   title?: string;
 };
 
+const PAGE_SIZE = 12;
+
 export function ShopCatalog({
-  products,
   collections,
   initialCollection,
   title = "Shop",
 }: Props) {
   const [q, setQ] = useState("");
+  const [debouncedQ, setDebouncedQ] = useState("");
   const [collection, setCollection] = useState(initialCollection ?? "all");
   const [size, setSize] = useState("all");
   const [color, setColor] = useState("all");
   const [maxPrice, setMaxPrice] = useState(500000);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [result, setResult] = useState<PageResult<Product>>({
+    items: [],
+    page: 1,
+    limit: PAGE_SIZE,
+    total: 0,
+    totalPages: 0,
+  });
+  const [facetSizes, setFacetSizes] = useState<string[]>([]);
+  const [facetColors, setFacetColors] = useState<string[]>([]);
 
-  const allSizes = useMemo(
-    () =>
-      Array.from(
-        new Set(products.flatMap((p) => p.variants.map((v) => v.size))),
-      ).sort(),
-    [products],
-  );
-  const allColors = useMemo(
-    () =>
-      Array.from(
-        new Set(products.flatMap((p) => p.variants.map((v) => v.color))),
-      ).sort(),
-    [products],
-  );
+  useEffect(() => {
+    const timer = window.setTimeout(() => setDebouncedQ(q.trim()), 300);
+    return () => window.clearTimeout(timer);
+  }, [q]);
 
-  const filtered = useMemo(() => {
-    return products.filter((product: Product) => {
-      if (collection !== "all" && product.collection !== collection) return false;
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedQ, collection, size, color, maxPrice]);
 
-      if (q.trim()) {
-        const needle = q.toLowerCase();
-        const hay = `${product.name} ${product.description} ${product.collection}`.toLowerCase();
-        if (!hay.includes(needle)) return false;
-      }
-
-      if (size !== "all") {
-        const ok = product.variants.some((v) => v.size === size && v.stock > 0);
-        if (!ok) return false;
-      }
-
-      if (color !== "all") {
-        const ok = product.variants.some((v) => v.color === color);
-        if (!ok) return false;
-      }
-
-      if (getLowestPrice(product) > maxPrice) return false;
-
-      return true;
-    });
-  }, [products, q, collection, size, color, maxPrice]);
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      const categoryId =
+        collection === "all"
+          ? undefined
+          : collections.find((item) => item.slug === collection)?.id;
+      const data = await fetchProductsPage({
+        page,
+        limit: PAGE_SIZE,
+        q: debouncedQ || undefined,
+        categoryId,
+        size: size === "all" ? undefined : size,
+        color: color === "all" ? undefined : color,
+        maxPrice,
+        isActive: true,
+      });
+      if (cancelled) return;
+      setResult(data);
+      setFacetSizes((prev) => {
+        const next = Array.from(
+          new Set([
+            ...prev,
+            ...data.items.flatMap((product) =>
+              product.variants.map((variant) => variant.size),
+            ),
+          ]),
+        ).sort();
+        return next.length ? next : prev;
+      });
+      setFacetColors((prev) => {
+        const next = Array.from(
+          new Set([
+            ...prev,
+            ...data.items.flatMap((product) =>
+              product.variants.map((variant) => variant.color),
+            ),
+          ]),
+        ).sort();
+        return next.length ? next : prev;
+      });
+      setLoading(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [page, debouncedQ, collection, size, color, maxPrice, collections]);
 
   return (
     <div className="mx-auto grid max-w-[1400px] gap-10 px-5 py-10 md:grid-cols-[220px_1fr] md:gap-12 md:px-8 md:py-14">
@@ -118,7 +148,7 @@ export function ShopCatalog({
               onClick={() => setSize("all")}
               label="All"
             />
-            {allSizes.map((s) => (
+            {facetSizes.map((s) => (
               <Chip
                 key={s}
                 active={size === s}
@@ -139,7 +169,7 @@ export function ShopCatalog({
               onClick={() => setColor("all")}
               label="All"
             />
-            {allColors.map((c) => (
+            {facetColors.map((c) => (
               <Chip
                 key={c}
                 active={color === c}
@@ -180,16 +210,18 @@ export function ShopCatalog({
               {title}
             </h1>
             <p className="mt-2 text-sm text-mute">
-              {filtered.length} piece{filtered.length === 1 ? "" : "s"}
+              {loading
+                ? "Loading…"
+                : `${result.total} piece${result.total === 1 ? "" : "s"}`}
             </p>
           </div>
         </div>
 
-        {filtered.length === 0 ? (
+        {!loading && result.items.length === 0 ? (
           <p className="py-20 text-mute">No pieces match those filters.</p>
         ) : (
           <div className="grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-3 lg:gap-x-6">
-            {filtered.map((product, index) => (
+            {result.items.map((product, index) => (
               <ProductCard
                 key={product.id}
                 product={product}
@@ -198,6 +230,34 @@ export function ShopCatalog({
             ))}
           </div>
         )}
+
+        {result.totalPages > 1 ? (
+          <div className="mt-10 flex flex-wrap items-center justify-between gap-3">
+            <p className="text-sm text-mute">
+              Page {result.page} of {result.totalPages}
+            </p>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                disabled={page <= 1 || loading}
+                onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+                className="border border-line px-3 py-2 text-[12px] font-semibold tracking-[0.1em] uppercase disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Previous
+              </button>
+              <button
+                type="button"
+                disabled={page >= result.totalPages || loading}
+                onClick={() =>
+                  setPage((prev) => Math.min(result.totalPages, prev + 1))
+                }
+                className="border border-line bg-ink px-3 py-2 text-[12px] font-semibold tracking-[0.1em] uppercase text-paper disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        ) : null}
       </div>
     </div>
   );

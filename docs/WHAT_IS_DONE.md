@@ -22,14 +22,18 @@ Workspaces: npm (`apps/*`, `packages/*`).
 - Seed catalog in site-config is bootstrap-only; live catalog is Prisma via API
 - After brand edits for API: `npm run build:site-config`
 
-## Schema ownership
+## Pagination
+
+- List APIs: `?page=1&limit=20` (max 100)
+- Response `data`: `{ items, page, limit, total, totalPages }`
+- Admin list pages + storefront shop use server/client pagination
 
 | Schema | Contents |
 |---|---|
 | `master` | Category, Product, ProductVariant, ProductImage (catalog) |
 | `core` | Role, UserType, User (staff), AppConfig, Discount (system) |
 | `security` | Account, Session, VerificationToken (auth credentials/sessions) |
-| `meta` | Customer, Address, Cart, CartItem, Order, OrderItem, Review (transactions) |
+| `meta` | Customer, Address, Cart, CartItem, Order, OrderItem, Review, CustomerQuery |
 
 - Staff `User` (core) vs shopper `Customer` (meta)
 - Checkout find-or-creates `Customer` by email and sets `order.customerId`
@@ -66,12 +70,14 @@ Controller → executeMethod → Service → Repo (Prisma) → Postgres
 | Customers | `/api/customers` | meta |
 | Addresses | `/api/addresses` | meta |
 | Carts / Orders / Reviews | `/api/carts` etc. | meta |
+| Customer queries | `/api/customer-queries` (public create; staff list/update) | meta |
 | App configs / Discounts | `/api/app-configs` etc. | core |
 
 ## Storefront / admin
 
 - Storefront: products & categories from API; localStorage cart; checkout → Customer + Order
-- Admin: login, overview, orders, product CMS (create/edit), categories, customers
+- Help: `/shipping`, `/returns`, `/size-guide`, `/contact` (queries tracked in admin)
+- Admin: login, overview (orders + open queries), orders, product CMS, categories, customers, queries
 - Design: Syne + Figtree; paper/ink/volt
 
 ## Still open / next

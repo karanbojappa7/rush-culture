@@ -1,11 +1,16 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useCart } from "@/components/cart-provider";
 import { apiPost } from "@/lib/api";
 import { formatInr } from "@/lib/format";
+import {
+  checkCartStock,
+  stockIssueMessage,
+  type StockCheckResult,
+} from "@/lib/stock";
 
 type PlacedOrder = {
   id: string;
@@ -14,13 +19,16 @@ type PlacedOrder = {
 
 export function CheckoutForm() {
   const router = useRouter();
-  const { items, subtotalInPaise, clear } = useCart();
+  const { items, subtotalInPaise, clear, applyStock, ready } = useCart();
   const [submitting, setSubmitting] = useState(false);
+  const [checking, setChecking] = useState(false);
   const [error, setError] = useState("");
+  const [stockNotice, setStockNotice] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("upi");
   const [paymentDetails, setPaymentDetails] = useState("");
 
-  const shippingInPaise = subtotalInPaise >= 199900 || subtotalInPaise === 0 ? 0 : 9900;
+  const shippingInPaise =
+    subtotalInPaise >= 199900 || subtotalInPaise === 0 ? 0 : 9900;
   const total = subtotalInPaise + shippingInPaise;
 
   const paymentHint = useMemo(() => {
@@ -30,6 +38,70 @@ export function CheckoutForm() {
     return "Notes for cash on delivery";
   }, [paymentMethod]);
 
+  async function verifyStock(): Promise<StockCheckResult | null> {
+    if (!items.length) return { ok: true, items: [] };
+    setChecking(true);
+    const result = await checkCartStock(
+      items.map((item) => ({
+        variantId: item.variantId,
+        quantity: item.quantity,
+      })),
+    );
+    setChecking(false);
+    if (!result) {
+      setError("Could not verify stock. Try again.");
+      return null;
+    }
+    applyStock(
+      result.items.map((item) => ({
+        variantId: item.variantId,
+        stock: item.stock,
+      })),
+    );
+    if (!result.ok) {
+      const message = stockIssueMessage(result);
+      setStockNotice(message);
+      setError(message);
+      return null;
+    }
+    setStockNotice("");
+    setError("");
+    return result;
+  }
+
+  useEffect(() => {
+    if (!ready || !items.length) return;
+    let cancelled = false;
+    (async () => {
+      const result = await checkCartStock(
+        items.map((item) => ({
+          variantId: item.variantId,
+          quantity: item.quantity,
+        })),
+      );
+      if (cancelled || !result) return;
+      applyStock(
+        result.items.map((item) => ({
+          variantId: item.variantId,
+          stock: item.stock,
+        })),
+      );
+      if (!result.ok) setStockNotice(stockIssueMessage(result));
+      else setStockNotice("");
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [ready]);
+
+  useEffect(() => {
+    function onVisible() {
+      if (document.visibilityState === "visible") void verifyStock();
+    }
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
+  }, [items]);
+
   if (items.length === 0) {
     return (
       <div className="mx-auto max-w-[1400px] px-5 pt-28 pb-20 md:px-8">
@@ -37,6 +109,9 @@ export function CheckoutForm() {
           Checkout
         </h1>
         <p className="mt-4 text-mute">Your bag is empty.</p>
+        {stockNotice ? (
+          <p className="mt-2 text-sm text-mute">{stockNotice}</p>
+        ) : null}
         <Link href="/shop" className="mt-6 inline-block text-sm underline">
           Back to shop
         </Link>
@@ -46,10 +121,42 @@ export function CheckoutForm() {
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const formEl = e.currentTarget;
+    const form = new FormData(formEl);
     setSubmitting(true);
     setError("");
 
-    const form = new FormData(e.currentTarget);
+    const verified = await verifyStock();
+    if (!verified) {
+      setSubmitting(false);
+      return;
+    }
+
+    const orderItems = items
+      .map((item) => {
+        const checked = verified.items.find(
+          (row) => row.variantId === item.variantId,
+        );
+        if (!checked || checked.status !== "ok") return null;
+        return {
+          variantId: item.variantId,
+          productSlug: item.productSlug,
+          productName: item.productName,
+          variantSku: item.sku,
+          size: item.size,
+          color: item.color,
+          unitPriceInPaise: item.unitPriceInPaise,
+          quantity: checked.requested,
+        };
+      })
+      .filter((item): item is NonNullable<typeof item> => item !== null);
+
+    if (!orderItems.length) {
+      setError("Nothing left in stock to purchase.");
+      setSubmitting(false);
+      return;
+    }
+
     const payload = {
       customerEmail: String(form.get("email")),
       shippingFullName: String(form.get("fullName")),
@@ -63,21 +170,29 @@ export function CheckoutForm() {
       paymentMethod,
       paymentDetails: paymentDetails || undefined,
       idempotencyKey: crypto.randomUUID(),
-      items: items.map((item) => ({
-        variantId: item.variantId,
-        productSlug: item.productSlug,
-        productName: item.productName,
-        variantSku: item.sku,
-        size: item.size,
-        color: item.color,
-        unitPriceInPaise: item.unitPriceInPaise,
-        quantity: item.quantity,
-      })),
+      items: orderItems,
     };
 
     try {
       const res = await apiPost<PlacedOrder>("/api/orders", payload);
       if (res.status_code !== 200 || !res.data) {
+        const result = await checkCartStock(
+          items.map((item) => ({
+            variantId: item.variantId,
+            quantity: item.quantity,
+          })),
+        );
+        if (result) {
+          applyStock(
+            result.items.map((item) => ({
+              variantId: item.variantId,
+              stock: item.stock,
+            })),
+          );
+          throw new Error(
+            res.message || stockIssueMessage(result) || "Could not place order",
+          );
+        }
         throw new Error(res.message || "Could not place order");
       }
       clear();
@@ -94,8 +209,7 @@ export function CheckoutForm() {
         Checkout
       </h1>
       <p className="mt-3 max-w-lg text-mute">
-        Payment gateway comes later — we capture your details and show them in
-        admin.
+        Stock is verified before you place the order.
       </p>
 
       <form
@@ -166,18 +280,41 @@ export function CheckoutForm() {
         </div>
 
         <aside className="h-fit border border-line bg-mist/40 p-6 md:sticky md:top-28">
-          <p className="font-display text-2xl font-bold">Order</p>
+          <div className="flex items-center justify-between gap-3">
+            <p className="font-display text-2xl font-bold">Order</p>
+            <button
+              type="button"
+              onClick={() => void verifyStock()}
+              disabled={checking}
+              className="text-[11px] font-semibold tracking-[0.12em] uppercase text-mute hover:text-ink disabled:opacity-50"
+            >
+              {checking ? "Checking…" : "Refresh stock"}
+            </button>
+          </div>
           <ul className="mt-4 space-y-3 text-sm">
-            {items.map((item) => (
-              <li key={item.key} className="flex justify-between gap-3">
-                <span className="text-mute">
-                  {item.productName} × {item.quantity}
-                </span>
-                <span>
-                  {formatInr(item.unitPriceInPaise * item.quantity)}
-                </span>
-              </li>
-            ))}
+            {items.map((item) => {
+              const soldOut =
+                typeof item.maxStock === "number" && item.maxStock <= 0;
+              const low =
+                typeof item.maxStock === "number" &&
+                item.maxStock > 0 &&
+                item.quantity >= item.maxStock;
+              return (
+                <li key={item.key} className="flex justify-between gap-3">
+                  <span className={soldOut ? "text-mute line-through" : "text-mute"}>
+                    {item.productName} × {item.quantity}
+                    {soldOut
+                      ? " · Out of stock"
+                      : low
+                        ? ` · ${item.maxStock} left`
+                        : ""}
+                  </span>
+                  <span>
+                    {formatInr(item.unitPriceInPaise * item.quantity)}
+                  </span>
+                </li>
+              );
+            })}
           </ul>
           <dl className="mt-6 space-y-2 border-t border-line pt-4 text-sm">
             <div className="flex justify-between">
@@ -196,14 +333,17 @@ export function CheckoutForm() {
             </div>
           </dl>
 
+          {stockNotice ? (
+            <p className="mt-4 text-sm text-mute">{stockNotice}</p>
+          ) : null}
           {error ? <p className="mt-4 text-sm text-red-700">{error}</p> : null}
 
           <button
             type="submit"
-            disabled={submitting}
+            disabled={submitting || checking}
             className="mt-8 w-full cursor-pointer bg-volt py-4 text-[13px] font-bold tracking-[0.14em] uppercase text-volt-ink disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {submitting ? "Placing…" : "Place order"}
+            {submitting ? "Placing…" : checking ? "Checking stock…" : "Place order"}
           </button>
         </aside>
       </form>

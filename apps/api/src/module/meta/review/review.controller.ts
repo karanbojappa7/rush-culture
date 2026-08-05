@@ -9,6 +9,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { BaseController } from '../../../common/base/base.controller';
+import { parsePageQuery } from '../../../common/pagination/pagination.utility';
 import { ResponseBuilder } from '../../../common/response/response.builder';
 import { ResponseVm } from '../../../common/response/response.vm';
 import { CreateReviewDto } from './dto/create-review.dto';
@@ -30,8 +31,16 @@ export class ReviewController extends BaseController {
   }
 
   @Get()
-  findAll(@Query('productId') productId?: string): Promise<ResponseVm> {
-    return this.executeMethod((data) => this.reviewService.findAll(data), { productId }, 'Reviews fetched');
+  findAll(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('productId') productId?: string,
+  ): Promise<ResponseVm> {
+    return this.executeMethod(
+      (data) => this.reviewService.findAll(data),
+      { ...parsePageQuery(page, limit), productId },
+      'Reviews fetched',
+    );
   }
 
   @Get(':id')

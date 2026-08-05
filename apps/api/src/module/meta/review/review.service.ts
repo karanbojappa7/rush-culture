@@ -22,8 +22,17 @@ export class ReviewService extends BaseService {
     return this.reviewRepo.create(payload);
   }
 
-  async findAll(payload: { productId?: string }) {
-    return this.reviewRepo.findAllByProductId(payload.productId);
+  async findAll(payload: {
+    productId?: string;
+    page: number;
+    limit: number;
+    skip: number;
+  }) {
+    const { productId, page, limit, skip } = payload;
+    return this.reviewRepo.findPageByProductId(
+      { page, limit, skip },
+      productId,
+    );
   }
 
   async findById(payload: { id: string }) {

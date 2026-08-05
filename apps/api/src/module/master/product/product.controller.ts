@@ -1,8 +1,10 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { BaseController } from '../../../common/base/base.controller';
+import { parsePageQuery } from '../../../common/pagination/pagination.utility';
 import { ResponseBuilder } from '../../../common/response/response.builder';
 import { ResponseVm } from '../../../common/response/response.vm';
 import { StaffAuth } from '../../security/auth/guards/staff-auth.decorator';
+import { CheckStockDto } from './dto/check-stock.dto';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductService } from './product.service';
@@ -26,8 +28,19 @@ export class ProductController extends BaseController {
     );
   }
 
+  @Post('stock-check')
+  checkStock(@Body() payload: CheckStockDto): Promise<ResponseVm> {
+    return this.executeMethod(
+      (data) => this.productService.checkStock(data),
+      payload,
+      'Stock checked',
+    );
+  }
+
   @Get()
   findAll(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
     @Query('q') q?: string,
     @Query('categoryId') categoryId?: string,
     @Query('size') size?: string,
@@ -36,9 +49,11 @@ export class ProductController extends BaseController {
     @Query('maxPrice') maxPrice?: string,
     @Query('isActive') isActive?: string,
   ): Promise<ResponseVm> {
+    const pageQuery = parsePageQuery(page, limit);
     return this.executeMethod(
       (filters) => this.productService.findAll(filters),
       {
+        ...pageQuery,
         q,
         categoryId,
         size,

@@ -48,6 +48,7 @@ export type StoreProduct = {
 };
 
 export type StoreCollection = {
+  id: string;
   slug: string;
   name: string;
   tagline: string;
@@ -81,6 +82,7 @@ export function mapApiProduct(product: ApiProduct): StoreProduct {
 
 export function mapApiCategory(category: ApiCategory): StoreCollection {
   return {
+    id: category.id,
     slug: category.slug,
     name: category.name,
     tagline: category.description ?? "",

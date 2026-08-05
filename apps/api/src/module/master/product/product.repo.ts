@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, Product } from '@prisma/client';
 import { BaseRepo } from '../../../common/base/base.repo';
+import {
+  PageQuery,
+  toPageResult,
+} from '../../../common/pagination/pagination.utility';
 import { PrismaService } from '../../../common/prisma/prisma.service';
 import { ProductFilters, buildProductWhere } from './utility/product-filter.utility';
 
@@ -24,12 +28,19 @@ export class ProductRepo extends BaseRepo<
     return this.prisma.product;
   }
 
-  async findAllWithDetails(filters: ProductFilters) {
-    return this.prisma.product.findMany({
-      where: buildProductWhere(filters),
-      include: productInclude,
-      orderBy: { createdAt: 'desc' },
-    });
+  async findPageWithDetails(filters: ProductFilters, pageQuery: PageQuery) {
+    const where = buildProductWhere(filters);
+    const [items, total] = await Promise.all([
+      this.prisma.product.findMany({
+        where,
+        include: productInclude,
+        orderBy: { createdAt: 'desc' },
+        skip: pageQuery.skip,
+        take: pageQuery.limit,
+      }),
+      this.prisma.product.count({ where }),
+    ]);
+    return toPageResult(items, total, pageQuery.page, pageQuery.limit);
   }
 
   async findByIdWithDetails(id: string) {

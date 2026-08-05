@@ -3,6 +3,11 @@ import {
   AuditActor,
   BASE_ENTITY_DEFAULTS,
 } from '../entities/base.entity';
+import {
+  PageQuery,
+  PageResult,
+  toPageResult,
+} from '../pagination/pagination.utility';
 import { PrismaService } from '../prisma/prisma.service';
 import { utcNow } from '../utility/date.utility';
 
@@ -26,6 +31,7 @@ export abstract class BaseRepo<
       where: Record<string, unknown>;
     }) => Promise<TModel | null>;
     findMany: (args?: object) => Promise<TModel[]>;
+    count: (args: { where: Record<string, unknown> }) => Promise<number>;
     update: (args: {
       where: { id: string };
       data: Record<string, unknown>;
@@ -94,6 +100,26 @@ export abstract class BaseRepo<
       ...args,
       where,
     });
+  }
+
+  async findPage(
+    pageQuery: PageQuery,
+    args: Record<string, unknown> = {},
+  ): Promise<PageResult<TModel>> {
+    const where = this.notDeletedWhere(
+      (args.where as Record<string, unknown>) ?? {},
+    );
+    const { where: _ignored, ...rest } = args;
+    const [items, total] = await Promise.all([
+      this.model.findMany({
+        ...rest,
+        where,
+        skip: pageQuery.skip,
+        take: pageQuery.limit,
+      }),
+      this.model.count({ where }),
+    ]);
+    return toPageResult(items, total, pageQuery.page, pageQuery.limit);
   }
 
   async update(id: string, data: TUpdate, actor?: AuditActor): Promise<TModel> {

@@ -28,11 +28,30 @@ export class OrderRepo extends BaseRepo<
     });
   }
 
-  async findAllWithItems() {
-    return this.prisma.order.findMany({
-      where: this.notDeletedWhere(),
-      include: orderInclude,
-      orderBy: { createdAt: 'desc' },
-    });
+  async findAllWithItems(pageQuery: {
+    page: number;
+    limit: number;
+    skip: number;
+  }) {
+    const where = this.notDeletedWhere();
+    const [items, total] = await Promise.all([
+      this.prisma.order.findMany({
+        where,
+        include: orderInclude,
+        orderBy: { createdAt: 'desc' },
+        skip: pageQuery.skip,
+        take: pageQuery.limit,
+      }),
+      this.prisma.order.count({ where }),
+    ]);
+    const totalPages =
+      total === 0 ? 0 : Math.ceil(total / pageQuery.limit);
+    return {
+      items,
+      page: pageQuery.page,
+      limit: pageQuery.limit,
+      total,
+      totalPages,
+    };
   }
 }

@@ -1,6 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Address } from '@prisma/client';
 import { BaseService } from '../../../common/base/base.service';
+import {
+  PageQuery,
+  PageResult,
+} from '../../../common/pagination/pagination.utility';
 import { PrismaService } from '../../../common/prisma/prisma.service';
 import { CreateAddressDto } from './dto/create-address.dto';
 import { UpdateAddressDto } from './dto/update-address.dto';
@@ -32,11 +36,14 @@ export class AddressService extends BaseService {
     return address;
   }
 
-  async findAll(payload: { customerId?: string } = {}): Promise<Address[]> {
-    if (payload.customerId) {
-      return this.addressRepo.findByCustomerId(payload.customerId);
-    }
-    return this.addressRepo.findAll({ orderBy: { createdAt: 'desc' } });
+  async findAll(
+    payload: PageQuery & { customerId?: string },
+  ): Promise<PageResult<Address>> {
+    const { customerId, ...pageQuery } = payload;
+    return this.addressRepo.findPage(pageQuery, {
+      where: customerId ? { customerId } : {},
+      orderBy: { createdAt: 'desc' },
+    });
   }
 
   async update(payload: {

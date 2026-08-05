@@ -9,6 +9,7 @@ import { ProductModule } from './module/master/product/product.module';
 import { AuthModule } from './module/security/auth/auth.module';
 import { AddressModule } from './module/meta/address/address.module';
 import { CustomerModule } from './module/meta/customer/customer.module';
+import { CustomerQueryModule } from './module/meta/customer-query/customer-query.module';
 import { OrderModule } from './module/meta/order/order.module';
 import { CartModule } from './module/meta/cart/cart.module';
 import { ReviewModule } from './module/meta/review/review.module';
@@ -24,6 +25,7 @@ import { ReviewModule } from './module/meta/review/review.module';
     CategoryModule,
     ProductModule,
     CustomerModule,
+    CustomerQueryModule,
     AddressModule,
     OrderModule,
     CartModule,

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { AdminShell } from "@/components/admin-shell";
+import { PaginationNav } from "@/components/pagination-nav";
 import { apiGet, formatInr } from "@/lib/api-server";
+import { emptyPage, type PageResult } from "@/lib/pagination";
 import { getSessionUser, sessionLabel } from "@/lib/session";
 
 type Product = {
@@ -15,17 +17,20 @@ type Product = {
   }>;
 };
 
-export default async function ProductsPage() {
+type Props = { searchParams: Promise<{ page?: string }> };
+
+export default async function ProductsPage({ searchParams }: Props) {
+  const { page = "1" } = await searchParams;
   const [user, productsRes] = await Promise.all([
     getSessionUser(),
-    apiGet<Product[]>("/api/products"),
+    apiGet<PageResult<Product>>(`/api/products?page=${page}&limit=20`),
   ]);
-  const products = productsRes.data ?? [];
+  const data = productsRes.data ?? emptyPage<Product>();
 
   return (
     <AdminShell title="Products" userLabel={sessionLabel(user)}>
       <div className="mb-6 flex items-center justify-between gap-4">
-        <p className="text-sm text-mute">{products.length} products</p>
+        <p className="text-sm text-mute">{data.total} products</p>
         <Link
           href="/products/new"
           className="cursor-pointer bg-ink px-4 py-2.5 text-[12px] font-semibold tracking-[0.12em] uppercase text-white"
@@ -46,14 +51,17 @@ export default async function ProductsPage() {
             </tr>
           </thead>
           <tbody>
-            {products.map((product) => {
+            {data.items.map((product) => {
               const from = Math.min(
                 ...product.variants.map((v) => v.priceInPaise),
                 Number.POSITIVE_INFINITY,
               );
               const stock = product.variants.reduce((s, v) => s + v.stock, 0);
               return (
-                <tr key={product.id} className="border-b border-line last:border-0">
+                <tr
+                  key={product.id}
+                  className="border-b border-line last:border-0"
+                >
                   <td className="px-4 py-3 font-medium">
                     {product.name}
                     {!product.isActive ? (
@@ -82,6 +90,12 @@ export default async function ProductsPage() {
           </tbody>
         </table>
       </div>
+      <PaginationNav
+        page={data.page}
+        totalPages={data.totalPages}
+        total={data.total}
+        basePath="/products"
+      />
     </AdminShell>
   );
 }

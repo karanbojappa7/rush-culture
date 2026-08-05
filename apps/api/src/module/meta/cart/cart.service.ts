@@ -25,8 +25,12 @@ export class CartService extends BaseService {
     return cart;
   }
 
-  async findAll() {
-    return this.cartRepo.findAllWithItems();
+  async findAll(pageQuery: {
+    page: number;
+    limit: number;
+    skip: number;
+  }) {
+    return this.cartRepo.findAllWithItems(pageQuery);
   }
 
   async update(payload: { id: string; data: UpdateCartDto }) {

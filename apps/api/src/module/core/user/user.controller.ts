@@ -6,8 +6,10 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { BaseController } from '../../../common/base/base.controller';
+import { parsePageQuery } from '../../../common/pagination/pagination.utility';
 import { ResponseBuilder } from '../../../common/response/response.builder';
 import { ResponseVm } from '../../../common/response/response.vm';
 import { StaffAuth } from '../../security/auth/guards/staff-auth.decorator';
@@ -44,10 +46,13 @@ export class UserController extends BaseController {
   }
 
   @Get()
-  findAll(): Promise<ResponseVm> {
+  findAll(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ): Promise<ResponseVm> {
     return this.executeMethod(
       (data) => this.userService.findAll(data),
-      {},
+      parsePageQuery(page, limit),
       'Users fetched',
     );
   }

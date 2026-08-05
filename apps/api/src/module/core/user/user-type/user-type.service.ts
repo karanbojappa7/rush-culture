@@ -6,6 +6,10 @@ import {
 } from '@nestjs/common';
 import { UserType } from '@prisma/client';
 import { BaseService } from '../../../../common/base/base.service';
+import {
+  PageQuery,
+  PageResult,
+} from '../../../../common/pagination/pagination.utility';
 import { CreateUserTypeDto } from '../dto/create-user-type.dto';
 import { UpdateUserTypeDto } from '../dto/update-user-type.dto';
 import { UserTypeRepo } from './user-type.repo';
@@ -67,8 +71,8 @@ export class UserTypeService extends BaseService implements OnModuleInit {
     return type;
   }
 
-  async findAll(): Promise<UserType[]> {
-    return this.userTypeRepo.findAll({
+  async findAll(pageQuery: PageQuery): Promise<PageResult<UserType>> {
+    return this.userTypeRepo.findPage(pageQuery, {
       where: { isActive: true },
       orderBy: { code: 'asc' },
     });

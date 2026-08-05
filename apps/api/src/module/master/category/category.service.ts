@@ -5,6 +5,10 @@ import {
 } from '@nestjs/common';
 import { Category } from '@prisma/client';
 import { BaseService } from '../../../common/base/base.service';
+import {
+  PageQuery,
+  PageResult,
+} from '../../../common/pagination/pagination.utility';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { CategoryRepo } from './category.repo';
@@ -30,8 +34,10 @@ export class CategoryService extends BaseService {
     return category;
   }
 
-  async findAll(_payload: Record<string, never> = {}): Promise<Category[]> {
-    return this.categoryRepo.findAll({ orderBy: { createdAt: 'desc' } });
+  async findAll(pageQuery: PageQuery): Promise<PageResult<Category>> {
+    return this.categoryRepo.findPage(pageQuery, {
+      orderBy: { createdAt: 'desc' },
+    });
   }
 
   async findBySlug(payload: { slug: string }): Promise<Category> {
