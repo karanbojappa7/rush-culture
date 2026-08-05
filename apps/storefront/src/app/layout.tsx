@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Figtree, Syne } from "next/font/google";
 import { brand } from "@linq/site-config";
 import { CartProvider } from "@/components/cart-provider";
-import { OrganizationJsonLd } from "@/components/seo/organization-json-ld";
+import { SiteJsonLd } from "@/components/seo/site-json-ld";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { ThemeBootstrap } from "@/components/theme/theme-bootstrap";
@@ -51,7 +51,7 @@ export default async function RootLayout({
     >
       <head>
         <ThemeBootstrap />
-        <OrganizationJsonLd settings={seo} />
+        <SiteJsonLd settings={seo} />
       </head>
       <body className="flex min-h-full flex-col font-sans antialiased">
         <ThemeProvider>

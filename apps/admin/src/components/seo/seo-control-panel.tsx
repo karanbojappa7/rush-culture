@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import {
   defaultSeoSettings,
   normalizeSeoSettings,
+  type MaxImagePreview,
+  type OrganizationSchemaType,
   type SeoSettings,
   type TwitterCardType,
 } from "@linq/site-config";
@@ -28,7 +30,32 @@ function Field({
     <label className={labelClass}>
       {label}
       {children}
-      {hint ? <span className="mt-1 block normal-case tracking-normal text-mute/80 font-normal text-[11px]">{hint}</span> : null}
+      {hint ? (
+        <span className="mt-1 block normal-case tracking-normal text-mute/80 font-normal text-[11px]">
+          {hint}
+        </span>
+      ) : null}
+    </label>
+  );
+}
+
+function Check({
+  label,
+  checked,
+  onChange,
+}: {
+  label: string;
+  checked: boolean;
+  onChange: (next: boolean) => void;
+}) {
+  return (
+    <label className="flex cursor-pointer items-center gap-2 text-sm text-ink">
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+      />
+      {label}
     </label>
   );
 }
@@ -37,10 +64,24 @@ export function SeoControlPanel() {
   const [draft, setDraft] = useState<SeoSettings>(() => defaultSeoSettings());
   const [sameAsText, setSameAsText] = useState("");
   const [noIndexText, setNoIndexText] = useState("");
+  const [staticPathsText, setStaticPathsText] = useState("");
+  const [additionalPathsText, setAdditionalPathsText] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [savedOk, setSavedOk] = useState(false);
+
+  function applyLoaded(next: SeoSettings) {
+    setDraft(next);
+    setSameAsText(next.sameAs.join("\n"));
+    setNoIndexText(next.noIndexPaths.join("\n"));
+    setStaticPathsText(
+      next.sitemapStaticPaths
+        .map((p) => (p === "" ? "/" : p))
+        .join("\n"),
+    );
+    setAdditionalPathsText(next.sitemapAdditionalPaths.join("\n"));
+  }
 
   async function load() {
     setLoading(true);
@@ -50,9 +91,7 @@ export function SeoControlPanel() {
       res.status_code === 200 && res.data
         ? normalizeSeoSettings(res.data)
         : defaultSeoSettings();
-    setDraft(next);
-    setSameAsText(next.sameAs.join("\n"));
-    setNoIndexText(next.noIndexPaths.join("\n"));
+    applyLoaded(next);
     setLoading(false);
   }
 
@@ -79,6 +118,15 @@ export function SeoControlPanel() {
         .split(/[\n,]+/)
         .map((item) => item.trim())
         .filter(Boolean),
+      sitemapStaticPaths: staticPathsText
+        .split(/[\n,]+/)
+        .map((item) => item.trim())
+        .filter(Boolean)
+        .map((p) => (p === "/" ? "" : p)),
+      sitemapAdditionalPaths: additionalPathsText
+        .split(/[\n,]+/)
+        .map((item) => item.trim())
+        .filter(Boolean),
     });
     const res = await apiPut<SeoSettings>("/api/seo-settings", payload);
     setSaving(false);
@@ -86,10 +134,7 @@ export function SeoControlPanel() {
       setError(res.message || "Could not save SEO settings");
       return;
     }
-    const saved = normalizeSeoSettings(res.data);
-    setDraft(saved);
-    setSameAsText(saved.sameAs.join("\n"));
-    setNoIndexText(saved.noIndexPaths.join("\n"));
+    applyLoaded(normalizeSeoSettings(res.data));
     setSavedOk(true);
   }
 
@@ -100,9 +145,11 @@ export function SeoControlPanel() {
   return (
     <div className="space-y-8">
       <section className="border border-line bg-panel p-5 md:p-6">
-        <h2 className="font-display text-xl font-bold">Titles and descriptions</h2>
+        <h2 className="font-display text-xl font-bold">
+          Titles and descriptions
+        </h2>
         <p className="mt-1 text-sm text-mute">
-          Default document title and meta description for the storefront.
+          Storefront document titles, meta descriptions, and brand labels.
         </p>
         <div className="mt-5 grid gap-4 md:grid-cols-2">
           <Field label="Default title">
@@ -122,6 +169,34 @@ export function SeoControlPanel() {
               onChange={(e) => update({ titleTemplate: e.target.value })}
             />
           </Field>
+          <Field label="Home title override" hint="Leave blank to use default title">
+            <input
+              className={inputClass}
+              value={draft.homeTitle}
+              onChange={(e) => update({ homeTitle: e.target.value })}
+            />
+          </Field>
+          <Field label="Site name" hint="Open Graph site_name / WebSite name">
+            <input
+              className={inputClass}
+              value={draft.siteName}
+              onChange={(e) => update({ siteName: e.target.value })}
+            />
+          </Field>
+          <Field label="Application name" hint="PWA / browser application name">
+            <input
+              className={inputClass}
+              value={draft.applicationName}
+              onChange={(e) => update({ applicationName: e.target.value })}
+            />
+          </Field>
+          <Field label="Locale" hint="e.g. en-IN">
+            <input
+              className={inputClass}
+              value={draft.locale}
+              onChange={(e) => update({ locale: e.target.value })}
+            />
+          </Field>
           <Field label="Meta description">
             <textarea
               className={textareaClass}
@@ -129,7 +204,14 @@ export function SeoControlPanel() {
               onChange={(e) => update({ description: e.target.value })}
             />
           </Field>
-          <Field label="Short description">
+          <Field label="Home description override" hint="Leave blank to use meta description">
+            <textarea
+              className={textareaClass}
+              value={draft.homeDescription}
+              onChange={(e) => update({ homeDescription: e.target.value })}
+            />
+          </Field>
+          <Field label="Short description" hint="Used in structured data">
             <textarea
               className={textareaClass}
               value={draft.shortDescription}
@@ -143,6 +225,13 @@ export function SeoControlPanel() {
               onChange={(e) => update({ shopDescription: e.target.value })}
             />
           </Field>
+          <Field label="Contact page description">
+            <textarea
+              className={textareaClass}
+              value={draft.contactDescription}
+              onChange={(e) => update({ contactDescription: e.target.value })}
+            />
+          </Field>
           <Field label="Keywords" hint="Comma-separated">
             <input
               className={inputClass}
@@ -151,16 +240,9 @@ export function SeoControlPanel() {
               placeholder="streetwear, oversized tees, cargos"
             />
           </Field>
-          <Field label="Locale" hint="e.g. en-IN">
-            <input
-              className={inputClass}
-              value={draft.locale}
-              onChange={(e) => update({ locale: e.target.value })}
-            />
-          </Field>
           <Field
             label="Canonical site URL"
-            hint="https://www.example.com — used for OG URLs, robots, sitemap"
+            hint="https://www.example.com — used for OG, robots, sitemap"
           >
             <input
               className={inputClass}
@@ -175,30 +257,74 @@ export function SeoControlPanel() {
       <section className="border border-line bg-panel p-5 md:p-6">
         <h2 className="font-display text-xl font-bold">Indexing / robots</h2>
         <p className="mt-1 text-sm text-mute">
-          Controls storefront robots meta, robots.txt, and noindex path list.
+          robots meta, robots.txt, Google-bot previews, and noindex paths.
         </p>
         <div className="mt-5 flex flex-wrap gap-6">
-          <label className="flex cursor-pointer items-center gap-2 text-sm text-ink">
-            <input
-              type="checkbox"
-              checked={draft.robotsIndex}
-              onChange={(e) => update({ robotsIndex: e.target.checked })}
-            />
-            Allow search engines to index
-          </label>
-          <label className="flex cursor-pointer items-center gap-2 text-sm text-ink">
-            <input
-              type="checkbox"
-              checked={draft.robotsFollow}
-              onChange={(e) => update({ robotsFollow: e.target.checked })}
-            />
-            Allow following links
-          </label>
+          <Check
+            label="Allow search engines to index"
+            checked={draft.robotsIndex}
+            onChange={(v) => update({ robotsIndex: v })}
+          />
+          <Check
+            label="Allow following links"
+            checked={draft.robotsFollow}
+            onChange={(v) => update({ robotsFollow: v })}
+          />
+          <Check
+            label="No archive"
+            checked={draft.robotsNoArchive}
+            onChange={(v) => update({ robotsNoArchive: v })}
+          />
+          <Check
+            label="No snippet"
+            checked={draft.robotsNoSnippet}
+            onChange={(v) => update({ robotsNoSnippet: v })}
+          />
+          <Check
+            label="No image index"
+            checked={draft.robotsNoImageIndex}
+            onChange={(v) => update({ robotsNoImageIndex: v })}
+          />
         </div>
-        <div className="mt-4">
+        <div className="mt-5 grid gap-4 md:grid-cols-3">
+          <Field label="Max image preview">
+            <select
+              className={inputClass}
+              value={draft.maxImagePreview}
+              onChange={(e) =>
+                update({ maxImagePreview: e.target.value as MaxImagePreview })
+              }
+            >
+              <option value="large">large</option>
+              <option value="standard">standard</option>
+              <option value="none">none</option>
+            </select>
+          </Field>
+          <Field label="Max snippet" hint="-1 = default (omit)">
+            <input
+              type="number"
+              className={inputClass}
+              value={draft.maxSnippet}
+              onChange={(e) =>
+                update({ maxSnippet: Number(e.target.value) || -1 })
+              }
+            />
+          </Field>
+          <Field label="Max video preview" hint="-1 = default (omit)">
+            <input
+              type="number"
+              className={inputClass}
+              value={draft.maxVideoPreview}
+              onChange={(e) =>
+                update({ maxVideoPreview: Number(e.target.value) || -1 })
+              }
+            />
+          </Field>
+        </div>
+        <div className="mt-4 grid gap-4 md:grid-cols-2">
           <Field
             label="Noindex paths"
-            hint="One path per line (e.g. /cart). Added to robots.txt disallow when present."
+            hint="One path per line. Disallowed in robots.txt and meta robots."
           >
             <textarea
               className={textareaClass}
@@ -206,6 +332,63 @@ export function SeoControlPanel() {
               onChange={(e) => {
                 setSavedOk(false);
                 setNoIndexText(e.target.value);
+              }}
+            />
+          </Field>
+          <Field
+            label="Robots sitemap URL"
+            hint="Optional override; leave blank for {canonical}/sitemap.xml"
+          >
+            <input
+              className={inputClass}
+              value={draft.robotsSitemapUrl}
+              onChange={(e) => update({ robotsSitemapUrl: e.target.value })}
+              placeholder="https://www.example.com/sitemap.xml"
+            />
+          </Field>
+        </div>
+      </section>
+
+      <section className="border border-line bg-panel p-5 md:p-6">
+        <h2 className="font-display text-xl font-bold">Sitemap</h2>
+        <div className="mt-5 flex flex-wrap gap-6">
+          <Check
+            label="Include static pages"
+            checked={draft.sitemapIncludeStatic}
+            onChange={(v) => update({ sitemapIncludeStatic: v })}
+          />
+          <Check
+            label="Include products"
+            checked={draft.sitemapIncludeProducts}
+            onChange={(v) => update({ sitemapIncludeProducts: v })}
+          />
+          <Check
+            label="Include collections"
+            checked={draft.sitemapIncludeCollections}
+            onChange={(v) => update({ sitemapIncludeCollections: v })}
+          />
+        </div>
+        <div className="mt-4 grid gap-4 md:grid-cols-2">
+          <Field label="Static paths" hint="One path per line; use / for home">
+            <textarea
+              className={textareaClass}
+              value={staticPathsText}
+              onChange={(e) => {
+                setSavedOk(false);
+                setStaticPathsText(e.target.value);
+              }}
+            />
+          </Field>
+          <Field
+            label="Additional paths"
+            hint="Extra sitemap entries, e.g. /lookbook"
+          >
+            <textarea
+              className={textareaClass}
+              value={additionalPathsText}
+              onChange={(e) => {
+                setSavedOk(false);
+                setAdditionalPathsText(e.target.value);
               }}
             />
           </Field>
@@ -248,6 +431,20 @@ export function SeoControlPanel() {
               placeholder="https://cdn.example.com/og.jpg"
             />
           </Field>
+          <Field label="OG image alt">
+            <input
+              className={inputClass}
+              value={draft.ogImageAlt}
+              onChange={(e) => update({ ogImageAlt: e.target.value })}
+            />
+          </Field>
+          <Field label="Facebook app ID">
+            <input
+              className={inputClass}
+              value={draft.facebookAppId}
+              onChange={(e) => update({ facebookAppId: e.target.value })}
+            />
+          </Field>
         </div>
       </section>
 
@@ -266,11 +463,18 @@ export function SeoControlPanel() {
               <option value="summary">summary</option>
             </select>
           </Field>
-          <Field label="Twitter handle" hint="Without @">
+          <Field label="Site handle" hint="Without @">
             <input
               className={inputClass}
               value={draft.twitterHandle}
               onChange={(e) => update({ twitterHandle: e.target.value })}
+            />
+          </Field>
+          <Field label="Creator handle" hint="Optional; falls back to site handle">
+            <input
+              className={inputClass}
+              value={draft.twitterCreator}
+              onChange={(e) => update({ twitterCreator: e.target.value })}
             />
           </Field>
           <Field label="Twitter title">
@@ -300,11 +504,44 @@ export function SeoControlPanel() {
       </section>
 
       <section className="border border-line bg-panel p-5 md:p-6">
-        <h2 className="font-display text-xl font-bold">Organization (JSON-LD)</h2>
+        <h2 className="font-display text-xl font-bold">Structured data</h2>
         <p className="mt-1 text-sm text-mute">
-          Defaults for structured data on the storefront.
+          Organization, WebSite (and SearchAction), and Product JSON-LD.
         </p>
+        <div className="mt-5 flex flex-wrap gap-6">
+          <Check
+            label="Organization schema"
+            checked={draft.enableOrganizationSchema}
+            onChange={(v) => update({ enableOrganizationSchema: v })}
+          />
+          <Check
+            label="WebSite schema"
+            checked={draft.enableWebsiteSchema}
+            onChange={(v) => update({ enableWebsiteSchema: v })}
+          />
+          <Check
+            label="Product schema"
+            checked={draft.enableProductSchema}
+            onChange={(v) => update({ enableProductSchema: v })}
+          />
+        </div>
         <div className="mt-5 grid gap-4 md:grid-cols-2">
+          <Field label="Organization type">
+            <select
+              className={inputClass}
+              value={draft.organizationType}
+              onChange={(e) =>
+                update({
+                  organizationType: e.target.value as OrganizationSchemaType,
+                })
+              }
+            >
+              <option value="OnlineStore">OnlineStore</option>
+              <option value="Organization">Organization</option>
+              <option value="ClothingStore">ClothingStore</option>
+              <option value="Store">Store</option>
+            </select>
+          </Field>
           <Field label="Organization name">
             <input
               className={inputClass}
@@ -319,6 +556,13 @@ export function SeoControlPanel() {
               onChange={(e) => update({ organizationEmail: e.target.value })}
             />
           </Field>
+          <Field label="Organization phone">
+            <input
+              className={inputClass}
+              value={draft.organizationPhone}
+              onChange={(e) => update({ organizationPhone: e.target.value })}
+            />
+          </Field>
           <Field label="Logo URL">
             <input
               className={inputClass}
@@ -327,9 +571,29 @@ export function SeoControlPanel() {
             />
           </Field>
           <Field
-            label="sameAs profiles"
-            hint="Social / website URLs, one per line"
+            label="Organization URL"
+            hint="Leave blank to use canonical site URL"
           >
+            <input
+              className={inputClass}
+              value={draft.organizationUrl}
+              onChange={(e) => update({ organizationUrl: e.target.value })}
+            />
+          </Field>
+          <Field
+            label="Site search URL template"
+            hint="Include {search_term_string}; relative or absolute"
+          >
+            <input
+              className={inputClass}
+              value={draft.siteSearchUrlTemplate}
+              onChange={(e) =>
+                update({ siteSearchUrlTemplate: e.target.value })
+              }
+              placeholder="/shop?q={search_term_string}"
+            />
+          </Field>
+          <Field label="sameAs profiles" hint="Social / website URLs, one per line">
             <textarea
               className={textareaClass}
               value={sameAsText}
@@ -343,8 +607,24 @@ export function SeoControlPanel() {
       </section>
 
       <section className="border border-line bg-panel p-5 md:p-6">
-        <h2 className="font-display text-xl font-bold">Search console verification</h2>
+        <h2 className="font-display text-xl font-bold">
+          Icons and verification
+        </h2>
         <div className="mt-5 grid gap-4 md:grid-cols-2">
+          <Field label="Favicon URL">
+            <input
+              className={inputClass}
+              value={draft.faviconUrl}
+              onChange={(e) => update({ faviconUrl: e.target.value })}
+            />
+          </Field>
+          <Field label="Apple touch icon URL">
+            <input
+              className={inputClass}
+              value={draft.appleTouchIconUrl}
+              onChange={(e) => update({ appleTouchIconUrl: e.target.value })}
+            />
+          </Field>
           <Field label="Google site verification" hint="Content value only">
             <input
               className={inputClass}
@@ -359,6 +639,24 @@ export function SeoControlPanel() {
               className={inputClass}
               value={draft.bingSiteVerification}
               onChange={(e) => update({ bingSiteVerification: e.target.value })}
+            />
+          </Field>
+          <Field label="Yandex site verification">
+            <input
+              className={inputClass}
+              value={draft.yandexSiteVerification}
+              onChange={(e) =>
+                update({ yandexSiteVerification: e.target.value })
+              }
+            />
+          </Field>
+          <Field label="Pinterest domain verify">
+            <input
+              className={inputClass}
+              value={draft.pinterestSiteVerification}
+              onChange={(e) =>
+                update({ pinterestSiteVerification: e.target.value })
+              }
             />
           </Field>
         </div>

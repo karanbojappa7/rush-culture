@@ -7,36 +7,58 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = seo.canonicalBaseUrl;
   if (!base) return [];
 
+  const now = new Date();
+  const entries: MetadataRoute.Sitemap = [];
+
+  if (seo.sitemapIncludeStatic) {
+    for (const path of seo.sitemapStaticPaths) {
+      const normalized = path === "/" ? "" : path;
+      entries.push({
+        url: `${base}${normalized}`,
+        lastModified: now,
+        changeFrequency:
+          normalized === "" || normalized === "/shop" ? "daily" : "monthly",
+        priority: normalized === "" ? 1 : normalized === "/shop" ? 0.9 : 0.5,
+      });
+    }
+  }
+
+  for (const path of seo.sitemapAdditionalPaths) {
+    const normalized = path === "/" ? "" : path.startsWith("/") ? path : `/${path}`;
+    entries.push({
+      url: `${base}${normalized}`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.4,
+    });
+  }
+
   const [products, collections] = await Promise.all([
-    fetchProducts(200),
-    fetchCollections(),
+    seo.sitemapIncludeProducts ? fetchProducts(200) : Promise.resolve([]),
+    seo.sitemapIncludeCollections ? fetchCollections() : Promise.resolve([]),
   ]);
 
-  const staticPaths = ["", "/shop", "/contact", "/shipping", "/returns", "/size-guide"];
-  const now = new Date();
+  if (seo.sitemapIncludeProducts) {
+    for (const product of products) {
+      entries.push({
+        url: `${base}/products/${product.slug}`,
+        lastModified: now,
+        changeFrequency: "weekly",
+        priority: 0.8,
+      });
+    }
+  }
 
-  const staticEntries: MetadataRoute.Sitemap = staticPaths.map((path) => ({
-    url: `${base}${path}`,
-    lastModified: now,
-    changeFrequency: path === "" || path === "/shop" ? "daily" : "monthly",
-    priority: path === "" ? 1 : path === "/shop" ? 0.9 : 0.5,
-  }));
+  if (seo.sitemapIncludeCollections) {
+    for (const collection of collections) {
+      entries.push({
+        url: `${base}/collections/${collection.slug}`,
+        lastModified: now,
+        changeFrequency: "weekly",
+        priority: 0.7,
+      });
+    }
+  }
 
-  const productEntries: MetadataRoute.Sitemap = products.map((product) => ({
-    url: `${base}/products/${product.slug}`,
-    lastModified: now,
-    changeFrequency: "weekly",
-    priority: 0.8,
-  }));
-
-  const collectionEntries: MetadataRoute.Sitemap = collections.map(
-    (collection) => ({
-      url: `${base}/collections/${collection.slug}`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.7,
-    }),
-  );
-
-  return [...staticEntries, ...collectionEntries, ...productEntries];
+  return entries;
 }

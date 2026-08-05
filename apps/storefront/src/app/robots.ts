@@ -1,11 +1,14 @@
 import type { MetadataRoute } from "next";
+import { absoluteSeoUrl } from "@linq/site-config";
 import { fetchSeoSettings } from "@/lib/seo";
 
 export default async function robots(): Promise<MetadataRoute.Robots> {
   const seo = await fetchSeoSettings();
-  const sitemap = seo.canonicalBaseUrl
-    ? `${seo.canonicalBaseUrl}/sitemap.xml`
-    : undefined;
+  const sitemap =
+    absoluteSeoUrl(seo, seo.robotsSitemapUrl) ||
+    (seo.canonicalBaseUrl
+      ? `${seo.canonicalBaseUrl}/sitemap.xml`
+      : undefined);
 
   if (!seo.robotsIndex) {
     return {

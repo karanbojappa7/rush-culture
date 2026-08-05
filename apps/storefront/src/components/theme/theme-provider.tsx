@@ -51,6 +51,7 @@ function applySettings(settings: ThemeSettings) {
   root.dataset.colorMode = normalized.colorMode;
   root.dataset.fontScale = normalized.fontScale;
   root.dataset.fontSize = String(normalized.fontSizePx);
+  root.dataset.themeSurface = "storefront";
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
@@ -62,7 +63,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   const refresh = useCallback(async () => {
     setLoading(true);
-    const res = await apiGet<ThemeSettings>("/api/theme-settings");
+    const res = await apiGet<ThemeSettings>(
+      "/api/theme-settings?surface=storefront",
+    );
     if (res.status_code === 200 && res.data) {
       const next = normalizeThemeSettings(res.data, brand.themeId);
       setSettings(next);

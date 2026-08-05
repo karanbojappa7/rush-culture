@@ -1,8 +1,19 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Hero } from "@/components/hero";
 import { ProductGrid } from "@/components/product-grid";
 import { fetchCollections, fetchProducts } from "@/lib/catalog";
+import { fetchSeoSettings, seoToPageMetadata } from "@/lib/seo";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await fetchSeoSettings();
+  return seoToPageMetadata(seo, {
+    title: seo.homeTitle || undefined,
+    description: seo.homeDescription || seo.description,
+    path: "/",
+  });
+}
 
 export default async function HomePage() {
   const [collections, products] = await Promise.all([

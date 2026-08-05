@@ -25,9 +25,9 @@ export default async function SeoPage() {
       ]}
     >
       <p className="mb-6 max-w-2xl text-sm text-mute">
-        Super Admin controls for storefront search and social tags: titles,
-        descriptions, Open Graph, Twitter cards, robots, verification, and
-        organization structured data.
+        Super Admin controls for storefront SEO: titles, robots/sitemap, Open
+        Graph, Twitter, verification, icons, Organization / WebSite / Product
+        structured data.
       </p>
       <SeoControlPanel />
     </AdminShell>

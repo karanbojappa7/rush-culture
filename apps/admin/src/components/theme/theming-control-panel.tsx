@@ -8,15 +8,23 @@ import {
   FONT_SIZE_PX_MAX,
   FONT_SIZE_PX_MIN,
   THEME_COLOR_FIELDS,
+  THEME_SURFACES,
+  brand,
+  defaultSurfaceThemeSettings,
   lineFromInk,
   listGoogleFonts,
+  normalizeSurfaceThemeSettings,
+  normalizeThemeSettings,
   paletteToColors,
   toColorPickerValue,
   type ColorMode,
   type FontScale,
+  type SurfaceThemeSettings,
   type ThemeColors,
   type ThemeSettings,
+  type ThemeSurface,
 } from "@linq/site-config";
+import { apiGet, apiPut } from "@/lib/api";
 import { useTheme } from "@/components/theme/theme-provider";
 
 const labelClass =
@@ -28,15 +36,22 @@ const CUSTOM_FONT = "__custom__";
 
 export function ThemingControlPanel() {
   const {
-    settings,
     palettes,
     previewSettings,
-    saveSettings,
-    refresh,
-    saving,
-    error,
+    restoreLive,
+    refresh: refreshAdminShell,
+    canManage,
   } = useTheme();
-  const [draft, setDraft] = useState<ThemeSettings>(settings);
+  const [surface, setSurface] = useState<ThemeSurface>("storefront");
+  const [bundle, setBundle] = useState<SurfaceThemeSettings>(() =>
+    defaultSurfaceThemeSettings(brand.themeId),
+  );
+  const [draft, setDraft] = useState<ThemeSettings>(
+    () => defaultSurfaceThemeSettings(brand.themeId).storefront,
+  );
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [savedOk, setSavedOk] = useState(false);
   const [customDisplayFont, setCustomDisplayFont] = useState(false);
   const [customBodyFont, setCustomBodyFont] = useState(false);
@@ -44,21 +59,59 @@ export function ThemingControlPanel() {
   const displayFontOptions = listGoogleFonts("display");
   const bodyFontOptions = listGoogleFonts("body");
 
-  useEffect(() => {
-    setDraft(settings);
+  function syncCustomFontFlags(settings: ThemeSettings) {
     setCustomDisplayFont(
       !listGoogleFonts("display").some((font) => font.id === settings.displayFont),
     );
     setCustomBodyFont(
       !listGoogleFonts("body").some((font) => font.id === settings.bodyFont),
     );
-  }, [settings]);
+  }
+
+  async function loadBundle() {
+    setLoading(true);
+    setError(null);
+    const res = await apiGet<SurfaceThemeSettings>("/api/theme-settings");
+    const next =
+      res.status_code === 200 && res.data
+        ? normalizeSurfaceThemeSettings(res.data, brand.themeId)
+        : defaultSurfaceThemeSettings(brand.themeId);
+    setBundle(next);
+    const active = next[surface];
+    setDraft(active);
+    syncCustomFontFlags(active);
+    if (surface === "admin") {
+      previewSettings(active);
+    } else {
+      restoreLive();
+    }
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    void loadBundle();
+  }, []);
+
+  useEffect(() => {
+    const next = bundle[surface];
+    setDraft(next);
+    syncCustomFontFlags(next);
+    if (surface === "admin") {
+      previewSettings(next);
+    } else {
+      restoreLive();
+    }
+  }, [surface]);
 
   function updateDraft(partial: Partial<ThemeSettings>) {
     setSavedOk(false);
-    const next = { ...draft, ...partial } as ThemeSettings;
+    setError(null);
+    const next = normalizeThemeSettings({ ...draft, ...partial }, brand.themeId);
     setDraft(next);
-    previewSettings(next);
+    setBundle((prev) => ({ ...prev, [surface]: next }));
+    if (surface === "admin") {
+      previewSettings(next);
+    }
   }
 
   function selectPreset(themeId: string) {
@@ -76,49 +129,114 @@ export function ThemingControlPanel() {
     if (key === "ink" && !draft.colors.line.startsWith("rgba")) {
       nextColors.line = lineFromInk(value);
     }
-    const next = {
-      ...draft,
+    updateDraft({
       themeId: CUSTOM_THEME_ID,
       colors: nextColors,
-    } as ThemeSettings;
-    setDraft(next);
-    previewSettings(next);
+    });
   }
 
   function resetLineFromInk() {
-    setSavedOk(false);
-    const next = {
-      ...draft,
+    updateDraft({
       themeId: CUSTOM_THEME_ID,
       colors: {
         ...draft.colors,
         line: lineFromInk(draft.colors.ink),
       },
-    } as ThemeSettings;
-    setDraft(next);
-    previewSettings(next);
+    });
+  }
+
+  function switchSurface(next: ThemeSurface) {
+    if (next === surface) return;
+    setSavedOk(false);
+    setSurface(next);
   }
 
   async function onSave() {
+    if (!canManage) {
+      setError("You do not have permission to save themes");
+      return;
+    }
+    setSaving(true);
+    setError(null);
     setSavedOk(false);
-    const ok = await saveSettings(draft);
-    if (ok) setSavedOk(true);
+    const payload = {
+      surface,
+      ...normalizeThemeSettings(draft, brand.themeId),
+    };
+    const res = await apiPut<ThemeSettings>("/api/theme-settings", payload);
+    setSaving(false);
+    if (res.status_code !== 200 || !res.data) {
+      setError(res.message || "Could not save theme settings");
+      return;
+    }
+    const saved = normalizeThemeSettings(res.data, brand.themeId);
+    setDraft(saved);
+    setBundle((prev) => ({ ...prev, [surface]: saved }));
+    syncCustomFontFlags(saved);
+    if (surface === "admin") {
+      await refreshAdminShell();
+    } else {
+      restoreLive();
+    }
+    setSavedOk(true);
   }
 
   async function onResetPreview() {
     setSavedOk(false);
-    await refresh();
+    await loadBundle();
+    await refreshAdminShell();
   }
 
   const isCustomColors = draft.themeId === CUSTOM_THEME_ID;
   const isCustomFontSize = draft.fontScale === "custom";
+  const surfaceLabel =
+    THEME_SURFACES.find((item) => item.id === surface)?.name ?? surface;
+
+  if (loading) {
+    return <p className="text-sm text-mute">Loading theme settings…</p>;
+  }
 
   return (
     <div className="space-y-8">
       <section className="border border-line bg-panel p-5 md:p-6">
+        <h2 className="font-display text-xl font-bold">App surface</h2>
+        <p className="mt-1 text-sm text-mute">
+          Toggle which app this palette applies to. Storefront and Admin keep
+          separate colors, fonts, and day/night settings.
+        </p>
+        <div className="mt-5 flex flex-wrap gap-2">
+          {THEME_SURFACES.map((option) => {
+            const active = surface === option.id;
+            return (
+              <button
+                key={option.id}
+                type="button"
+                onClick={() => switchSurface(option.id)}
+                className={`cursor-pointer border px-4 py-2.5 text-[11px] font-semibold tracking-[0.12em] uppercase transition-colors ${
+                  active
+                    ? "border-btn bg-btn text-btn-fg"
+                    : "border-line text-mute hover:border-ink/40 hover:text-ink"
+                }`}
+              >
+                {option.name}
+              </button>
+            );
+          })}
+        </div>
+        <p className="mt-3 text-sm text-mute">
+          Editing <span className="text-ink">{surfaceLabel}</span>
+          {surface === "admin"
+            ? " — live preview on this admin UI"
+            : " — save to apply on the storefront (admin chrome stays on the Admin palette)"}
+          .
+        </p>
+      </section>
+
+      <section className="border border-line bg-panel p-5 md:p-6">
         <h2 className="font-display text-xl font-bold">Color palette</h2>
         <p className="mt-1 text-sm text-mute">
-          Choose a preset, or Custom to edit individual colors.
+          Choose a preset, or Custom to edit individual colors for{" "}
+          {surfaceLabel.toLowerCase()}.
         </p>
         <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {palettes.map((palette) => {
@@ -196,7 +314,8 @@ export function ThemingControlPanel() {
               <div>
                 <h3 className="font-display text-lg font-bold">Custom colors</h3>
                 <p className="mt-1 text-sm text-mute">
-                  Pick hex/rgba values for the storefront palette.
+                  Pick hex/rgba values for the {surfaceLabel.toLowerCase()}{" "}
+                  palette.
                 </p>
               </div>
               <button
@@ -467,7 +586,7 @@ export function ThemingControlPanel() {
           onClick={() => void onSave()}
           className="cursor-pointer bg-btn px-4 py-2.5 text-[12px] font-semibold tracking-[0.12em] uppercase text-btn-fg transition-opacity hover:opacity-90 disabled:opacity-50"
         >
-          {saving ? "Saving…" : "Save theme"}
+          {saving ? "Saving…" : `Save ${surfaceLabel} theme`}
         </button>
         <button
           type="button"
@@ -478,7 +597,12 @@ export function ThemingControlPanel() {
           Discard preview
         </button>
         {savedOk ? (
-          <p className="text-sm text-mute">Saved for the storefront.</p>
+          <p className="text-sm text-mute">
+            Saved for {surfaceLabel.toLowerCase()}.
+            {surface === "storefront"
+              ? " Reload the storefront to see it."
+              : ""}
+          </p>
         ) : null}
         {error ? <p className="text-sm text-mute">{error}</p> : null}
       </div>

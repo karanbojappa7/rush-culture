@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { brand } from "@linq/site-config";
 import { ContactForm } from "@/components/contact-form";
 import { fetchSeoSettings, seoToPageMetadata } from "@/lib/seo";
 
@@ -7,7 +6,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const seo = await fetchSeoSettings();
   return seoToPageMetadata(seo, {
     title: "Contact",
-    description: `Ask ${seo.organizationName || brand.name} about shipping, returns, orders, or products.`,
+    description: seo.contactDescription,
     path: "/contact",
   });
 }

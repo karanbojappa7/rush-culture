@@ -1,10 +1,16 @@
+import type { Metadata } from "next";
 import { sizeGuide } from "@linq/site-config";
 import Link from "next/link";
+import { fetchSeoSettings, seoToPageMetadata } from "@/lib/seo";
 
-export const metadata = {
-  title: sizeGuide.title,
-  description: sizeGuide.intro,
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await fetchSeoSettings();
+  return seoToPageMetadata(seo, {
+    title: sizeGuide.title,
+    description: sizeGuide.intro,
+    path: "/size-guide",
+  });
+}
 
 export default function SizeGuidePage() {
   return (

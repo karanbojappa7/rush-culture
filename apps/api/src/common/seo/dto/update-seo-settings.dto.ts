@@ -1,9 +1,12 @@
+import { Type } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
   IsIn,
-  IsOptional,
+  IsInt,
   IsString,
+  Max,
+  Min,
 } from 'class-validator';
 
 export class UpdateSeoSettingsDto {
@@ -23,7 +26,22 @@ export class UpdateSeoSettingsDto {
   shopDescription!: string;
 
   @IsString()
+  contactDescription!: string;
+
+  @IsString()
+  homeTitle!: string;
+
+  @IsString()
+  homeDescription!: string;
+
+  @IsString()
   keywords!: string;
+
+  @IsString()
+  siteName!: string;
+
+  @IsString()
+  applicationName!: string;
 
   @IsBoolean()
   robotsIndex!: boolean;
@@ -31,8 +49,35 @@ export class UpdateSeoSettingsDto {
   @IsBoolean()
   robotsFollow!: boolean;
 
+  @IsBoolean()
+  robotsNoArchive!: boolean;
+
+  @IsBoolean()
+  robotsNoSnippet!: boolean;
+
+  @IsBoolean()
+  robotsNoImageIndex!: boolean;
+
+  @IsIn(['none', 'standard', 'large'])
+  maxImagePreview!: 'none' | 'standard' | 'large';
+
+  @Type(() => Number)
+  @IsInt()
+  @Min(-1)
+  @Max(100000)
+  maxSnippet!: number;
+
+  @Type(() => Number)
+  @IsInt()
+  @Min(-1)
+  @Max(100000)
+  maxVideoPreview!: number;
+
   @IsString()
   canonicalBaseUrl!: string;
+
+  @IsString()
+  robotsSitemapUrl!: string;
 
   @IsString()
   locale!: string;
@@ -47,6 +92,9 @@ export class UpdateSeoSettingsDto {
   ogImageUrl!: string;
 
   @IsString()
+  ogImageAlt!: string;
+
+  @IsString()
   ogType!: string;
 
   @IsIn(['summary', 'summary_large_image'])
@@ -54,6 +102,9 @@ export class UpdateSeoSettingsDto {
 
   @IsString()
   twitterHandle!: string;
+
+  @IsString()
+  twitterCreator!: string;
 
   @IsString()
   twitterTitle!: string;
@@ -64,6 +115,16 @@ export class UpdateSeoSettingsDto {
   @IsString()
   twitterImageUrl!: string;
 
+  @IsBoolean()
+  enableOrganizationSchema!: boolean;
+
+  @IsIn(['Organization', 'OnlineStore', 'ClothingStore', 'Store'])
+  organizationType!:
+    | 'Organization'
+    | 'OnlineStore'
+    | 'ClothingStore'
+    | 'Store';
+
   @IsString()
   organizationName!: string;
 
@@ -73,9 +134,24 @@ export class UpdateSeoSettingsDto {
   @IsString()
   organizationEmail!: string;
 
+  @IsString()
+  organizationPhone!: string;
+
+  @IsString()
+  organizationUrl!: string;
+
   @IsArray()
   @IsString({ each: true })
   sameAs!: string[];
+
+  @IsBoolean()
+  enableWebsiteSchema!: boolean;
+
+  @IsString()
+  siteSearchUrlTemplate!: string;
+
+  @IsBoolean()
+  enableProductSchema!: boolean;
 
   @IsString()
   googleSiteVerification!: string;
@@ -83,8 +159,39 @@ export class UpdateSeoSettingsDto {
   @IsString()
   bingSiteVerification!: string;
 
+  @IsString()
+  yandexSiteVerification!: string;
+
+  @IsString()
+  pinterestSiteVerification!: string;
+
+  @IsString()
+  facebookAppId!: string;
+
+  @IsString()
+  faviconUrl!: string;
+
+  @IsString()
+  appleTouchIconUrl!: string;
+
   @IsArray()
   @IsString({ each: true })
-  @IsOptional()
   noIndexPaths!: string[];
+
+  @IsBoolean()
+  sitemapIncludeStatic!: boolean;
+
+  @IsBoolean()
+  sitemapIncludeProducts!: boolean;
+
+  @IsBoolean()
+  sitemapIncludeCollections!: boolean;
+
+  @IsArray()
+  @IsString({ each: true })
+  sitemapStaticPaths!: string[];
+
+  @IsArray()
+  @IsString({ each: true })
+  sitemapAdditionalPaths!: string[];
 }

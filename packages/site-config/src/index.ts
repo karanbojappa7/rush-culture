@@ -8,7 +8,11 @@ export {
   themeToCssVars,
   themeToCssText,
   defaultThemeSettings,
+  defaultSurfaceThemeSettings,
   normalizeThemeSettings,
+  normalizeSurfaceThemeSettings,
+  pickSurfaceTheme,
+  isThemeSurface,
   resolveDisplayPalette,
   themeSettingsToCssText,
   themeSettingsToCssVars,
@@ -26,6 +30,7 @@ export {
   fontFamilyCss,
   buildGoogleFontsStylesheetUrl,
   THEME_COLOR_FIELDS,
+  THEME_SURFACES,
   CUSTOM_THEME_ID,
   FONT_SCALE_OPTIONS,
   FONT_SIZE_PX_MIN,
@@ -39,7 +44,9 @@ export type {
   ThemePalette,
   ThemeId,
   ThemeSettings,
+  SurfaceThemeSettings,
   ThemeColors,
+  ThemeSurface,
   ColorMode,
   FontScale,
 } from "./themes";
@@ -48,8 +55,18 @@ export {
   normalizeSeoSettings,
   absoluteSeoUrl,
   parseSeoKeywords,
+  isSeoNoIndexPath,
+  resolveSiteSearchUrlTemplate,
+  organizationJsonLd,
+  websiteJsonLd,
+  productJsonLd,
 } from "./seo";
-export type { SeoSettings, TwitterCardType } from "./seo";
+export type {
+  SeoSettings,
+  TwitterCardType,
+  MaxImagePreview,
+  OrganizationSchemaType,
+} from "./seo";
 export {
   collections,
   products,

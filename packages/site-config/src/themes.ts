@@ -24,6 +24,7 @@ export type ThemeColors = {
 
 export type ColorMode = "day" | "night";
 export type FontScale = "sm" | "md" | "lg" | "custom";
+export type ThemeSurface = "storefront" | "admin";
 
 export type ThemeSettings = {
   themeId: string;
@@ -34,6 +35,20 @@ export type ThemeSettings = {
   bodyFont: string;
   colors: ThemeColors;
 };
+
+export type SurfaceThemeSettings = {
+  storefront: ThemeSettings;
+  admin: ThemeSettings;
+};
+
+export const THEME_SURFACES: Array<{ id: ThemeSurface; name: string }> = [
+  { id: "storefront", name: "Storefront" },
+  { id: "admin", name: "Admin" },
+];
+
+export function isThemeSurface(value: unknown): value is ThemeSurface {
+  return value === "storefront" || value === "admin";
+}
 
 export const CUSTOM_THEME_ID = "custom";
 
@@ -404,6 +419,64 @@ export function defaultThemeSettings(themeId?: string): ThemeSettings {
     bodyFont: DEFAULT_BODY_FONT,
     colors: paletteToColors(palette),
   };
+}
+
+export function defaultSurfaceThemeSettings(
+  themeId?: string,
+): SurfaceThemeSettings {
+  const base = defaultThemeSettings(themeId);
+  return {
+    storefront: { ...base, colors: { ...base.colors } },
+    admin: {
+      ...base,
+      colorMode: "night",
+      colors: { ...base.colors },
+    },
+  };
+}
+
+function isLegacyThemeSettingsBlob(value: unknown): value is Partial<ThemeSettings> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const record = value as Record<string, unknown>;
+  if ("storefront" in record || "admin" in record) return false;
+  return (
+    "themeId" in record ||
+    "colors" in record ||
+    "colorMode" in record ||
+    "fontScale" in record
+  );
+}
+
+export function normalizeSurfaceThemeSettings(
+  input?: Partial<SurfaceThemeSettings> | Partial<ThemeSettings> | null,
+  fallbackThemeId?: string,
+): SurfaceThemeSettings {
+  const base = defaultSurfaceThemeSettings(fallbackThemeId);
+  if (!input || typeof input !== "object") return base;
+
+  if (isLegacyThemeSettingsBlob(input)) {
+    const shared = normalizeThemeSettings(input, fallbackThemeId);
+    return {
+      storefront: shared,
+      admin: { ...shared, colors: { ...shared.colors } },
+    };
+  }
+
+  const bundle = input as Partial<SurfaceThemeSettings>;
+  return {
+    storefront: normalizeThemeSettings(
+      bundle.storefront ?? base.storefront,
+      fallbackThemeId,
+    ),
+    admin: normalizeThemeSettings(bundle.admin ?? base.admin, fallbackThemeId),
+  };
+}
+
+export function pickSurfaceTheme(
+  bundle: SurfaceThemeSettings,
+  surface: ThemeSurface,
+): ThemeSettings {
+  return bundle[surface];
 }
 
 export function normalizeThemeSettings(

@@ -50,6 +50,9 @@ export class ThemeColorsDto {
 }
 
 export class UpdateThemeSettingsDto {
+  @IsIn(['storefront', 'admin'])
+  surface!: 'storefront' | 'admin';
+
   @IsString()
   themeId!: string;
 

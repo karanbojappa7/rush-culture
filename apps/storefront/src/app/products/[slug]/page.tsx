@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { ProductBuyBox } from "@/components/product-buy-box";
 import { ProductImageGallery } from "@/components/product-image-gallery";
 import { ProductReviews } from "@/components/product-reviews";
+import { ProductJsonLd } from "@/components/seo/product-json-ld";
 import { fetchProductBySlug, fetchProducts } from "@/lib/catalog";
 import { fetchSeoSettings, seoToPageMetadata } from "@/lib/seo";
 
@@ -32,12 +33,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
-  const product = await fetchProductBySlug(slug);
+  const [product, seo] = await Promise.all([
+    fetchProductBySlug(slug),
+    fetchSeoSettings(),
+  ]);
   if (!product) notFound();
   const description = product.description?.trim();
 
   return (
     <div className="pt-20 md:pt-24">
+      <ProductJsonLd settings={seo} product={product} />
       <div className="mx-auto max-w-[1400px] px-5 py-10 md:px-8 md:py-16">
         <div className="grid gap-10 md:grid-cols-2 md:gap-14">
           <div className="relative z-20 min-w-0">

@@ -26,7 +26,8 @@ export default async function ThemingPage() {
     >
       <p className="mb-6 max-w-2xl text-sm text-mute">
         Super Admin controls for presets, custom colors, day/night mode, and
-        base font size. Settings apply primarily on the storefront.
+        base font size. Toggle between Storefront and Admin — each has its own
+        palette.
       </p>
       <ThemingControlPanel />
     </AdminShell>

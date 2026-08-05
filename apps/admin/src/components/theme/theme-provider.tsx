@@ -36,6 +36,8 @@ type ThemeContextValue = {
   refresh: () => Promise<void>;
   saveSettings: (next: ThemeSettings) => Promise<boolean>;
   previewSettings: (next: ThemeSettings | Partial<ThemeSettings>) => void;
+  applyLive: (next: ThemeSettings) => void;
+  restoreLive: () => void;
 };
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
@@ -57,6 +59,7 @@ function applySettings(settings: ThemeSettings) {
   root.dataset.colorMode = normalized.colorMode;
   root.dataset.fontScale = normalized.fontScale;
   root.dataset.fontSize = String(normalized.fontSizePx);
+  root.dataset.themeSurface = "admin";
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
@@ -73,7 +76,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     setError(null);
     const [themeRes, meRes] = await Promise.all([
-      apiGet<ThemeSettings>("/api/theme-settings"),
+      apiGet<ThemeSettings>("/api/theme-settings?surface=admin"),
       apiGet<SessionUser>("/api/auth/me"),
     ]);
     if (themeRes.status_code === 200 && themeRes.data) {
@@ -110,12 +113,23 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     [],
   );
 
+  const applyLive = useCallback((next: ThemeSettings) => {
+    applySettings(normalizeThemeSettings(next, brand.themeId));
+  }, []);
+
+  const restoreLive = useCallback(() => {
+    applySettings(settings);
+  }, [settings]);
+
   const saveSettings = useCallback(
     async (next: ThemeSettings) => {
       if (!canManage) return false;
       setSaving(true);
       setError(null);
-      const payload = normalizeThemeSettings(next, brand.themeId);
+      const payload = {
+        surface: "admin" as const,
+        ...normalizeThemeSettings(next, brand.themeId),
+      };
       const res = await apiPut<ThemeSettings>("/api/theme-settings", payload);
       setSaving(false);
       if (res.status_code !== 200 || !res.data) {
@@ -144,6 +158,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       refresh,
       previewSettings,
       saveSettings,
+      applyLive,
+      restoreLive,
     };
   }, [
     settings,
@@ -155,6 +171,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     refresh,
     previewSettings,
     saveSettings,
+    applyLive,
+    restoreLive,
   ]);
 
   return (

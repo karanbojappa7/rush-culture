@@ -22,6 +22,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: collection.name,
     description: collection.tagline || seo.description,
     path: `/collections/${slug}`,
+    imageUrl: collection.image,
+    imageAlt: collection.name,
   });
 }
 

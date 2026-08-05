@@ -1,4 +1,8 @@
-import { Body, Controller, Get, Put } from '@nestjs/common';
+import { Body, Controller, Get, Put, Query } from '@nestjs/common';
+import {
+  isThemeSurface,
+  type ThemeSurface,
+} from '@linq/site-config';
 import { BaseController } from '../base/base.controller';
 import { PermissionsAuth } from '../rbac/permissions.decorator';
 import { ResponseBuilder } from '../response/response.builder';
@@ -16,9 +20,16 @@ export class ThemeSettingsController extends BaseController {
   }
 
   @Get()
-  get(): Promise<ResponseVm> {
+  get(@Query('surface') surface?: string): Promise<ResponseVm> {
+    if (isThemeSurface(surface)) {
+      return this.executeMethod(
+        () => this.themeSettingsService.getSurface(surface),
+        undefined as never,
+        `${surface} theme settings fetched`,
+      );
+    }
     return this.executeMethod(
-      () => this.themeSettingsService.get(),
+      () => this.themeSettingsService.getAll(),
       undefined as never,
       'Theme settings fetched',
     );
@@ -27,10 +38,14 @@ export class ThemeSettingsController extends BaseController {
   @Put()
   @PermissionsAuth('theming.manage')
   update(@Body() payload: UpdateThemeSettingsDto): Promise<ResponseVm> {
+    const surface: ThemeSurface = isThemeSurface(payload.surface)
+      ? payload.surface
+      : 'storefront';
+    const { surface: _surface, ...theme } = payload;
     return this.executeMethod(
-      (data) => this.themeSettingsService.update(data),
-      payload,
-      'Theme settings updated',
+      (data) => this.themeSettingsService.updateSurface(surface, data),
+      theme,
+      `${surface} theme settings updated`,
     );
   }
 }

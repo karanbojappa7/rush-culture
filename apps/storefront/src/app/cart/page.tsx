@@ -7,7 +7,6 @@ export async function generateMetadata(): Promise<Metadata> {
   return seoToPageMetadata(seo, {
     title: "Cart",
     path: "/cart",
-    noIndex: true,
   });
 }
 

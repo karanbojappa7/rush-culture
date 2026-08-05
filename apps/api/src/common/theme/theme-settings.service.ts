@@ -1,9 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import {
   brand,
-  defaultThemeSettings,
+  defaultSurfaceThemeSettings,
+  isThemeSurface,
+  normalizeSurfaceThemeSettings,
   normalizeThemeSettings,
+  pickSurfaceTheme,
+  type SurfaceThemeSettings,
   type ThemeSettings,
+  type ThemeSurface,
 } from '@linq/site-config';
 import { AppConfigRepo } from '../../module/core/app-config/app-config.repo';
 
@@ -13,23 +18,55 @@ export const THEME_SETTINGS_KEY = 'ui.theme';
 export class ThemeSettingsService {
   constructor(private readonly appConfigRepo: AppConfigRepo) {}
 
-  async get(): Promise<ThemeSettings> {
+  async getAll(): Promise<SurfaceThemeSettings> {
     const row = await this.appConfigRepo.findByKey(THEME_SETTINGS_KEY);
     if (!row?.value) {
-      return defaultThemeSettings(brand.themeId);
+      return defaultSurfaceThemeSettings(brand.themeId);
     }
     try {
-      const parsed = JSON.parse(row.value) as Partial<ThemeSettings>;
-      return normalizeThemeSettings(parsed, brand.themeId);
+      const parsed = JSON.parse(row.value) as unknown;
+      return normalizeSurfaceThemeSettings(
+        parsed as Partial<SurfaceThemeSettings>,
+        brand.themeId,
+      );
     } catch {
-      return defaultThemeSettings(brand.themeId);
+      return defaultSurfaceThemeSettings(brand.themeId);
     }
   }
 
-  async update(input: Partial<ThemeSettings>): Promise<ThemeSettings> {
-    const next = normalizeThemeSettings(input, brand.themeId);
+  async getSurface(surface: ThemeSurface): Promise<ThemeSettings> {
+    const bundle = await this.getAll();
+    return pickSurfaceTheme(bundle, surface);
+  }
+
+  async updateSurface(
+    surface: ThemeSurface,
+    input: Partial<ThemeSettings>,
+  ): Promise<ThemeSettings> {
+    if (!isThemeSurface(surface)) {
+      surface = 'storefront';
+    }
+    const bundle = await this.getAll();
+    const nextSurface = normalizeThemeSettings(input, brand.themeId);
+    const nextBundle: SurfaceThemeSettings = {
+      ...bundle,
+      [surface]: nextSurface,
+    };
+    await this.persist(nextBundle);
+    return nextSurface;
+  }
+
+  async updateAll(
+    input: Partial<SurfaceThemeSettings>,
+  ): Promise<SurfaceThemeSettings> {
+    const next = normalizeSurfaceThemeSettings(input, brand.themeId);
+    await this.persist(next);
+    return next;
+  }
+
+  private async persist(bundle: SurfaceThemeSettings): Promise<void> {
     const existing = await this.appConfigRepo.findByKey(THEME_SETTINGS_KEY);
-    const value = JSON.stringify(next);
+    const value = JSON.stringify(bundle);
     if (existing) {
       await this.appConfigRepo.update(existing.id, {
         value,
@@ -44,6 +81,5 @@ export class ThemeSettingsService {
         description: 'Storefront and admin theme settings',
       });
     }
-    return next;
   }
 }
