@@ -53,6 +53,18 @@ modules:
       - code: cache.flush
         name: Flush cache
         description: View cache status and flush Redis/module keys
+  - key: theming
+    name: Theming
+    permissions:
+      - code: theming.manage
+        name: Manage theming
+        description: Palette, font size, and day/night mode primarily for the storefront
+  - key: seo
+    name: SEO
+    permissions:
+      - code: seo.manage
+        name: Manage SEO
+        description: Storefront titles, meta tags, Open Graph, robots, and structured data
   - key: access
     name: Access control
     permissions:

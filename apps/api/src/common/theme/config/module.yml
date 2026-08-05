@@ -1,0 +1,26 @@
+name: theme-settings
+version: 1.0.0
+enabled: true
+prefix: /api/theme-settings
+description: White-label UI theme settings controlled by Super Admin
+
+routes:
+  - method: GET
+    path: /
+    action: get
+    auth: false
+    cache: true
+    ttl: 60
+  - method: PUT
+    path: /
+    action: update
+    auth: true
+    cache: false
+
+security:
+  encrypt: true
+  rate_limit:
+    window_ms: 60000
+    max: 60
+
+schema: core

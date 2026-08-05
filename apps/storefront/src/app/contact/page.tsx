@@ -1,10 +1,16 @@
+import type { Metadata } from "next";
 import { brand } from "@linq/site-config";
 import { ContactForm } from "@/components/contact-form";
+import { fetchSeoSettings, seoToPageMetadata } from "@/lib/seo";
 
-export const metadata = {
-  title: "Contact",
-  description: `Ask ${brand.name} about shipping, returns, orders, or products.`,
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await fetchSeoSettings();
+  return seoToPageMetadata(seo, {
+    title: "Contact",
+    description: `Ask ${seo.organizationName || brand.name} about shipping, returns, orders, or products.`,
+    path: "/contact",
+  });
+}
 
 export default function ContactPage() {
   return (
@@ -15,9 +21,9 @@ export default function ContactPage() {
       <h1 className="mt-2 font-display text-5xl font-extrabold tracking-tight text-ink md:text-6xl">
         Contact
       </h1>
-      <p className="mt-4 max-w-lg text-mute">
-        Shipping, returns, order issues — send a query and we track it on the
-        admin dashboard until it is resolved.
+      <p className="mt-3 text-mute">
+        Questions about shipping, returns, sizing, or an order? Send a note —
+        we read every message.
       </p>
       <div className="mt-10">
         <ContactForm />

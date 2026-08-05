@@ -10,6 +10,8 @@ import { HealthModule } from './common/health/health.module';
 import { PrismaModule } from './common/prisma/prisma.module';
 import { RateLimitModule } from './common/rate-limit/rate-limit.module';
 import { RbacModule } from './common/rbac/rbac.module';
+import { SeoSettingsModule } from './common/seo/seo-settings.module';
+import { ThemeSettingsModule } from './common/theme/theme-settings.module';
 import { AppConfigModule } from './module/core/app-config/app-config.module';
 import { DiscountModule } from './module/core/discount/discount.module';
 import { UserModule } from './module/core/user/user.module';
@@ -29,6 +31,8 @@ import { ReviewModule } from './module/meta/review/review.module';
     CachingModule,
     DeviceModule,
     EmailModule,
+    ThemeSettingsModule,
+    SeoSettingsModule,
     RateLimitModule,
     HealthModule,
     PrismaModule,

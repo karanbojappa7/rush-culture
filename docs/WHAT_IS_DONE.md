@@ -19,6 +19,8 @@ Workspaces: npm (`apps/*`, `packages/*`).
 ## White-label / DRY
 
 - Brand name, cart storage key, order prefix, admin auth cookie → `@linq/site-config` (`brand`)
+- Theme settings (palette, **custom colors**, day/night, font scale) → `packages/site-config/src/themes.ts`; API `GET/PUT /api/theme-settings` (`AppConfig` key `ui.theme`); Super Admin **Theming** (`theming.manage`); primarily storefront
+- Storefront SEO → `packages/site-config/src/seo.ts`; API `GET/PUT /api/seo-settings` (`AppConfig` key `ui.seo`); Super Admin **SEO** (`seo.manage`): titles, meta, OG, Twitter, robots, verification, organization JSON-LD; storefront `generateMetadata`, `robots.ts`, `sitemap.ts`
 - SKU helpers → `sku` / `withBrandName` from site-config (no hardcoded prefixes)
 - Money → `formatInr` from site-config
 - Policies (shipping / returns / size guide topics) → `packages/site-config/src/policies.ts`

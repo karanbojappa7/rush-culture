@@ -10,6 +10,13 @@
   --line: rgba(14, 14, 14, 0.12);
   --background: var(--paper);
   --foreground: var(--ink);
+  --panel: #fffcf8;
+  --accent: var(--volt);
+  --accent-ink: var(--volt-ink);
+  --bg: var(--paper);
+  --font-scale: 1;
+  --btn: #0e0e0e;
+  --btn-fg: #ffffff;
 }
 
 @theme inline {
@@ -22,6 +29,8 @@
   --color-volt: var(--volt);
   --color-volt-ink: var(--volt-ink);
   --color-line: var(--line);
+  --color-btn: var(--btn);
+  --color-btn-fg: var(--btn-fg);
   --font-display: var(--font-syne);
   --font-sans: var(--font-figtree);
 }
@@ -32,6 +41,7 @@
 
 html {
   scroll-behavior: smooth;
+  font-size: calc(16px * var(--font-scale, 1));
 }
 
 body {

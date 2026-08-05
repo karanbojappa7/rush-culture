@@ -64,8 +64,10 @@ export function SiteFooter({ collections = [] }: { collections?: Collection[] })
           </ul>
         </div>
       </div>
-      <div className="border-t border-paper/10 px-5 py-5 text-center text-xs tracking-[0.12em] uppercase text-paper/40 md:px-8">
-        © {new Date().getFullYear()} {brand.legalName}
+      <div className="border-t border-paper/10 px-5 py-6 md:px-8">
+        <p className="text-center text-xs tracking-[0.12em] uppercase text-paper/40">
+          © {new Date().getFullYear()} {brand.legalName}
+        </p>
       </div>
     </footer>
   );

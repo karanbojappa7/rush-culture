@@ -18,6 +18,8 @@ const nav = [
   { href: "/queries", label: "Queries", permission: "queries.manage" },
   { href: "/reviews", label: "Reviews", permission: "reviews.manage" },
   { href: "/devices", label: "Devices", permission: "devices.read" },
+  { href: "/theming", label: "Theming", permission: "theming.manage" },
+  { href: "/seo", label: "SEO", permission: "seo.manage" },
   { href: "/access", label: "Access", permission: "access.dashboard" },
   { href: "/cache", label: "Cache", permission: "cache.flush" },
 ];
@@ -155,7 +157,7 @@ export function AdminShell({
 
   return (
     <div className="admin-shell min-h-screen md:grid md:grid-cols-[232px_1fr]">
-      <aside className="flex flex-col border-b border-white/10 bg-ink text-white md:sticky md:top-0 md:h-screen md:border-b-0 md:border-r md:border-white/10">
+      <aside className="flex flex-col border-b border-white/10 bg-[#101010] text-white md:sticky md:top-0 md:h-screen md:border-b-0 md:border-r md:border-white/10">
         <div className="shrink-0 px-5 py-6">
           <Link href="/" className="block">
             <p className="font-display text-2xl font-extrabold tracking-tight">

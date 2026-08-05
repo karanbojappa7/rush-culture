@@ -3,20 +3,26 @@ import {
   fetchCollectionBySlug,
   fetchCollections,
 } from "@/lib/catalog";
+import { fetchSeoSettings, seoToPageMetadata } from "@/lib/seo";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 type Props = {
   params: Promise<{ slug: string }>;
 };
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const collection = await fetchCollectionBySlug(slug);
+  const [collection, seo] = await Promise.all([
+    fetchCollectionBySlug(slug),
+    fetchSeoSettings(),
+  ]);
   if (!collection) return { title: "Collection" };
-  return {
+  return seoToPageMetadata(seo, {
     title: collection.name,
-    description: collection.tagline,
-  };
+    description: collection.tagline || seo.description,
+    path: `/collections/${slug}`,
+  });
 }
 
 export default async function CollectionPage({ params }: Props) {

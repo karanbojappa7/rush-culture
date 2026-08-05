@@ -1,11 +1,16 @@
-import { brand } from "@linq/site-config";
+import type { Metadata } from "next";
 import { ShopCatalog } from "@/components/shop-catalog";
 import { fetchCollections } from "@/lib/catalog";
+import { fetchSeoSettings, seoToPageMetadata } from "@/lib/seo";
 
-export const metadata = {
-  title: "Shop",
-  description: brand.meta.shopDescription,
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await fetchSeoSettings();
+  return seoToPageMetadata(seo, {
+    title: "Shop",
+    description: seo.shopDescription,
+    path: "/shop",
+  });
+}
 
 export default async function ShopPage() {
   const collections = await fetchCollections();

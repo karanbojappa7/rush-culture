@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { ProductBuyBox } from "@/components/product-buy-box";
 import { ProductImageGallery } from "@/components/product-image-gallery";
 import { ProductReviews } from "@/components/product-reviews";
 import { fetchProductBySlug, fetchProducts } from "@/lib/catalog";
+import { fetchSeoSettings, seoToPageMetadata } from "@/lib/seo";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -13,14 +15,19 @@ export async function generateStaticParams() {
   return products.map((product) => ({ slug: product.slug }));
 }
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const product = await fetchProductBySlug(slug);
+  const [product, seo] = await Promise.all([
+    fetchProductBySlug(slug),
+    fetchSeoSettings(),
+  ]);
   if (!product) return { title: "Product" };
-  return {
+  return seoToPageMetadata(seo, {
     title: product.name,
-    description: product.description,
-  };
+    description: product.description || seo.description,
+    path: `/products/${slug}`,
+    imageUrl: product.images[0] ?? null,
+  });
 }
 
 export default async function ProductPage({ params }: Props) {

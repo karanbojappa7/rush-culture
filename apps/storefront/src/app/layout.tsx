@@ -2,9 +2,13 @@ import type { Metadata } from "next";
 import { Figtree, Syne } from "next/font/google";
 import { brand } from "@linq/site-config";
 import { CartProvider } from "@/components/cart-provider";
+import { OrganizationJsonLd } from "@/components/seo/organization-json-ld";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { ThemeBootstrap } from "@/components/theme/theme-bootstrap";
+import { ThemeProvider } from "@/components/theme/theme-provider";
 import { fetchCollections } from "@/lib/catalog";
+import { fetchSeoSettings, seoToRootMetadata } from "@/lib/seo";
 import "./globals.css";
 
 const syne = Syne({
@@ -19,20 +23,20 @@ const figtree = Figtree({
   weight: ["400", "500", "600", "700"],
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: brand.meta.titleDefault,
-    template: brand.meta.titleTemplate,
-  },
-  description: brand.description,
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await fetchSeoSettings();
+  return seoToRootMetadata(settings);
+}
 
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const collections = await fetchCollections();
+  const [collections, seo] = await Promise.all([
+    fetchCollections(),
+    fetchSeoSettings(),
+  ]);
   const collectionLinks = collections.map((collection) => ({
     href: `/collections/${collection.slug}`,
     label: collection.name,
@@ -40,16 +44,23 @@ export default async function RootLayout({
 
   return (
     <html
-      lang="en"
+      lang={seo.locale.split("-")[0] || "en"}
+      data-theme={brand.themeId}
       data-scroll-behavior="smooth"
       className={`${syne.variable} ${figtree.variable} h-full`}
     >
+      <head>
+        <ThemeBootstrap />
+        <OrganizationJsonLd settings={seo} />
+      </head>
       <body className="flex min-h-full flex-col font-sans antialiased">
-        <CartProvider>
-          <SiteHeader collectionLinks={collectionLinks} />
-          <main className="flex-1">{children}</main>
-          <SiteFooter collections={collections} />
-        </CartProvider>
+        <ThemeProvider>
+          <CartProvider>
+            <SiteHeader collectionLinks={collectionLinks} />
+            <main className="flex-1">{children}</main>
+            <SiteFooter collections={collections} />
+          </CartProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

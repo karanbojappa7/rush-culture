@@ -13,6 +13,7 @@ export const brand = {
   currency: "INR",
   country: "IN",
   supportEmail: "support@rushculture.example",
+  themeId: "rush-volt",
   meta: {
     titleDefault: "Rush Culture — Youth clothing",
     titleTemplate: "%s · Rush Culture",

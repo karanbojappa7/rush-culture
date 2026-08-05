@@ -7,6 +7,13 @@
   --mute: #6a655c;
   --line: rgba(20, 20, 20, 0.1);
   --accent: #c8f542;
+  --font-scale: 1;
+  --btn: #141414;
+  --btn-fg: #ffffff;
+}
+
+html {
+  font-size: calc(16px * var(--font-scale, 1));
 }
 
 @theme inline {
@@ -16,14 +23,24 @@
   --color-mute: var(--mute);
   --color-line: var(--line);
   --color-accent: var(--accent);
+  --color-btn: var(--btn);
+  --color-btn-fg: var(--btn-fg);
   --font-sans: var(--font-figtree);
   --font-display: var(--font-syne);
 }
 
 body {
   background:
-    radial-gradient(ellipse 80% 50% at 0% -10%, rgba(200, 245, 66, 0.14), transparent 55%),
-    radial-gradient(ellipse 60% 40% at 100% 0%, rgba(20, 20, 20, 0.04), transparent 50%),
+    radial-gradient(
+      ellipse 80% 50% at 0% -10%,
+      color-mix(in srgb, var(--accent) 18%, transparent),
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 60% 40% at 100% 0%,
+      color-mix(in srgb, var(--ink) 4%, transparent),
+      transparent 50%
+    ),
     var(--bg);
   color: var(--ink);
   font-family: var(--font-sans), system-ui, sans-serif;
@@ -96,4 +113,17 @@ body {
   .chart-arc {
     animation: none;
   }
+}
+
+html[data-color-mode="night"] .bg-ink {
+  background-color: var(--btn) !important;
+}
+
+html[data-color-mode="night"] .text-white.bg-ink,
+html[data-color-mode="night"] .bg-ink.text-white {
+  color: var(--btn-fg) !important;
+}
+
+html[data-color-mode="night"] .border-ink.bg-ink {
+  border-color: color-mix(in srgb, var(--btn-fg) 35%, transparent) !important;
 }
