@@ -16,19 +16,19 @@ routes:
     action: summary
     auth: true
     cache: true
-    ttl: 60
+    ttl: 300
   - method: GET
     path: /
     action: findAll
     auth: true
     cache: true
-    ttl: 60
+    ttl: 300
   - method: GET
     path: /:id
     action: findById
     auth: true
     cache: true
-    ttl: 60
+    ttl: 300
   - method: PATCH
     path: /:id
     action: update

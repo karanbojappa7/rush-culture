@@ -10,4 +10,4 @@ routes:
     action: findAll
     auth: true
     cache: true
-    ttl: 60
+    ttl: 300

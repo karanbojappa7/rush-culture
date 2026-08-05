@@ -10,7 +10,7 @@ routes:
     action: findAll
     auth: false
     cache: true
-    ttl: 60
+    ttl: 300
     query:
       - q
       - collection
@@ -23,13 +23,13 @@ routes:
     action: findById
     auth: false
     cache: true
-    ttl: 60
+    ttl: 300
   - method: GET
     path: /:slug
     action: findBySlug
     auth: false
     cache: true
-    ttl: 60
+    ttl: 300
   - method: POST
     path: /
     action: create

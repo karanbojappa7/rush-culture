@@ -11,19 +11,19 @@ routes:
     action: findAll
     auth: false
     cache: true
-    ttl: 120
+    ttl: 300
   - method: GET
     path: /slug/:slug
     action: findBySlug
     auth: false
     cache: true
-    ttl: 120
+    ttl: 300
   - method: GET
     path: /:id
     action: findById
     auth: false
     cache: true
-    ttl: 120
+    ttl: 300
   - method: POST
     path: /
     action: create

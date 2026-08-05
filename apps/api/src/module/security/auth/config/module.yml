@@ -21,7 +21,7 @@ routes:
     action: me
     auth: true
     cache: true
-    ttl: 120
+    ttl: 300
 
 security:
   encrypt: false

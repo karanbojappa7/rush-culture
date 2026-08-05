@@ -16,25 +16,25 @@ routes:
     action: summary
     auth: false
     cache: true
-    ttl: 120
+    ttl: 300
   - method: GET
     path: /admin
     action: findAllAdmin
     auth: true
     cache: true
-    ttl: 60
+    ttl: 300
   - method: GET
     path: /
     action: findAll
     auth: false
     cache: true
-    ttl: 120
+    ttl: 300
   - method: GET
     path: /:id
     action: findById
     auth: false
     cache: true
-    ttl: 120
+    ttl: 300
   - method: PATCH
     path: /:id/approve
     action: approve
