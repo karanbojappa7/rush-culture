@@ -49,10 +49,11 @@ export class CustomerController extends BaseController {
   findAll(
     @Query('page') page?: string,
     @Query('limit') limit?: string,
+    @Query('q') q?: string,
   ): Promise<ResponseVm> {
     return this.executeMethod(
       (data) => this.customerService.findAll(data),
-      parsePageQuery(page, limit),
+      { ...parsePageQuery(page, limit), q },
       'Customers fetched',
     );
   }

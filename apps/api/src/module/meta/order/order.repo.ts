@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Order, Prisma } from '@prisma/client';
 import { BaseRepo } from '../../../common/base/base.repo';
+import { toPageResult } from '../../../common/pagination/pagination.utility';
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { buildContainsOr } from '../../../common/utility/search.utility';
 
 const orderInclude = {
   items: { where: { isDeleted: false } },
@@ -32,8 +34,16 @@ export class OrderRepo extends BaseRepo<
     page: number;
     limit: number;
     skip: number;
+    q?: string;
   }) {
-    const where = this.notDeletedWhere();
+    const where = this.notDeletedWhere(
+      buildContainsOr(pageQuery.q, [
+        'orderNumber',
+        'customerEmail',
+        'shippingFullName',
+        'shippingPhone',
+      ] as const),
+    );
     const [items, total] = await Promise.all([
       this.prisma.order.findMany({
         where,
@@ -44,14 +54,6 @@ export class OrderRepo extends BaseRepo<
       }),
       this.prisma.order.count({ where }),
     ]);
-    const totalPages =
-      total === 0 ? 0 : Math.ceil(total / pageQuery.limit);
-    return {
-      items,
-      page: pageQuery.page,
-      limit: pageQuery.limit,
-      total,
-      totalPages,
-    };
+    return toPageResult(items, total, pageQuery.page, pageQuery.limit);
   }
 }

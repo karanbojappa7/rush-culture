@@ -38,12 +38,12 @@ npm run dev:api
 npm run dev:storefront
 ```
 
-API: `http://localhost:3001` · Storefront: `http://localhost:3000`
+API: `http://localhost:4000` · Storefront: `http://localhost:4001` · Admin: `http://localhost:4002`
 
 ### Example
 
 ```bash
-curl -X POST http://localhost:3001/api/users \
+curl -X POST http://localhost:4000/api/users \
   -H 'Content-Type: application/json' \
   -d '{"email":"you@example.com","name":"You","phoneNumber":"+919999999999"}'
 ```

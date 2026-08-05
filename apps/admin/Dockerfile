@@ -18,7 +18,7 @@ COPY apps/admin ./apps/admin
 COPY packages/secure-api ./packages/secure-api
 WORKDIR /app/apps/admin
 ENV NEXT_TELEMETRY_DISABLED=1
-ARG NEXT_PUBLIC_API_URL=http://localhost:3001
+ARG NEXT_PUBLIC_API_URL=http://localhost:4000
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 RUN npm run build
 
@@ -26,7 +26,7 @@ FROM base AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV PORT=3002
+ENV PORT=4002
 ENV HOSTNAME=0.0.0.0
 
 RUN addgroup --system --gid 1001 nodejs \
@@ -37,5 +37,5 @@ COPY --from=build --chown=nextjs:nodejs /app/apps/admin/.next/standalone ./
 COPY --from=build --chown=nextjs:nodejs /app/apps/admin/.next/static ./apps/admin/.next/static
 
 USER nextjs
-EXPOSE 3002
+EXPOSE 4002
 CMD ["node", "apps/admin/server.js"]

@@ -11,6 +11,7 @@ import {
   toPageResult,
 } from '../../../common/pagination/pagination.utility';
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { buildContainsOr } from '../../../common/utility/search.utility';
 
 @Injectable()
 export class CustomerQueryRepo extends BaseRepo<
@@ -28,11 +29,22 @@ export class CustomerQueryRepo extends BaseRepo<
 
   async findPageFiltered(
     pageQuery: PageQuery,
-    filters: { status?: CustomerQueryStatus; topic?: CustomerQueryTopic } = {},
+    filters: {
+      status?: CustomerQueryStatus;
+      topic?: CustomerQueryTopic;
+      q?: string;
+    } = {},
   ) {
     const where = this.notDeletedWhere({
       ...(filters.status ? { status: filters.status } : {}),
       ...(filters.topic ? { topic: filters.topic } : {}),
+      ...buildContainsOr(filters.q, [
+        'subject',
+        'name',
+        'email',
+        'orderNumber',
+        'message',
+      ] as const),
     });
     const [items, total] = await Promise.all([
       this.prisma.customerQuery.findMany({

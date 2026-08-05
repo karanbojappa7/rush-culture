@@ -1,8 +1,14 @@
 import { AdminShell } from "@/components/admin-shell";
 import { CategoryForm } from "@/components/category-form";
+import {
+  DataTable,
+  DataTableCell,
+  DataTableRow,
+} from "@/components/data-table";
+import { ListToolbar } from "@/components/list-toolbar";
 import { PaginationNav } from "@/components/pagination-nav";
 import { apiGet } from "@/lib/api-server";
-import { emptyPage, type PageResult } from "@/lib/pagination";
+import { emptyPage, pageQuery, type PageResult } from "@/lib/pagination";
 import { getSessionUser, sessionLabel } from "@/lib/session";
 
 type Category = {
@@ -13,50 +19,56 @@ type Category = {
   imageUrl: string | null;
 };
 
-type Props = { searchParams: Promise<{ page?: string }> };
+type Props = { searchParams: Promise<{ page?: string; q?: string }> };
 
 export default async function CategoriesPage({ searchParams }: Props) {
-  const { page = "1" } = await searchParams;
+  const { page = "1", q } = await searchParams;
   const [user, categoriesRes] = await Promise.all([
     getSessionUser(),
-    apiGet<PageResult<Category>>(`/api/categories?page=${page}&limit=20`),
+    apiGet<PageResult<Category>>(
+      `/api/categories${pageQuery({ page, limit: 20, q })}`,
+    ),
   ]);
   const data = categoriesRes.data ?? emptyPage<Category>();
 
   return (
     <AdminShell title="Categories" userLabel={sessionLabel(user)}>
-      <div className="grid gap-8 lg:grid-cols-[1fr_0.9fr]">
+      <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
         <div>
-          <div className="overflow-x-auto border border-line bg-panel">
-            <table className="min-w-full text-left text-sm">
-              <thead className="border-b border-line text-[11px] tracking-[0.12em] uppercase text-mute">
-                <tr>
-                  <th className="px-4 py-3 font-medium">Name</th>
-                  <th className="px-4 py-3 font-medium">Slug</th>
-                  <th className="px-4 py-3 font-medium">Description</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.items.map((category) => (
-                  <tr
-                    key={category.id}
-                    className="border-b border-line last:border-0"
-                  >
-                    <td className="px-4 py-3 font-medium">{category.name}</td>
-                    <td className="px-4 py-3 text-mute">{category.slug}</td>
-                    <td className="px-4 py-3 text-mute">
-                      {category.description ?? "—"}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <ListToolbar
+            total={data.total}
+            noun="categories"
+            placeholder="Search categories…"
+          />
+          <DataTable
+            columns={[
+              { key: "name", header: "Name" },
+              { key: "slug", header: "Slug" },
+              { key: "description", header: "Description" },
+            ]}
+            empty={
+              q ? "No categories match your search." : "No categories yet."
+            }
+            isEmpty={data.items.length === 0}
+          >
+            {data.items.map((category) => (
+              <DataTableRow key={category.id}>
+                <DataTableCell className="font-medium">
+                  {category.name}
+                </DataTableCell>
+                <DataTableCell mute>{category.slug}</DataTableCell>
+                <DataTableCell mute>
+                  {category.description ?? "—"}
+                </DataTableCell>
+              </DataTableRow>
+            ))}
+          </DataTable>
           <PaginationNav
             page={data.page}
             totalPages={data.totalPages}
             total={data.total}
             basePath="/categories"
+            searchParams={{ q }}
           />
         </div>
         <CategoryForm />

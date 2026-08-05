@@ -56,7 +56,7 @@ const collection = {
       "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
   },
   variable: [
-    { key: "url", value: "http://localhost:3001" },
+    { key: "url", value: "http://localhost:4000" },
     { key: "id", value: "" },
     { key: "slug", value: "" },
     { key: "code", value: "" },
@@ -450,7 +450,7 @@ const env = {
   values: [
     {
       key: "url",
-      value: "http://localhost:3001",
+      value: "http://localhost:4000",
       type: "default",
       enabled: true,
     },

@@ -9,8 +9,8 @@ async function bootstrap() {
   app.use(cookieParser());
   app.enableCors({
     origin: [
-      process.env.STOREFRONT_ORIGIN ?? 'http://localhost:3000',
-      process.env.ADMIN_ORIGIN ?? 'http://localhost:3002',
+      process.env.STOREFRONT_ORIGIN ?? 'http://localhost:4001',
+      process.env.ADMIN_ORIGIN ?? 'http://localhost:4002',
     ],
     credentials: true,
   });
@@ -21,7 +21,7 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
-  const port = process.env.PORT ?? 3001;
+  const port = process.env.PORT ?? 4000;
   await app.listen(port);
   console.log(`API listening on http://localhost:${port}`);
 }

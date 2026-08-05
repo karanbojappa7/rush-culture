@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { AdminShell } from "@/components/admin-shell";
+import { ListToolbar } from "@/components/list-toolbar";
 import { PaginationNav } from "@/components/pagination-nav";
 import { apiGet, formatInr } from "@/lib/api-server";
-import { emptyPage, type PageResult } from "@/lib/pagination";
+import { emptyPage, pageQuery, type PageResult } from "@/lib/pagination";
 import { getSessionUser, sessionLabel } from "@/lib/session";
 
 type OrderItem = {
@@ -33,26 +34,35 @@ type Order = {
   items: OrderItem[];
 };
 
-type Props = { searchParams: Promise<{ page?: string }> };
+type Props = { searchParams: Promise<{ page?: string; q?: string }> };
 
 export default async function OrdersPage({ searchParams }: Props) {
-  const { page = "1" } = await searchParams;
+  const { page = "1", q } = await searchParams;
   const [user, res] = await Promise.all([
     getSessionUser(),
-    apiGet<PageResult<Order>>(`/api/orders?page=${page}&limit=10`),
+    apiGet<PageResult<Order>>(
+      `/api/orders${pageQuery({ page, limit: 10, q })}`,
+    ),
   ]);
   const data = res.data ?? emptyPage<Order>(10);
 
   return (
     <AdminShell title="Orders" userLabel={sessionLabel(user)}>
+      <ListToolbar
+        total={data.total}
+        noun="orders"
+        placeholder="Search order #, customer, phone…"
+      />
       <div className="space-y-4">
         {data.items.length === 0 ? (
-          <p className="text-mute">No orders yet.</p>
+          <p className="border border-line bg-panel px-4 py-12 text-center text-mute">
+            {q ? "No orders match your search." : "No orders yet."}
+          </p>
         ) : (
           data.items.map((order) => (
             <article
               key={order.id}
-              className="border border-line bg-panel p-5 md:p-6"
+              className="border border-line bg-panel p-5 transition-colors hover:border-ink/25 md:p-6"
             >
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
@@ -126,6 +136,7 @@ export default async function OrdersPage({ searchParams }: Props) {
         totalPages={data.totalPages}
         total={data.total}
         basePath="/orders"
+        searchParams={{ q }}
       />
     </AdminShell>
   );

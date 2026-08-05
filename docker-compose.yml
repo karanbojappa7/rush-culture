@@ -28,20 +28,20 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      PORT: 3001
+      PORT: 4000
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/ecommerce
       ENABLE_ENCRYPTION: ${ENABLE_ENCRYPTION:-false}
       ENCRYPTION_PRIVATE_KEY_B64: ${ENCRYPTION_PRIVATE_KEY_B64:-}
       ENCRYPTION_PUBLIC_KEY_B64: ${ENCRYPTION_PUBLIC_KEY_B64:-}
     ports:
-      - "3001:3001"
+      - "4000:4000"
     healthcheck:
       test:
         [
           "CMD",
           "node",
           "-e",
-          "fetch('http://127.0.0.1:3001/api/crypto/public-key').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+          "fetch('http://127.0.0.1:4000/api/crypto/public-key').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
         ]
       interval: 10s
       timeout: 5s
@@ -53,38 +53,38 @@ services:
       context: .
       dockerfile: apps/storefront/Dockerfile
       args:
-        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3001}
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:4000}
     container_name: linq-storefront
     restart: unless-stopped
     depends_on:
       api:
         condition: service_healthy
     environment:
-      PORT: 3000
+      PORT: 4001
       HOSTNAME: 0.0.0.0
-      API_INTERNAL_URL: http://api:3001
-      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3001}
+      API_INTERNAL_URL: http://api:4000
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:4000}
     ports:
-      - "3000:3000"
+      - "4001:4001"
 
   admin:
     build:
       context: .
       dockerfile: apps/admin/Dockerfile
       args:
-        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3001}
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:4000}
     container_name: linq-admin
     restart: unless-stopped
     depends_on:
       api:
         condition: service_healthy
     environment:
-      PORT: 3002
+      PORT: 4002
       HOSTNAME: 0.0.0.0
-      API_INTERNAL_URL: http://api:3001
-      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3001}
+      API_INTERNAL_URL: http://api:4000
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:4000}
     ports:
-      - "3002:3002"
+      - "4002:4002"
 
 volumes:
   postgres_data:

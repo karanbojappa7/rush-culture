@@ -1,5 +1,10 @@
 import Link from "next/link";
 import { AdminShell } from "@/components/admin-shell";
+import {
+  DataTable,
+  DataTableCell,
+  DataTableRow,
+} from "@/components/data-table";
 import { apiGet, formatInr } from "@/lib/api-server";
 import { emptyPage, type PageResult } from "@/lib/pagination";
 import { getSessionUser, sessionLabel } from "@/lib/session";
@@ -70,7 +75,7 @@ export default async function AdminHomePage() {
   return (
     <AdminShell title="Overview" userLabel={sessionLabel(user)}>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Stat label="Orders" value={String(summary.orders)} />
+        <Stat label="Orders" value={String(summary.orders)} href="/orders" />
         <Stat label="Pending payment" value={String(summary.pending)} />
         <Stat
           label="Revenue captured"
@@ -89,53 +94,41 @@ export default async function AdminHomePage() {
             <h2 className="font-display text-xl font-bold">Open queries</h2>
             <Link
               href="/queries"
-              className="text-[12px] font-semibold tracking-[0.1em] uppercase text-mute hover:text-ink"
+              className="text-[12px] font-semibold tracking-[0.1em] uppercase text-mute transition-colors hover:text-ink"
             >
               View all
             </Link>
           </div>
-          <div className="mt-4 overflow-x-auto border border-line bg-panel">
-            <table className="min-w-full text-left text-sm">
-              <thead className="border-b border-line text-[11px] tracking-[0.12em] uppercase text-mute">
-                <tr>
-                  <th className="px-4 py-3 font-medium">Subject</th>
-                  <th className="px-4 py-3 font-medium">Customer</th>
-                  <th className="px-4 py-3 font-medium">Topic</th>
-                </tr>
-              </thead>
-              <tbody>
-                {openQueries.length === 0 ? (
-                  <tr>
-                    <td colSpan={3} className="px-4 py-8 text-mute">
-                      No open customer queries.
-                    </td>
-                  </tr>
-                ) : (
-                  openQueries.map((query) => (
-                    <tr
-                      key={query.id}
-                      className="border-b border-line last:border-0"
+          <div className="mt-4">
+            <DataTable
+              columns={[
+                { key: "subject", header: "Subject" },
+                { key: "customer", header: "Customer" },
+                { key: "topic", header: "Topic" },
+              ]}
+              empty="No open customer queries."
+              isEmpty={openQueries.length === 0}
+            >
+              {openQueries.map((query) => (
+                <DataTableRow key={query.id}>
+                  <DataTableCell className="font-medium">
+                    <Link
+                      href={`/queries/${query.id}`}
+                      className="hover:underline"
                     >
-                      <td className="px-4 py-3 font-medium">
-                        <Link
-                          href={`/queries/${query.id}`}
-                          className="hover:underline"
-                        >
-                          {query.subject}
-                        </Link>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div>{query.name}</div>
-                        <div className="text-mute">{query.email}</div>
-                      </td>
-                      <td className="px-4 py-3 uppercase text-mute">
-                        {query.topic}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                      {query.subject}
+                    </Link>
+                  </DataTableCell>
+                  <DataTableCell>
+                    <div>{query.name}</div>
+                    <div className="text-mute">{query.email}</div>
+                  </DataTableCell>
+                  <DataTableCell className="uppercase" mute>
+                    {query.topic}
+                  </DataTableCell>
+                </DataTableRow>
+              ))}
+            </DataTable>
           </div>
           <p className="mt-3 text-sm text-mute">
             {querySummary.open} open · {querySummary.inProgress} in progress ·{" "}
@@ -144,48 +137,49 @@ export default async function AdminHomePage() {
         </div>
 
         <div>
-          <h2 className="font-display text-xl font-bold">Recent orders</h2>
-          <div className="mt-4 overflow-x-auto border border-line bg-panel">
-            <table className="min-w-full text-left text-sm">
-              <thead className="border-b border-line text-[11px] tracking-[0.12em] uppercase text-mute">
-                <tr>
-                  <th className="px-4 py-3 font-medium">Order</th>
-                  <th className="px-4 py-3 font-medium">Customer</th>
-                  <th className="px-4 py-3 font-medium">Payment</th>
-                  <th className="px-4 py-3 font-medium">Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recent.length === 0 ? (
-                  <tr>
-                    <td colSpan={4} className="px-4 py-8 text-mute">
-                      No orders yet. Place one from the storefront checkout.
-                    </td>
-                  </tr>
-                ) : (
-                  recent.map((order) => (
-                    <tr
-                      key={order.id}
-                      className="border-b border-line last:border-0"
+          <div className="flex items-end justify-between gap-3">
+            <h2 className="font-display text-xl font-bold">Recent orders</h2>
+            <Link
+              href="/orders"
+              className="text-[12px] font-semibold tracking-[0.1em] uppercase text-mute transition-colors hover:text-ink"
+            >
+              View all
+            </Link>
+          </div>
+          <div className="mt-4">
+            <DataTable
+              columns={[
+                { key: "order", header: "Order" },
+                { key: "customer", header: "Customer" },
+                { key: "payment", header: "Payment" },
+                { key: "total", header: "Total" },
+              ]}
+              empty="No orders yet."
+              isEmpty={recent.length === 0}
+            >
+              {recent.map((order) => (
+                <DataTableRow key={order.id}>
+                  <DataTableCell className="font-medium">
+                    <Link
+                      href={`/orders/${order.id}`}
+                      className="hover:underline"
                     >
-                      <td className="px-4 py-3 font-medium">
-                        {order.orderNumber}
-                      </td>
-                      <td className="px-4 py-3">
-                        <div>{order.shippingFullName}</div>
-                        <div className="text-mute">{order.customerEmail}</div>
-                      </td>
-                      <td className="px-4 py-3 uppercase">
-                        {order.paymentMethod ?? "—"} · {order.paymentStatus}
-                      </td>
-                      <td className="px-4 py-3">
-                        {formatInr(order.totalInPaise)}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                      {order.orderNumber}
+                    </Link>
+                  </DataTableCell>
+                  <DataTableCell>
+                    <div>{order.shippingFullName}</div>
+                    <div className="text-mute">{order.customerEmail}</div>
+                  </DataTableCell>
+                  <DataTableCell className="uppercase">
+                    {order.paymentMethod ?? "—"} · {order.paymentStatus}
+                  </DataTableCell>
+                  <DataTableCell>
+                    {formatInr(order.totalInPaise)}
+                  </DataTableCell>
+                </DataTableRow>
+              ))}
+            </DataTable>
           </div>
         </div>
       </div>
@@ -203,7 +197,7 @@ function Stat({
   href?: string;
 }) {
   const body = (
-    <div className="border border-line bg-panel p-5">
+    <div className="border border-line bg-panel p-5 transition-colors hover:border-ink/20">
       <p className="text-[11px] font-medium tracking-[0.14em] uppercase text-mute">
         {label}
       </p>
@@ -214,7 +208,7 @@ function Stat({
   );
   if (!href) return body;
   return (
-    <Link href={href} className="block transition-opacity hover:opacity-90">
+    <Link href={href} className="block">
       {body}
     </Link>
   );

@@ -37,5 +37,5 @@ RUN chmod +x ./docker-entrypoint.sh \
   && chown -R node:node /app
 
 USER node
-EXPOSE 3001
+EXPOSE 4000
 ENTRYPOINT ["./docker-entrypoint.sh"]

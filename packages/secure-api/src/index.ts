@@ -113,7 +113,7 @@ function isEncryptedResponse(body: unknown): body is EncryptedResponse {
   );
 }
 
-export function resolveApiBaseUrl(fallback = "http://localhost:3001") {
+export function resolveApiBaseUrl(fallback = "http://localhost:4000") {
   if (typeof window === "undefined") {
     return (
       process.env.API_INTERNAL_URL ??

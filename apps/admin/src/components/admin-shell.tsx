@@ -33,8 +33,8 @@ export function AdminShell({
   }
 
   return (
-    <div className="min-h-screen md:grid md:grid-cols-[220px_1fr]">
-      <aside className="border-b border-line bg-ink text-white md:border-b-0 md:border-r md:border-line">
+    <div className="admin-shell min-h-screen md:grid md:grid-cols-[232px_1fr]">
+      <aside className="relative border-b border-white/10 bg-ink text-white md:sticky md:top-0 md:h-screen md:border-b-0 md:border-r md:border-white/10">
         <div className="px-5 py-6">
           <p className="font-display text-2xl font-extrabold tracking-tight">
             {brand.name}
@@ -56,10 +56,10 @@ export function AdminShell({
               <Link
                 key={item.href}
                 href={item.href}
-                className={`cursor-pointer whitespace-nowrap px-3 py-2 text-sm transition-colors ${
+                className={`relative cursor-pointer whitespace-nowrap px-3 py-2.5 text-sm transition-colors ${
                   active
-                    ? "bg-white/15 text-white"
-                    : "text-white/75 hover:bg-white/10 hover:text-white"
+                    ? "bg-white/12 text-white before:absolute before:inset-y-1.5 before:left-0 before:w-0.5 before:bg-accent md:before:block"
+                    : "text-white/70 hover:bg-white/8 hover:text-white"
                 }`}
               >
                 {item.label}
@@ -67,20 +67,22 @@ export function AdminShell({
             );
           })}
         </nav>
-        <div className="px-3 pb-6">
+        <div className="px-3 pb-6 md:absolute md:inset-x-0 md:bottom-0">
           <button
             type="button"
             onClick={logout}
-            className="w-full cursor-pointer px-3 py-2 text-left text-sm text-white/60 hover:bg-white/10 hover:text-white"
+            className="w-full cursor-pointer px-3 py-2.5 text-left text-sm text-white/55 transition-colors hover:bg-white/8 hover:text-white"
           >
             Log out
           </button>
         </div>
       </aside>
-      <div className="px-5 py-8 md:px-10">
-        <h1 className="font-display text-3xl font-extrabold tracking-tight md:text-4xl">
-          {title}
-        </h1>
+      <div className="admin-main px-5 py-8 md:px-10 md:py-10">
+        <header className="border-b border-line pb-6">
+          <h1 className="font-display text-3xl font-extrabold tracking-tight md:text-4xl">
+            {title}
+          </h1>
+        </header>
         <div className="mt-8">{children}</div>
       </div>
     </div>

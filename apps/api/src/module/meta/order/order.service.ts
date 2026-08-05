@@ -112,7 +112,12 @@ export class OrderService extends BaseService {
     });
   }
 
-  async findAll(pageQuery: { page: number; limit: number; skip: number }) {
+  async findAll(pageQuery: {
+    page: number;
+    limit: number;
+    skip: number;
+    q?: string;
+  }) {
     return this.orderRepo.findAllWithItems(pageQuery);
   }
 

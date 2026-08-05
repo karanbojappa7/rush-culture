@@ -9,6 +9,7 @@ import {
   PageQuery,
   PageResult,
 } from '../../../common/pagination/pagination.utility';
+import { buildContainsOr } from '../../../common/utility/search.utility';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { CategoryRepo } from './category.repo';
@@ -34,8 +35,12 @@ export class CategoryService extends BaseService {
     return category;
   }
 
-  async findAll(pageQuery: PageQuery): Promise<PageResult<Category>> {
-    return this.categoryRepo.findPage(pageQuery, {
+  async findAll(
+    pageQuery: PageQuery & { q?: string },
+  ): Promise<PageResult<Category>> {
+    const { q, ...page } = pageQuery;
+    return this.categoryRepo.findPage(page, {
+      where: buildContainsOr(q, ['name', 'slug', 'description'] as const),
       orderBy: { createdAt: 'desc' },
     });
   }

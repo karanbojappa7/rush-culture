@@ -56,6 +56,7 @@ export class CustomerQueryController extends BaseController {
     @Query('limit') limit?: string,
     @Query('status') status?: CustomerQueryStatus,
     @Query('topic') topic?: CustomerQueryTopic,
+    @Query('q') q?: string,
   ): Promise<ResponseVm> {
     return this.executeMethod(
       (data) => this.customerQueryService.findAll(data),
@@ -63,6 +64,7 @@ export class CustomerQueryController extends BaseController {
         ...parsePageQuery(page, limit),
         status,
         topic,
+        q,
       },
       'Queries fetched',
     );

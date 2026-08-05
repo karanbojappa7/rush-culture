@@ -1,103 +1,209 @@
 # What’s done
 
-Status of the Rush Culture / white-label youth clothing e-commerce monorepo as of the current codebase.
+Status of the Rush Culture / white-label youth clothing e-commerce monorepo (as of 2026-08-05).
 
 ## Monorepo
 
-| Path | Role |
-|---|---|
-| `apps/api` | NestJS + Prisma API |
-| `apps/storefront` | Next.js storefront |
-| `apps/admin` | Next.js admin CMS |
-| `packages/site-config` | White-label brand + seed catalog + `formatInr` |
-| `packages/secure-api` | Shared API client (get/post/patch/delete, cookies) |
+| Path | Role | Port |
+|---|---|---|
+| `apps/api` | NestJS + Prisma API | `4000` |
+| `apps/storefront` | Next.js storefront | `4001` |
+| `apps/admin` | Next.js admin CMS | `4002` |
+| `packages/site-config` | Brand, policies, seed catalog, `formatInr` | — |
+| `packages/secure-api` | Shared HTTP client (cookies / credentials) | — |
 
 Workspaces: npm (`apps/*`, `packages/*`).
 
+---
+
 ## White-label / DRY
 
-- Brand, cart key, order prefix, admin auth cookie: `packages/site-config/src/brand.ts`
-- Money formatting: `formatInr` from `@linq/site-config` (not duplicated in apps)
-- API client: `@linq/secure-api` (`resolveApiBaseUrl`, credentials/cookie forwarding)
-- Seed catalog in site-config is bootstrap-only; live catalog is Prisma via API
-- After brand edits for API: `npm run build:site-config`
+- Brand name, cart storage key, order prefix, admin auth cookie → `@linq/site-config` (`brand`)
+- SKU helpers → `sku` / `withBrandName` from site-config (no hardcoded prefixes)
+- Money → `formatInr` from site-config
+- Policies (shipping / returns / size guide topics) → `packages/site-config/src/policies.ts`
+- Seed catalog is bootstrap-only; live catalog is Postgres via API
+- After site-config edits: `npm run build:site-config`
 
-## Pagination
+---
 
-- List APIs: `?page=1&limit=20` (max 100)
-- Response `data`: `{ items, page, limit, total, totalPages }`
-- Admin list pages + storefront shop use server/client pagination
+## Database (Postgres multi-schema)
 
-| Schema | Contents |
+| Schema | Owns |
 |---|---|
-| `master` | Category, Product, ProductVariant, ProductImage (catalog) |
-| `core` | Role, UserType, User (staff), AppConfig, Discount (system) |
-| `security` | Account, Session, VerificationToken (auth credentials/sessions) |
+| `master` | Category, Product, ProductVariant, ProductImage |
+| `core` | Role, UserType, User (staff), AppConfig, Discount |
+| `security` | Account, Session, VerificationToken |
 | `meta` | Customer, Address, Cart, CartItem, Order, OrderItem, Review, CustomerQuery |
 
+- Soft delete via `isDeleted`
 - Staff `User` (core) vs shopper `Customer` (meta)
-- Checkout find-or-creates `Customer` by email and sets `order.customerId`
-- Nest modules live under `module/{master|core|meta|security}/`
+- Checkout find-or-creates Customer by email and sets `order.customerId`
+- Variant replace frees unique `sku` and `(productId, size, color)` when retiring rows
+- Apply schema: `npx prisma db push` from `apps/api` (use `--accept-data-loss` only when intentional)
+
+---
 
 ## API architecture
 
 ```
 Controller → executeMethod → Service → Repo (Prisma) → Postgres
                 ↓
-         ResponseBuilder (success 200 / warning 401 / authError 403 / codeError 1000)
+         ResponseBuilder (200 / 401 / 403 / 1000)
 ```
 
-- Module layout: `apps/api/src/module/{master|core|meta|security}/{domain}/`
-- Soft delete via `isDeleted`
-- No comments in application code
-- Redis response cache (`apps/api/src/common/caching`): `cache: true|false` on `module.yml` routes; `CacheInterceptor` serves GET hits and clears the module namespace on successful writes. Toggle with `ENABLE_CACHING=true` + `CACHE_TYPE=redis`.
+- Modules under `apps/api/src/module/{master|core|meta|security}/`
+- Module config: each domain has `config/module.yml`
+- No comments in application TS/TSX/JS
+- Optional request encryption (`ENABLE_ENCRYPTION`) via crypto middleware/interceptor
 
-## Auth (admin)
+### Modules & prefixes
 
-- `POST /api/auth/login|logout`, `GET /api/auth/me` (`module/security/auth`)
-- JWT in httpOnly cookie (`brand.adminAuthCookie`)
-- `@StaffAuth()` on admin write/list routes; public product/category reads + order create
-- Bootstrap admin from `ADMIN_EMAIL` / `ADMIN_PASSWORD`
-- Admin `/login` + Next middleware
-
-## API modules
-
-| Module | Prefix | Schema |
+| Area | Prefix | Notes |
 |---|---|---|
-| Auth | `/api/auth` | security |
-| Users / Roles / UserTypes | `/api/users` etc. | core |
-| Categories | `/api/categories` | master |
-| Products | `/api/products` (+ variants/images patch) | master |
-| Customers | `/api/customers` | meta |
-| Addresses | `/api/addresses` | meta |
+| Auth | `/api/auth` | login / logout / me |
+| Users / Roles / UserTypes | `/api/users` etc. | staff |
+| Categories | `/api/categories` | public reads |
+| Products | `/api/products` | stock-check, variants/images patch |
+| Customers / Addresses | `/api/customers`, `/api/addresses` | meta |
 | Carts / Orders / Reviews | `/api/carts` etc. | meta |
-| Customer queries | `/api/customer-queries` (public create; staff list/update) | meta |
+| Customer queries | `/api/customer-queries` | public POST; staff list/update |
 | App configs / Discounts | `/api/app-configs` etc. | core |
+| Health | `/api/health` | connectivity |
+| Cache admin | `/api/cache` | staff flush |
 
-## Storefront / admin
+### Pagination & search
 
-- Storefront: products & categories from API; localStorage cart; checkout → Customer + Order
-- Help: `/shipping`, `/returns`, `/size-guide`, `/contact` (queries tracked in admin)
-- Admin: login, overview (orders + open queries), orders, product CMS, categories, customers, queries
-- Design: Syne + Figtree; paper/ink/volt
+- Query: `?page=1&limit=20` (max 100); optional `q` text search on list endpoints
+- Response `data`: `{ items, page, limit, total, totalPages }`
+- Shared helpers: `parsePageQuery` / `PageResult` / `BaseRepo.findPage` / `buildContainsOr`
+- Admin: shared `DebouncedSearch` + `ListToolbar` + `DataTable` + `PaginationNav` (URL `q` + `page`)
 
-## Still open / next
+### Auth (admin)
 
-- Storefront customer login
-- Razorpay charge flow
-- Media upload (URLs only today)
-- Full Docker compose verification
-- Apply schema with `prisma db push --accept-data-loss` on local (needs explicit consent when AI-run)
+- JWT in httpOnly cookie (`brand.adminAuthCookie`)
+- `@StaffAuth()` on staff routes; public catalog reads + order create + contact query create
+- Bootstrap admin from `ADMIN_EMAIL` / `ADMIN_PASSWORD`
+- Admin app: `/login` + Next middleware/proxy
+
+---
+
+## Caching (Redis)
+
+Location: `apps/api/src/common/caching`
+
+- Backend: **Redis** (`ioredis`); memory fallback if Redis init fails
+- Enable: `ENABLE_CACHING=true`, `CACHE_TYPE=redis`, `CACHE_HOST` / `CACHE_PORT` / `CACHE_TTL`
+- Per-route flag in `module.yml`: `cache: true|false` (+ optional `ttl`)
+- `CacheInterceptor`:
+  - Cacheable GETs → Redis hit/miss
+  - Successful writes (POST/PATCH/PUT/DELETE) → clear that module’s keys (`rc:{module}:*`)
+- Product + category GET routes are cache-enabled in YAML
+
+### Cache admin (staff auth)
+
+| Method | Path | Purpose |
+|---|---|---|
+| `GET` | `/api/cache` | Status + services |
+| `GET` | `/api/cache/services` | List flushable services |
+| `POST` | `/api/cache/flush` | Flush all `rc:*` |
+| `POST` | `/api/cache/flush/:service` | Flush one service (e.g. `product`) |
+| `DELETE` | `/api/cache` | Same as flush all |
+| `DELETE` | `/api/cache/services/:service` | Same as flush service |
+
+---
+
+## Health
+
+| Method | Path | Purpose |
+|---|---|---|
+| `GET` | `/api/health` | Full report: API, Postgres (+ schemas), Redis ping, cache round-trip, encryption config |
+| `GET` | `/api/health/live` | Process liveness |
+
+Overall `status`: `ok` | `degraded` | `error` (HTTP **503** if Postgres down).
+
+---
+
+## Storefront
+
+- Catalog from API; shop filters (collection, size, color, max price)
+- Max price default is **Any price** (range up to ₹20,000) so high-priced SKUs are not hidden
+- PDP: color/size stock UI, quantity stepper (+/−), add to bag / buy now, live stock refresh
+- Cart: localStorage; quantity capped by `maxStock`; stock sync
+- Checkout: FormData captured before async stock verify; stock-check then order create
+- Help pages: `/shipping`, `/returns`, `/size-guide`, `/contact` (posts CustomerQuery)
+- Design: Syne + Figtree; paper / ink / volt tokens
+
+---
+
+## Admin CMS
+
+- Login, overview (orders + open query stats)
+- Products: structured variants (size, color, ₹ price, Auto SKU), image URL rows, edit/create
+- Categories, customers, orders, **Queries** (status OPEN → IN_PROGRESS → RESOLVED → CLOSED + admin note)
+- Product form mappers live in `@/lib/product-form-initial` (safe for server pages)
+- Client vs server API split: `@/lib/api` vs `@/lib/api-server`
+
+---
+
+## Catalog / stock behaviour
+
+- Grey/disabled OOS colors & sizes; “X available” / low-stock cues
+- `POST /api/products/stock-check`
+- Orders atomically decrement stock (`updateMany` where `stock >= qty`)
+- Variant replace: retire conflicting soft-deleted SKUs/size-color before recreate
+
+---
+
+## Postman
+
+- Collection: `docs/postman/RushCulture.postman_collection.json`
+- Environment: `docs/postman/RushCulture.postman_environment.json`
+- Generator: `docs/postman/generate-collection.mjs` (`node generate-collection.mjs`)
+- Includes Common (health + cache), Core, Master, Meta (incl. customer-query), Security
+- Vars: `url`, `id`, `slug`, `code`, `key`, `itemId`, `variantId`, `service`
+
+---
+
+## Env (API) highlights
+
+See `apps/api/.env` / root `.env.example`:
+
+- `DATABASE_URL`, `PORT`
+- `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `JWT_SECRET`
+- `ADMIN_ORIGIN`, `STOREFRONT_ORIGIN`
+- `ENABLE_ENCRYPTION` + key pair (optional)
+- `ENABLE_CACHING`, `CACHE_TYPE`, `CACHE_HOST`, `CACHE_PORT`, `CACHE_TTL`, `CACHE_DB`
+
+---
 
 ## Local commands
 
 ```bash
 npm run build:site-config
 npm run prisma:generate -w apps/api
-npx prisma db push --accept-data-loss   # local ecommerce DB only
-npm run dev:api
-npm run dev:storefront
-npm run dev:admin
+cd apps/api && npx prisma db push
+npm run start:dev -w apps/api      # :4000
+npm run dev -w apps/storefront     # :4001
+npm run dev -w apps/admin          # :4002
 ```
 
-API: `http://localhost:3001` · Storefront: `http://localhost:3000` · Admin: `http://localhost:3002`
+Redis required only when `ENABLE_CACHING=true`.
+
+---
+
+## Still open / next
+
+- Storefront customer login / accounts
+- Razorpay (or other) live payment capture
+- Media upload (image URLs only today)
+- Full Docker Compose verification
+- Optional: expand cache flags to more modules beyond product/category
+
+---
+
+## Related docs
+
+- `docs/admin_auth_schema_cms.md` — schema ownership + CMS notes
+- `docs/README.md` — docs index
+- `docs/postman/` — API collection
