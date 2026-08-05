@@ -231,6 +231,22 @@ export function ProductForm({
       return;
     }
 
+    const skuSet = new Set(variants.map((variant) => variant.sku));
+    if (skuSet.size !== variants.length) {
+      setSaving(false);
+      setError("Each variant needs a unique SKU.");
+      return;
+    }
+
+    const sizeColorSet = new Set(
+      variants.map((variant) => `${variant.size}::${variant.color}`),
+    );
+    if (sizeColorSet.size !== variants.length) {
+      setSaving(false);
+      setError("Each size and color pair can only appear once.");
+      return;
+    }
+
     const images = values.images
       .map((image) => image.url.trim())
       .filter(Boolean)

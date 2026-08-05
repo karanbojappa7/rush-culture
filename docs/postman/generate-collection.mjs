@@ -51,7 +51,7 @@ const collection = {
   info: {
     name: "RushCulture",
     description:
-      "Rush Culture API — folders by Postgres schema (Core / Master / Meta / Security). Use {{url}} as API base. Staff write routes need cookie rc_admin_token from Security/auth/Login.",
+      "Rush Culture API — folders by Postgres schema (Core / Master / Meta / Security) plus Common health. Use {{url}} as API base. Staff write/list routes need cookie rc_admin_token from Security/auth/Login. List endpoints support ?page=&limit=.",
     schema:
       "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
   },
@@ -62,8 +62,15 @@ const collection = {
     { key: "code", value: "" },
     { key: "key", value: "" },
     { key: "itemId", value: "" },
+    { key: "variantId", value: "" },
   ],
   item: [
+    folder("Common", [
+      folder("health", [
+        req("HealthCheck", "GET", "/api/health"),
+        req("HealthLive", "GET", "/api/health/live"),
+      ]),
+    ]),
     folder("Core", [
       folder("user", [
         req("CreateUser", "POST", "/api/users", {
@@ -74,7 +81,10 @@ const collection = {
           roleCode: "STAFF",
           userTypeCode: "INTERNAL",
         }),
-        req("GetUsers", "GET", "/api/users"),
+        req("GetUsers", "GET", "/api/users", undefined, [
+          { key: "page", value: "1" },
+          { key: "limit", value: "20" },
+        ]),
         req("GetUserById", "GET", "/api/users/{{id}}"),
         req("UpdateUser", "PATCH", "/api/users/{{id}}", {
           name: "Updated Staff",
@@ -88,7 +98,10 @@ const collection = {
           name: "Staff",
           description: "Staff role",
         }),
-        req("GetRoles", "GET", "/api/roles"),
+        req("GetRoles", "GET", "/api/roles", undefined, [
+          { key: "page", value: "1" },
+          { key: "limit", value: "20" },
+        ]),
         req("GetRoleByCode", "GET", "/api/roles/code/{{code}}"),
         req("GetRoleById", "GET", "/api/roles/{{id}}"),
         req("UpdateRole", "PATCH", "/api/roles/{{id}}", {
@@ -103,7 +116,10 @@ const collection = {
           name: "Internal",
           description: "Internal staff type",
         }),
-        req("GetUserTypes", "GET", "/api/user-types"),
+        req("GetUserTypes", "GET", "/api/user-types", undefined, [
+          { key: "page", value: "1" },
+          { key: "limit", value: "20" },
+        ]),
         req("GetUserTypeByCode", "GET", "/api/user-types/code/{{code}}"),
         req("GetUserTypeById", "GET", "/api/user-types/{{id}}"),
         req("UpdateUserType", "PATCH", "/api/user-types/{{id}}", {
@@ -118,7 +134,10 @@ const collection = {
           description: "Storefront tagline",
           isActive: true,
         }),
-        req("GetAppConfigs", "GET", "/api/app-configs"),
+        req("GetAppConfigs", "GET", "/api/app-configs", undefined, [
+          { key: "page", value: "1" },
+          { key: "limit", value: "20" },
+        ]),
         req("GetAppConfigByKey", "GET", "/api/app-configs/key/{{key}}"),
         req("GetAppConfigById", "GET", "/api/app-configs/{{id}}"),
         req("UpdateAppConfig", "PATCH", "/api/app-configs/{{id}}", {
@@ -136,7 +155,10 @@ const collection = {
           maxUses: 100,
           isActive: true,
         }),
-        req("GetDiscounts", "GET", "/api/discounts"),
+        req("GetDiscounts", "GET", "/api/discounts", undefined, [
+          { key: "page", value: "1" },
+          { key: "limit", value: "20" },
+        ]),
         req("GetDiscountByCode", "GET", "/api/discounts/code/{{code}}"),
         req("GetDiscountById", "GET", "/api/discounts/{{id}}"),
         req("UpdateDiscount", "PATCH", "/api/discounts/{{id}}", {
@@ -154,7 +176,10 @@ const collection = {
           description: "Tops collection",
           imageUrl: "https://example.com/tops.jpg",
         }),
-        req("GetCategories", "GET", "/api/categories"),
+        req("GetCategories", "GET", "/api/categories", undefined, [
+          { key: "page", value: "1" },
+          { key: "limit", value: "20" },
+        ]),
         req("GetCategoryBySlug", "GET", "/api/categories/slug/{{slug}}"),
         req("GetCategoryById", "GET", "/api/categories/{{id}}"),
         req("UpdateCategory", "PATCH", "/api/categories/{{id}}", {
@@ -192,23 +217,22 @@ const collection = {
             },
           ],
         }),
-        req(
-          "GetProducts",
-          "GET",
-          "/api/products",
-          undefined,
-          [
-            { key: "q", value: "", disabled: true },
-            { key: "categoryId", value: "", disabled: true },
-            { key: "size", value: "", disabled: true },
-            { key: "color", value: "", disabled: true },
-            { key: "minPrice", value: "", disabled: true },
-            { key: "maxPrice", value: "", disabled: true },
-            { key: "isActive", value: "true", disabled: true },
-          ],
-        ),
+        req("GetProducts", "GET", "/api/products", undefined, [
+          { key: "page", value: "1" },
+          { key: "limit", value: "20" },
+          { key: "q", value: "", disabled: true },
+          { key: "categoryId", value: "", disabled: true },
+          { key: "size", value: "", disabled: true },
+          { key: "color", value: "", disabled: true },
+          { key: "minPrice", value: "", disabled: true },
+          { key: "maxPrice", value: "", disabled: true },
+          { key: "isActive", value: "true", disabled: true },
+        ]),
         req("GetProductById", "GET", "/api/products/id/{{id}}"),
         req("GetProductBySlug", "GET", "/api/products/{{slug}}"),
+        req("CheckStock", "POST", "/api/products/stock-check", {
+          items: [{ variantId: "{{variantId}}", quantity: 1 }],
+        }),
         req("UpdateProduct", "PATCH", "/api/products/{{id}}", {
           name: "Graphic Tee Updated",
           isActive: true,
@@ -246,7 +270,10 @@ const collection = {
           phoneNumber: "9876543210",
           name: "Buyer One",
         }),
-        req("GetCustomers", "GET", "/api/customers"),
+        req("GetCustomers", "GET", "/api/customers", undefined, [
+          { key: "page", value: "1" },
+          { key: "limit", value: "20" },
+        ]),
         req("GetCustomerById", "GET", "/api/customers/{{id}}"),
         req("UpdateCustomer", "PATCH", "/api/customers/{{id}}", {
           name: "Buyer Updated",
@@ -267,7 +294,10 @@ const collection = {
           country: "IN",
           isDefault: true,
         }),
-        req("GetAddresses", "GET", "/api/addresses"),
+        req("GetAddresses", "GET", "/api/addresses", undefined, [
+          { key: "page", value: "1" },
+          { key: "limit", value: "20" },
+        ]),
         req("GetAddressById", "GET", "/api/addresses/{{id}}"),
         req("UpdateAddress", "PATCH", "/api/addresses/{{id}}", {
           line1: "14 MG Road",
@@ -280,18 +310,21 @@ const collection = {
           customerId: "{{id}}",
           sessionId: "guest-session-1",
         }),
-        req("GetCarts", "GET", "/api/carts"),
+        req("GetCarts", "GET", "/api/carts", undefined, [
+          { key: "page", value: "1" },
+          { key: "limit", value: "20" },
+        ]),
         req("GetCartById", "GET", "/api/carts/{{id}}"),
         req("UpdateCart", "PATCH", "/api/carts/{{id}}", {
           customerId: "{{id}}",
         }),
         req("DeleteCart", "DELETE", "/api/carts/{{id}}"),
         req("AddCartItem", "POST", "/api/carts/{{id}}/items", {
-          variantId: "{{itemId}}",
+          variantId: "{{variantId}}",
           quantity: 1,
         }),
         req("UpdateCartItem", "PATCH", "/api/carts/{{id}}/items/{{itemId}}", {
-          variantId: "{{itemId}}",
+          variantId: "{{variantId}}",
           quantity: 2,
         }),
         req("DeleteCartItem", "DELETE", "/api/carts/{{id}}/items/{{itemId}}"),
@@ -312,6 +345,7 @@ const collection = {
           idempotencyKey: "demo-order-1",
           items: [
             {
+              variantId: "{{variantId}}",
               productSlug: "graphic-tee",
               productName: "Graphic Tee",
               variantSku: "RC-TEE-M-BLK",
@@ -322,7 +356,10 @@ const collection = {
             },
           ],
         }),
-        req("GetOrders", "GET", "/api/orders"),
+        req("GetOrders", "GET", "/api/orders", undefined, [
+          { key: "page", value: "1" },
+          { key: "limit", value: "20" },
+        ]),
         req("GetOrderSummary", "GET", "/api/orders/summary"),
         req("GetOrderById", "GET", "/api/orders/{{id}}"),
         req("UpdateOrder", "PATCH", "/api/orders/{{id}}", {
@@ -340,7 +377,10 @@ const collection = {
           body: "Loved the fabric",
           isApproved: false,
         }),
-        req("GetReviews", "GET", "/api/reviews"),
+        req("GetReviews", "GET", "/api/reviews", undefined, [
+          { key: "page", value: "1" },
+          { key: "limit", value: "20" },
+        ]),
         req("GetReviewById", "GET", "/api/reviews/{{id}}"),
         req("ApproveReview", "PATCH", "/api/reviews/{{id}}/approve", {}),
         req("UpdateReview", "PATCH", "/api/reviews/{{id}}", {
@@ -349,6 +389,30 @@ const collection = {
           body: "Updated review",
         }),
         req("DeleteReview", "DELETE", "/api/reviews/{{id}}"),
+      ]),
+      folder("customer-query", [
+        req("CreateCustomerQuery", "POST", "/api/customer-queries", {
+          name: "Buyer One",
+          email: "buyer@example.com",
+          phone: "9876543210",
+          topic: "SHIPPING",
+          subject: "Where is my order",
+          message: "I placed an order last week and have not received updates.",
+          orderNumber: "RC-1001",
+        }),
+        req("GetCustomerQuerySummary", "GET", "/api/customer-queries/summary"),
+        req("GetCustomerQueries", "GET", "/api/customer-queries", undefined, [
+          { key: "page", value: "1" },
+          { key: "limit", value: "20" },
+          { key: "status", value: "OPEN", disabled: true },
+          { key: "topic", value: "SHIPPING", disabled: true },
+        ]),
+        req("GetCustomerQueryById", "GET", "/api/customer-queries/{{id}}"),
+        req("UpdateCustomerQuery", "PATCH", "/api/customer-queries/{{id}}", {
+          status: "CLOSED",
+          adminNote: "Resolved over email",
+        }),
+        req("DeleteCustomerQuery", "DELETE", "/api/customer-queries/{{id}}"),
       ]),
     ]),
     folder("Security", [
@@ -382,6 +446,7 @@ const env = {
     { key: "code", value: "", type: "default", enabled: true },
     { key: "key", value: "", type: "default", enabled: true },
     { key: "itemId", value: "", type: "default", enabled: true },
+    { key: "variantId", value: "", type: "default", enabled: true },
   ],
   _postman_variable_scope: "environment",
 };

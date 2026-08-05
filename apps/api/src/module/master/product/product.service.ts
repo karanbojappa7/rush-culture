@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  OnModuleInit,
+} from '@nestjs/common';
 import { brand, collections, products } from '@linq/site-config';
 import { utcNow } from '../../../common/utility/date.utility';
 import { PrismaService } from '../../../common/prisma/prisma.service';
@@ -192,14 +197,71 @@ export class ProductService extends BaseService implements OnModuleInit {
     await this.findById({ id: payload.id });
     const stamp = utcNow();
     const incoming = payload.variants ?? [];
+    const incomingSkus = incoming.map((variant) => variant.sku.trim());
+    if (new Set(incomingSkus).size !== incomingSkus.length) {
+      throw new BadRequestException('Variant SKUs must be unique');
+    }
+    const sizeColorKeys = incoming.map(
+      (variant) => `${variant.size.trim()}::${variant.color.trim()}`,
+    );
+    if (new Set(sizeColorKeys).size !== sizeColorKeys.length) {
+      throw new BadRequestException(
+        'Each size and color combination must be unique',
+      );
+    }
 
     await this.prisma.$transaction(async (tx) => {
-      const existing = await tx.productVariant.findMany({
+      const activeOnProduct = await tx.productVariant.findMany({
         where: { productId: payload.id, isDeleted: false },
         select: { id: true, sku: true, size: true, color: true },
       });
 
-      for (const variant of existing) {
+      const skuHolders =
+        incomingSkus.length === 0
+          ? []
+          : await tx.productVariant.findMany({
+              where: { sku: { in: incomingSkus } },
+              select: {
+                id: true,
+                sku: true,
+                size: true,
+                color: true,
+                productId: true,
+                isDeleted: true,
+              },
+            });
+
+      const stolen = skuHolders.find(
+        (variant) =>
+          variant.productId !== payload.id && !variant.isDeleted,
+      );
+      if (stolen) {
+        throw new BadRequestException(
+          `SKU "${stolen.sku}" is already used by another product`,
+        );
+      }
+
+      const sizeColorHolders =
+        incoming.length === 0
+          ? []
+          : await tx.productVariant.findMany({
+              where: {
+                productId: payload.id,
+                OR: incoming.map((variant) => ({
+                  size: variant.size.trim(),
+                  color: variant.color.trim(),
+                })),
+              },
+              select: { id: true, sku: true, size: true, color: true },
+            });
+
+      const toRetire = new Map(
+        [...activeOnProduct, ...skuHolders, ...sizeColorHolders].map(
+          (variant) => [variant.id, variant],
+        ),
+      );
+
+      for (const variant of toRetire.values()) {
         await tx.productVariant.update({
           where: { id: variant.id },
           data: {
@@ -214,25 +276,27 @@ export class ProductService extends BaseService implements OnModuleInit {
 
       if (!incoming.length) return;
 
-      await tx.productVariant.createMany({
-        data: incoming.map((variant) => ({
-          productId: payload.id,
-          sku: variant.sku,
-          size: variant.size,
-          color: variant.color,
-          colorHex: variant.colorHex,
-          priceInPaise: variant.priceInPaise,
-          compareAtPriceInPaise: variant.compareAtPriceInPaise,
-          stock: variant.stock ?? 0,
-          isActive: variant.isActive ?? true,
-          createdAt: stamp,
-          updatedAt: stamp,
-          isDeleted: false,
-          userId: null,
-          createdBy: null,
-          updatedBy: null,
-        })),
-      });
+      for (const variant of incoming) {
+        await tx.productVariant.create({
+          data: {
+            productId: payload.id,
+            sku: variant.sku.trim(),
+            size: variant.size.trim(),
+            color: variant.color.trim(),
+            colorHex: variant.colorHex,
+            priceInPaise: variant.priceInPaise,
+            compareAtPriceInPaise: variant.compareAtPriceInPaise,
+            stock: variant.stock ?? 0,
+            isActive: variant.isActive ?? true,
+            createdAt: stamp,
+            updatedAt: stamp,
+            isDeleted: false,
+            userId: null,
+            createdBy: null,
+            updatedBy: null,
+          },
+        });
+      }
     });
 
     return this.findById({ id: payload.id });

@@ -9,6 +9,8 @@ routes:
     path: /
     action: findAll
     auth: false
+    cache: true
+    ttl: 60
     query:
       - q
       - collection
@@ -17,9 +19,47 @@ routes:
       - minPrice
       - maxPrice
   - method: GET
+    path: /id/:id
+    action: findById
+    auth: false
+    cache: true
+    ttl: 60
+  - method: GET
     path: /:slug
     action: findBySlug
     auth: false
+    cache: true
+    ttl: 60
+  - method: POST
+    path: /
+    action: create
+    auth: true
+    cache: false
+  - method: POST
+    path: /stock-check
+    action: checkStock
+    auth: false
+    cache: false
+  - method: PATCH
+    path: /:id
+    action: update
+    auth: true
+    cache: false
+  - method: PATCH
+    path: /:id/variants
+    action: replaceVariants
+    auth: true
+    cache: false
+  - method: PATCH
+    path: /:id/images
+    action: replaceImages
+    auth: true
+    cache: false
+  - method: DELETE
+    path: /:id
+    action: softDelete
+    auth: true
+    cache: false
 
 security:
   encrypt: true

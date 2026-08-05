@@ -50,6 +50,7 @@ Controller → executeMethod → Service → Repo (Prisma) → Postgres
 - Module layout: `apps/api/src/module/{master|core|meta|security}/{domain}/`
 - Soft delete via `isDeleted`
 - No comments in application code
+- Redis response cache (`apps/api/src/common/caching`): `cache: true|false` on `module.yml` routes; `CacheInterceptor` serves GET hits and clears the module namespace on successful writes. Toggle with `ENABLE_CACHING=true` + `CACHE_TYPE=redis`.
 
 ## Auth (admin)
 

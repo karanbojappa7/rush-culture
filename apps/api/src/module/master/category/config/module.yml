@@ -5,6 +5,41 @@ prefix: /api/categories
 description: Product categories in master schema
 schema: master
 
+routes:
+  - method: GET
+    path: /
+    action: findAll
+    auth: false
+    cache: true
+    ttl: 120
+  - method: GET
+    path: /slug/:slug
+    action: findBySlug
+    auth: false
+    cache: true
+    ttl: 120
+  - method: GET
+    path: /:id
+    action: findById
+    auth: false
+    cache: true
+    ttl: 120
+  - method: POST
+    path: /
+    action: create
+    auth: true
+    cache: false
+  - method: PATCH
+    path: /:id
+    action: update
+    auth: true
+    cache: false
+  - method: DELETE
+    path: /:id
+    action: softDelete
+    auth: true
+    cache: false
+
 security:
   encrypt: true
 

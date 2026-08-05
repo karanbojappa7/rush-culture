@@ -1,3 +1,10 @@
+export type ModuleRouteCacheConfig = {
+  enabled: boolean;
+  ttl?: number;
+};
+
+export type ModuleRouteCacheFlag = boolean | ModuleRouteCacheConfig;
+
 export type ModuleRouteConfig = {
   method: string;
   path: string;
@@ -6,6 +13,8 @@ export type ModuleRouteConfig = {
   roles?: string[];
   query?: string[];
   skip_encryption?: boolean;
+  cache?: ModuleRouteCacheFlag;
+  ttl?: number;
 };
 
 export type ModuleSecurityConfig = {
@@ -32,3 +41,22 @@ export type ModuleConfig = {
 };
 
 export const MODULE_CONFIG = Symbol('MODULE_CONFIG');
+
+export function normalizeRouteCache(
+  cache?: ModuleRouteCacheFlag,
+  ttlFallback?: number,
+): ModuleRouteCacheConfig | null {
+  if (cache === undefined || cache === null) {
+    return null;
+  }
+  if (typeof cache === 'boolean') {
+    return {
+      enabled: cache,
+      ...(ttlFallback !== undefined ? { ttl: ttlFallback } : {}),
+    };
+  }
+  return {
+    enabled: Boolean(cache.enabled),
+    ttl: cache.ttl ?? ttlFallback,
+  };
+}

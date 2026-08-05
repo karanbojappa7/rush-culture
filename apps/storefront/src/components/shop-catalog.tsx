@@ -16,6 +16,7 @@ type Props = {
 };
 
 const PAGE_SIZE = 12;
+const PRICE_FILTER_MAX = 2_000_000;
 
 export function ShopCatalog({
   collections,
@@ -27,7 +28,7 @@ export function ShopCatalog({
   const [collection, setCollection] = useState(initialCollection ?? "all");
   const [size, setSize] = useState("all");
   const [color, setColor] = useState("all");
-  const [maxPrice, setMaxPrice] = useState(500000);
+  const [maxPrice, setMaxPrice] = useState(PRICE_FILTER_MAX);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [result, setResult] = useState<PageResult<Product>>({
@@ -64,7 +65,7 @@ export function ShopCatalog({
         categoryId,
         size: size === "all" ? undefined : size,
         color: color === "all" ? undefined : color,
-        maxPrice,
+        maxPrice: maxPrice < PRICE_FILTER_MAX ? maxPrice : undefined,
         isActive: true,
       });
       if (cancelled) return;
@@ -191,14 +192,16 @@ export function ShopCatalog({
             id="max-price"
             type="range"
             min={50000}
-            max={500000}
+            max={PRICE_FILTER_MAX}
             step={10000}
             value={maxPrice}
             onChange={(e) => setMaxPrice(Number(e.target.value))}
             className="mt-3 w-full"
           />
           <p className="mt-1 text-sm text-mute">
-            Up to ₹{Math.round(maxPrice / 100).toLocaleString("en-IN")}
+            {maxPrice >= PRICE_FILTER_MAX
+              ? "Any price"
+              : `Up to ₹${Math.round(maxPrice / 100).toLocaleString("en-IN")}`}
           </p>
         </div>
       </aside>

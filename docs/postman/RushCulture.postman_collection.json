@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "RushCulture",
-    "description": "Rush Culture API — folders by Postgres schema (Core / Master / Meta / Security). Use {{url}} as API base. Staff write routes need cookie rc_admin_token from Security/auth/Login.",
+    "description": "Rush Culture API — folders by Postgres schema (Core / Master / Meta / Security) plus Common health. Use {{url}} as API base. Staff write/list routes need cookie rc_admin_token from Security/auth/Login. List endpoints support ?page=&limit=.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -28,9 +28,58 @@
     {
       "key": "itemId",
       "value": ""
+    },
+    {
+      "key": "variantId",
+      "value": ""
     }
   ],
   "item": [
+    {
+      "name": "Common",
+      "item": [
+        {
+          "name": "health",
+          "item": [
+            {
+              "name": "HealthCheck",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{url}}/api/health",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "health"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "HealthLive",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{url}}/api/health/live",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "health",
+                    "live"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
     {
       "name": "Core",
       "item": [
@@ -74,13 +123,23 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{url}}/api/users",
+                  "raw": "{{url}}/api/users?page=1&limit=20",
                   "host": [
                     "{{url}}"
                   ],
                   "path": [
                     "api",
                     "users"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    }
                   ]
                 }
               }
@@ -195,13 +254,23 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{url}}/api/roles",
+                  "raw": "{{url}}/api/roles?page=1&limit=20",
                   "host": [
                     "{{url}}"
                   ],
                   "path": [
                     "api",
                     "roles"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    }
                   ]
                 }
               }
@@ -335,13 +404,23 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{url}}/api/user-types",
+                  "raw": "{{url}}/api/user-types?page=1&limit=20",
                   "host": [
                     "{{url}}"
                   ],
                   "path": [
                     "api",
                     "user-types"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    }
                   ]
                 }
               }
@@ -475,13 +554,23 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{url}}/api/app-configs",
+                  "raw": "{{url}}/api/app-configs?page=1&limit=20",
                   "host": [
                     "{{url}}"
                   ],
                   "path": [
                     "api",
                     "app-configs"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    }
                   ]
                 }
               }
@@ -615,13 +704,23 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{url}}/api/discounts",
+                  "raw": "{{url}}/api/discounts?page=1&limit=20",
                   "host": [
                     "{{url}}"
                   ],
                   "path": [
                     "api",
                     "discounts"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    }
                   ]
                 }
               }
@@ -760,13 +859,23 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{url}}/api/categories",
+                  "raw": "{{url}}/api/categories?page=1&limit=20",
                   "host": [
                     "{{url}}"
                   ],
                   "path": [
                     "api",
                     "categories"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    }
                   ]
                 }
               }
@@ -900,7 +1009,7 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{url}}/api/products",
+                  "raw": "{{url}}/api/products?page=1&limit=20",
                   "host": [
                     "{{url}}"
                   ],
@@ -909,6 +1018,14 @@
                     "products"
                   ],
                   "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    },
                     {
                       "key": "q",
                       "value": "",
@@ -982,6 +1099,38 @@
                     "products",
                     "{{slug}}"
                   ]
+                }
+              }
+            },
+            {
+              "name": "CheckStock",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{url}}/api/products/stock-check",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "products",
+                    "stock-check"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"items\": [\n    {\n      \"variantId\": \"{{variantId}}\",\n      \"quantity\": 1\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
                 }
               }
             },
@@ -1148,13 +1297,23 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{url}}/api/customers",
+                  "raw": "{{url}}/api/customers?page=1&limit=20",
                   "host": [
                     "{{url}}"
                   ],
                   "path": [
                     "api",
                     "customers"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    }
                   ]
                 }
               }
@@ -1269,13 +1428,23 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{url}}/api/addresses",
+                  "raw": "{{url}}/api/addresses?page=1&limit=20",
                   "host": [
                     "{{url}}"
                   ],
                   "path": [
                     "api",
                     "addresses"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    }
                   ]
                 }
               }
@@ -1390,13 +1559,23 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{url}}/api/carts",
+                  "raw": "{{url}}/api/carts?page=1&limit=20",
                   "host": [
                     "{{url}}"
                   ],
                   "path": [
                     "api",
                     "carts"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    }
                   ]
                 }
               }
@@ -1493,7 +1672,7 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"variantId\": \"{{itemId}}\",\n  \"quantity\": 1\n}",
+                  "raw": "{\n  \"variantId\": \"{{variantId}}\",\n  \"quantity\": 1\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -1527,7 +1706,7 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"variantId\": \"{{itemId}}\",\n  \"quantity\": 2\n}",
+                  "raw": "{\n  \"variantId\": \"{{variantId}}\",\n  \"quantity\": 2\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -1583,7 +1762,7 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"customerEmail\": \"buyer@example.com\",\n  \"shippingFullName\": \"Buyer One\",\n  \"shippingPhone\": \"9876543210\",\n  \"shippingLine1\": \"12 MG Road\",\n  \"shippingLine2\": \"\",\n  \"shippingCity\": \"Bengaluru\",\n  \"shippingState\": \"KA\",\n  \"shippingPostalCode\": \"560001\",\n  \"shippingCountry\": \"IN\",\n  \"paymentMethod\": \"COD\",\n  \"paymentDetails\": \"\",\n  \"idempotencyKey\": \"demo-order-1\",\n  \"items\": [\n    {\n      \"productSlug\": \"graphic-tee\",\n      \"productName\": \"Graphic Tee\",\n      \"variantSku\": \"RC-TEE-M-BLK\",\n      \"size\": \"M\",\n      \"color\": \"Black\",\n      \"unitPriceInPaise\": 99900,\n      \"quantity\": 1\n    }\n  ]\n}",
+                  "raw": "{\n  \"customerEmail\": \"buyer@example.com\",\n  \"shippingFullName\": \"Buyer One\",\n  \"shippingPhone\": \"9876543210\",\n  \"shippingLine1\": \"12 MG Road\",\n  \"shippingLine2\": \"\",\n  \"shippingCity\": \"Bengaluru\",\n  \"shippingState\": \"KA\",\n  \"shippingPostalCode\": \"560001\",\n  \"shippingCountry\": \"IN\",\n  \"paymentMethod\": \"COD\",\n  \"paymentDetails\": \"\",\n  \"idempotencyKey\": \"demo-order-1\",\n  \"items\": [\n    {\n      \"variantId\": \"{{variantId}}\",\n      \"productSlug\": \"graphic-tee\",\n      \"productName\": \"Graphic Tee\",\n      \"variantSku\": \"RC-TEE-M-BLK\",\n      \"size\": \"M\",\n      \"color\": \"Black\",\n      \"unitPriceInPaise\": 99900,\n      \"quantity\": 1\n    }\n  ]\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -1598,13 +1777,23 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{url}}/api/orders",
+                  "raw": "{{url}}/api/orders?page=1&limit=20",
                   "host": [
                     "{{url}}"
                   ],
                   "path": [
                     "api",
                     "orders"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    }
                   ]
                 }
               }
@@ -1737,13 +1926,23 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{url}}/api/reviews",
+                  "raw": "{{url}}/api/reviews?page=1&limit=20",
                   "host": [
                     "{{url}}"
                   ],
                   "path": [
                     "api",
                     "reviews"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    }
                   ]
                 }
               }
@@ -1844,6 +2043,165 @@
                   "path": [
                     "api",
                     "reviews",
+                    "{{id}}"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "customer-query",
+          "item": [
+            {
+              "name": "CreateCustomerQuery",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{url}}/api/customer-queries",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "customer-queries"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Buyer One\",\n  \"email\": \"buyer@example.com\",\n  \"phone\": \"9876543210\",\n  \"topic\": \"SHIPPING\",\n  \"subject\": \"Where is my order\",\n  \"message\": \"I placed an order last week and have not received updates.\",\n  \"orderNumber\": \"RC-1001\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "name": "GetCustomerQuerySummary",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{url}}/api/customer-queries/summary",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "customer-queries",
+                    "summary"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "GetCustomerQueries",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{url}}/api/customer-queries?page=1&limit=20",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "customer-queries"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    },
+                    {
+                      "key": "status",
+                      "value": "OPEN",
+                      "disabled": true
+                    },
+                    {
+                      "key": "topic",
+                      "value": "SHIPPING",
+                      "disabled": true
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "GetCustomerQueryById",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{url}}/api/customer-queries/{{id}}",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "customer-queries",
+                    "{{id}}"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "UpdateCustomerQuery",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{url}}/api/customer-queries/{{id}}",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "customer-queries",
+                    "{{id}}"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"CLOSED\",\n  \"adminNote\": \"Resolved over email\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "name": "DeleteCustomerQuery",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{url}}/api/customer-queries/{{id}}",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "customer-queries",
                     "{{id}}"
                   ]
                 }

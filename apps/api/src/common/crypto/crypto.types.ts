@@ -1,5 +1,9 @@
 export const ENCRYPTION_HEADER = 'x-enc-session';
-export const ENCRYPTION_SKIP_PATHS = ['/api/crypto/public-key'];
+export const ENCRYPTION_SKIP_PATHS = [
+  '/api/crypto/public-key',
+  '/api/health',
+  '/api/health/live',
+];
 
 export type EncryptedEnvelope = {
   enc: true;

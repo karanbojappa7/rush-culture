@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
+import { CachingModule } from './common/caching/caching.module';
 import { CryptoModule } from './common/crypto/crypto.module';
+import { HealthModule } from './common/health/health.module';
 import { PrismaModule } from './common/prisma/prisma.module';
 import { AppConfigModule } from './module/core/app-config/app-config.module';
 import { DiscountModule } from './module/core/discount/discount.module';
@@ -16,7 +18,9 @@ import { ReviewModule } from './module/meta/review/review.module';
 
 @Module({
   imports: [
+    CachingModule,
     CryptoModule,
+    HealthModule,
     PrismaModule,
     AppConfigModule,
     DiscountModule,
