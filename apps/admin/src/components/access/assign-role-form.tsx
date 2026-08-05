@@ -39,7 +39,7 @@ export function AssignRoleForm({ userId, roleCode, roles }: Props) {
           value={value}
           disabled={busy}
           onChange={(event) => setValue(event.target.value)}
-          className="border border-line bg-transparent px-2 py-1.5 text-xs outline-none focus:border-ink"
+          className="border border-line bg-panel px-2 py-1.5 text-xs text-ink outline-none focus:border-ink"
         >
           {roles.map((role) => (
             <option key={role.code} value={role.code}>

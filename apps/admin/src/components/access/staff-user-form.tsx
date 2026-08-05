@@ -82,7 +82,7 @@ export function StaffUserForm({ roles }: Props) {
         <select
           value={roleCode}
           onChange={(event) => setRoleCode(event.target.value)}
-          className="mt-1 w-full border border-line bg-transparent px-3 py-2 text-sm outline-none focus:border-ink"
+          className="mt-1 w-full border border-line bg-panel px-3 py-2 text-sm text-ink outline-none focus:border-ink"
         >
           {roles.map((role) => (
             <option key={role.code} value={role.code}>

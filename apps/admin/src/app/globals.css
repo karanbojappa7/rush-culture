@@ -23,6 +23,15 @@
 
 html {
   font-size: var(--font-size-base, calc(16px * var(--font-scale, 1)));
+  color-scheme: light;
+}
+
+html[data-color-mode="night"] {
+  color-scheme: dark;
+}
+
+html[data-color-mode="day"] {
+  color-scheme: light;
 }
 
 @theme inline {
@@ -150,6 +159,46 @@ body {
 .admin-main button.border-ink.bg-ink,
 .admin-main a.border-ink.bg-ink {
   border-color: var(--ink) !important;
+}
+
+.admin-main input:not([type="color"]):not([type="checkbox"]):not([type="radio"]),
+.admin-main select,
+.admin-main textarea {
+  background-color: var(--panel);
+  color: var(--ink);
+  border-color: var(--line);
+  color-scheme: inherit;
+}
+
+.admin-main select {
+  background-color: var(--panel) !important;
+  color: var(--ink) !important;
+}
+
+.admin-main select option,
+select option {
+  background-color: var(--panel);
+  color: var(--ink);
+}
+
+html[data-color-mode="day"] .admin-main select option,
+html[data-color-mode="day"] select option,
+html:not([data-color-mode]) select option {
+  background-color: #ffffff;
+  color: #141414;
+}
+
+html[data-color-mode="night"] .admin-main select option,
+html[data-color-mode="night"] select option {
+  background-color: #171717;
+  color: #f2efe8;
+}
+
+.admin-main select option:checked,
+.admin-main select option:focus,
+select option:checked {
+  background: linear-gradient(0deg, var(--accent) 0%, var(--accent) 100%);
+  color: var(--accent-ink);
 }
 
 .admin-main input:not([type="color"]):not([type="checkbox"]):not([type="radio"]):focus,
