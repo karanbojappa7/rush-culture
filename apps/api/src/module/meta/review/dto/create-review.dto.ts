@@ -1,11 +1,25 @@
-import { IsBoolean, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
+import {
+  IsEmail,
+  IsInt,
+  IsOptional,
+  IsString,
+  Max,
+  MaxLength,
+  Min,
+  MinLength,
+} from 'class-validator';
 
 export class CreateReviewDto {
   @IsString()
   productId!: string;
 
+  @IsEmail()
+  email!: string;
+
   @IsString()
-  customerId!: string;
+  @MinLength(1)
+  @MaxLength(80)
+  name!: string;
 
   @IsInt()
   @Min(1)
@@ -14,13 +28,11 @@ export class CreateReviewDto {
 
   @IsOptional()
   @IsString()
+  @MaxLength(120)
   title?: string;
 
   @IsOptional()
   @IsString()
+  @MaxLength(4000)
   body?: string;
-
-  @IsOptional()
-  @IsBoolean()
-  isApproved?: boolean;
 }

@@ -209,9 +209,6 @@ export function ProductBuyBox({ product: initial }: Props) {
             </span>
           ) : null}
         </div>
-        <p className="mt-5 max-w-md text-base leading-relaxed text-mute">
-          {product.description}
-        </p>
       </div>
 
       <div>

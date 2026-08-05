@@ -33,7 +33,7 @@ Workspaces: npm (`apps/*`, `packages/*`).
 |---|---|
 | `master` | Category, Product, ProductVariant, ProductImage |
 | `core` | Role, UserType, User (staff), AppConfig, Discount |
-| `security` | Account, Session, VerificationToken |
+| `security` | Account, Session, VerificationToken, ClientDevice |
 | `meta` | Customer, Address, Cart, CartItem, Order, OrderItem, Review, CustomerQuery |
 
 - Soft delete via `isDeleted`
@@ -66,11 +66,30 @@ Controller → executeMethod → Service → Repo (Prisma) → Postgres
 | Categories | `/api/categories` | public reads |
 | Products | `/api/products` | stock-check, variants/images patch |
 | Customers / Addresses | `/api/customers`, `/api/addresses` | meta |
-| Carts / Orders / Reviews | `/api/carts` etc. | meta |
+| Carts / Orders / Reviews | `/api/carts` etc. | meta; reviews: guest POST (email), approved GET, staff approve |
 | Customer queries | `/api/customer-queries` | public POST; staff list/update |
 | App configs / Discounts | `/api/app-configs` etc. | core |
 | Health | `/api/health` | connectivity |
 | Cache admin | `/api/cache` | staff flush |
+
+### Reviews (meta)
+
+- Guest submit: `POST /api/reviews` with `productId`, `name`, `email`, `rating` (1–5), optional `title`/`body`
+- Find-or-create `Customer` by email; `displayName` stored on review; starts `isApproved: false`
+- Public list/summary: approved only (`GET /api/reviews`, `GET /api/reviews/summary?productId=`)
+- Staff: `PATCH /:id/approve`, update, soft-delete
+
+### Rate limiting
+
+- Global `RateLimitGuard` reads `security.rate_limit` from each module’s `module.yml` (`window_ms`, `max`)
+- Default: 180 req / 60s per module fingerprint; Redis store with memory fallback
+- On block: HTTP 429 + increment `ClientDevice.blockedCount`
+- Health / crypto public-key excluded
+
+### Device tracking (security)
+
+- `ClientDevice`: fingerprint (IP+UA hash), IP, userAgent, deviceType, OS, browser, last path/method, hit/blocked counts
+- Middleware on all routes; DB upsert **debounced** (5 minutes) unless rate-limited (immediate)
 
 ### Pagination & search
 
@@ -128,7 +147,8 @@ Overall `status`: `ok` | `degraded` | `error` (HTTP **503** if Postgres down).
 
 - Catalog from API; shop filters (collection, size, color, max price)
 - Max price default is **Any price** (range up to ₹20,000) so high-priced SKUs are not hidden
-- PDP: color/size stock UI, quantity stepper (+/−), add to bag / buy now, live stock refresh
+- PDP: gallery carousel + hover zoom, color/size stock UI, quantity stepper, add to bag / buy now
+- PDP: **About this piece** description + **Ratings & reviews** (guest form; shows approved only)
 - Cart: localStorage; quantity capped by `maxStock`; stock sync
 - Checkout: FormData captured before async stock verify; stock-check then order create
 - Help pages: `/shipping`, `/returns`, `/size-guide`, `/contact` (posts CustomerQuery)
@@ -140,7 +160,7 @@ Overall `status`: `ok` | `degraded` | `error` (HTTP **503** if Postgres down).
 
 - Login, overview (orders + open query stats)
 - Products: structured variants (size, color, ₹ price, Auto SKU), image URL rows, edit/create
-- Categories, customers, orders, **Queries** (status OPEN → IN_PROGRESS → RESOLVED → CLOSED + admin note)
+- Categories, customers, orders, **Queries**, **Reviews** (approve/delete pending comments), **Devices** (IP/UA/OS traffic)
 - Product form mappers live in `@/lib/product-form-initial` (safe for server pages)
 - Client vs server API split: `@/lib/api` vs `@/lib/api-server`
 

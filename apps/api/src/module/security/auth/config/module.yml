@@ -7,3 +7,6 @@ schema: security
 
 security:
   encrypt: false
+  rate_limit:
+    window_ms: 60000
+    max: 20

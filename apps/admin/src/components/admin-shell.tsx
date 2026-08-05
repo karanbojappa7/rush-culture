@@ -14,12 +14,15 @@ const nav = [
   { href: "/categories", label: "Categories" },
   { href: "/customers", label: "Customers" },
   { href: "/queries", label: "Queries" },
+  { href: "/reviews", label: "Reviews" },
+  { href: "/devices", label: "Devices", adminOnly: true },
 ];
 
 export function AdminShell({
   children,
   title,
   userLabel,
+  roleCode,
   breadcrumbs,
   backHref,
   backLabel = "Back",
@@ -27,6 +30,7 @@ export function AdminShell({
   children: React.ReactNode;
   title: string;
   userLabel?: string;
+  roleCode?: string;
   breadcrumbs?: Crumb[];
   backHref?: string;
   backLabel?: string;
@@ -34,6 +38,9 @@ export function AdminShell({
   const pathname = usePathname();
   const router = useRouter();
   const showBack = Boolean(backHref) || (breadcrumbs?.length ?? 0) > 1;
+  const items = nav.filter(
+    (item) => !item.adminOnly || roleCode === "ADMIN",
+  );
 
   async function logout() {
     await apiPost("/api/auth/logout");
@@ -58,7 +65,7 @@ export function AdminShell({
           ) : null}
         </div>
         <nav className="flex gap-1 overflow-x-auto px-3 pb-4 md:flex-col md:pb-8">
-          {nav.map((item) => {
+          {items.map((item) => {
             const active =
               item.href === "/"
                 ? pathname === "/"

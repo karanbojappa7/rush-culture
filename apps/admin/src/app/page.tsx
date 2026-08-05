@@ -108,6 +108,7 @@ export default async function AdminHomePage() {
     <AdminShell
       title="Overview"
       userLabel={sessionLabel(user)}
+      roleCode={user?.roleCode}
       breadcrumbs={[{ label: "Overview" }]}
     >
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

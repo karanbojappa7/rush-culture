@@ -124,6 +124,11 @@ export class CacheConfigService {
     return best?.name ?? null;
   }
 
+  getModule(name: string): ModuleConfig | null {
+    this.ensureLoaded();
+    return this.modules.find((module) => module.name === name) ?? null;
+  }
+
   listModules(): Array<{
     name: string;
     prefix: string;

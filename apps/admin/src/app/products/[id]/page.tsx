@@ -45,6 +45,7 @@ export default async function EditProductPage({ params }: Props) {
     <AdminShell
       title="Edit product"
       userLabel={sessionLabel(user)}
+      roleCode={user?.roleCode}
       backHref="/products"
       backLabel="Back to products"
       breadcrumbs={[

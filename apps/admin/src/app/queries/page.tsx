@@ -48,6 +48,7 @@ export default async function QueriesPage({ searchParams }: Props) {
     <AdminShell
       title="Customer queries"
       userLabel={sessionLabel(user)}
+      roleCode={user?.roleCode}
       breadcrumbs={[
         { label: "Overview", href: "/" },
         { label: "Queries" },

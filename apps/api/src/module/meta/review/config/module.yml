@@ -5,5 +5,42 @@ prefix: /api/reviews
 description: Product reviews in meta schema
 schema: meta
 
+routes:
+  - method: POST
+    path: /
+    action: create
+    auth: false
+  - method: GET
+    path: /summary
+    action: summary
+    auth: false
+  - method: GET
+    path: /admin
+    action: findAllAdmin
+    auth: true
+  - method: GET
+    path: /
+    action: findAll
+    auth: false
+  - method: GET
+    path: /:id
+    action: findById
+    auth: false
+  - method: PATCH
+    path: /:id/approve
+    action: approve
+    auth: true
+  - method: PATCH
+    path: /:id
+    action: update
+    auth: true
+  - method: DELETE
+    path: /:id
+    action: softDelete
+    auth: true
+
 security:
   encrypt: true
+  rate_limit:
+    window_ms: 60000
+    max: 40

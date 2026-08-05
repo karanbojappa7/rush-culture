@@ -33,6 +33,7 @@ export default async function QueryDetailPage({ params }: Props) {
     <AdminShell
       title={query.subject}
       userLabel={sessionLabel(user)}
+      roleCode={user?.roleCode}
       backHref="/queries"
       backLabel="Back to queries"
       breadcrumbs={[

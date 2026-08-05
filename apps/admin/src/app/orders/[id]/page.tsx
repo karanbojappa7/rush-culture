@@ -48,6 +48,7 @@ export default async function OrderDetailPage({ params }: Props) {
     <AdminShell
       title={order.orderNumber}
       userLabel={sessionLabel(user)}
+      roleCode={user?.roleCode}
       backHref="/orders"
       backLabel="Back to orders"
       breadcrumbs={[

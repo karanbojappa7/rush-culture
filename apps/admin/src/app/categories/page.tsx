@@ -35,6 +35,7 @@ export default async function CategoriesPage({ searchParams }: Props) {
     <AdminShell
       title="Categories"
       userLabel={sessionLabel(user)}
+      roleCode={user?.roleCode}
       breadcrumbs={[
         { label: "Overview", href: "/" },
         { label: "Categories" },

@@ -50,6 +50,7 @@ export default async function OrdersPage({ searchParams }: Props) {
     <AdminShell
       title="Orders"
       userLabel={sessionLabel(user)}
+      roleCode={user?.roleCode}
       breadcrumbs={[
         { label: "Overview", href: "/" },
         { label: "Orders" },

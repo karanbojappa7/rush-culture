@@ -62,3 +62,42 @@ model VerificationToken {
   @@map("verification_token")
   @@schema("security")
 }
+
+enum DeviceType {
+  DESKTOP
+  MOBILE
+  TABLET
+  BOT
+  UNKNOWN
+
+  @@schema("security")
+}
+
+model ClientDevice {
+  id           String     @id @default(cuid())
+  fingerprint  String     @unique
+  ip           String
+  userAgent    String     @map("user_agent") @db.Text
+  deviceType   DeviceType @default(UNKNOWN) @map("device_type")
+  os           String?
+  browser      String?
+  path         String?
+  method       String?
+  hitCount     Int        @default(1) @map("hit_count")
+  blockedCount Int        @default(0) @map("blocked_count")
+  lastSeenAt   DateTime   @default(now()) @db.Timestamptz(3) @map("last_seen_at")
+
+  userId    String?  @map("user_id")
+  createdAt DateTime @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt DateTime @updatedAt @db.Timestamptz(3) @map("updated_at")
+  createdBy String?  @map("created_by")
+  updatedBy String?  @map("updated_by")
+  isDeleted Boolean  @default(false) @map("is_deleted")
+
+  @@index([ip])
+  @@index([deviceType])
+  @@index([lastSeenAt])
+  @@index([isDeleted])
+  @@map("client_device")
+  @@schema("security")
+}

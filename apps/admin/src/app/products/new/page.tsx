@@ -16,6 +16,7 @@ export default async function NewProductPage() {
     <AdminShell
       title="New product"
       userLabel={sessionLabel(user)}
+      roleCode={user?.roleCode}
       backHref="/products"
       backLabel="Back to products"
       breadcrumbs={[
