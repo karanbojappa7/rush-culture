@@ -63,12 +63,25 @@ const collection = {
     { key: "key", value: "" },
     { key: "itemId", value: "" },
     { key: "variantId", value: "" },
+    { key: "service", value: "product" },
   ],
   item: [
     folder("Common", [
       folder("health", [
         req("HealthCheck", "GET", "/api/health"),
         req("HealthLive", "GET", "/api/health/live"),
+      ]),
+      folder("cache", [
+        req("CacheStatus", "GET", "/api/cache"),
+        req("CacheServices", "GET", "/api/cache/services"),
+        req("FlushAllCache", "POST", "/api/cache/flush"),
+        req("FlushServiceCache", "POST", "/api/cache/flush/{{service}}"),
+        req("FlushAllCacheDelete", "DELETE", "/api/cache"),
+        req(
+          "FlushServiceCacheDelete",
+          "DELETE",
+          "/api/cache/services/{{service}}",
+        ),
       ]),
     ]),
     folder("Core", [
@@ -447,6 +460,7 @@ const env = {
     { key: "key", value: "", type: "default", enabled: true },
     { key: "itemId", value: "", type: "default", enabled: true },
     { key: "variantId", value: "", type: "default", enabled: true },
+    { key: "service", value: "product", type: "default", enabled: true },
   ],
   _postman_variable_scope: "environment",
 };

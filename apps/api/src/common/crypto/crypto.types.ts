@@ -3,6 +3,7 @@ export const ENCRYPTION_SKIP_PATHS = [
   '/api/crypto/public-key',
   '/api/health',
   '/api/health/live',
+  '/api/cache',
 ];
 
 export type EncryptedEnvelope = {

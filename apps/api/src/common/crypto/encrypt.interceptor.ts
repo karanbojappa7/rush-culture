@@ -24,7 +24,10 @@ export class EncryptInterceptor implements NestInterceptor {
     )[0];
     if (
       ENCRYPTION_SKIP_PATHS.some(
-        (skip) => requestPath === skip || requestPath.endsWith(skip),
+        (skip) =>
+          requestPath === skip ||
+          requestPath.endsWith(skip) ||
+          requestPath.startsWith(`${skip}/`),
       )
     ) {
       return next.handle();

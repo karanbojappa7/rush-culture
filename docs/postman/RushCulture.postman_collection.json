@@ -32,6 +32,10 @@
     {
       "key": "variantId",
       "value": ""
+    },
+    {
+      "key": "service",
+      "value": "product"
     }
   ],
   "item": [
@@ -72,6 +76,119 @@
                     "api",
                     "health",
                     "live"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "cache",
+          "item": [
+            {
+              "name": "CacheStatus",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{url}}/api/cache",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "cache"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "CacheServices",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{url}}/api/cache/services",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "cache",
+                    "services"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "FlushAllCache",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{url}}/api/cache/flush",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "cache",
+                    "flush"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "FlushServiceCache",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{url}}/api/cache/flush/{{service}}",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "cache",
+                    "flush",
+                    "{{service}}"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "FlushAllCacheDelete",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{url}}/api/cache",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "cache"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "FlushServiceCacheDelete",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{url}}/api/cache/services/{{service}}",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "cache",
+                    "services",
+                    "{{service}}"
                   ]
                 }
               }

@@ -124,6 +124,21 @@ export class CacheConfigService {
     return best?.name ?? null;
   }
 
+  listModules(): Array<{
+    name: string;
+    prefix: string;
+    cachedActions: string[];
+  }> {
+    this.ensureLoaded();
+    return this.modules.map((module) => ({
+      name: module.name,
+      prefix: module.prefix,
+      cachedActions: (module.routes || [])
+        .filter((route) => normalizeRouteCache(route.cache, route.ttl)?.enabled)
+        .map((route) => route.action),
+    }));
+  }
+
   private ensureLoaded(): void {
     if (this.loaded) return;
     this.modules = this.findModuleConfigs();

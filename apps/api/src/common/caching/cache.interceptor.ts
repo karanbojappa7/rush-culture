@@ -31,6 +31,12 @@ export class CacheInterceptor implements NestInterceptor {
     const requestPath = (req.originalUrl || req.url || req.path || '').split(
       '?',
     )[0];
+    if (
+      requestPath === '/api/cache' ||
+      requestPath.startsWith('/api/cache/')
+    ) {
+      return next.handle();
+    }
     const action = context.getHandler().name;
     const configService = CacheConfigService.getInstance();
     const resolved = configService.resolveByHttp({
