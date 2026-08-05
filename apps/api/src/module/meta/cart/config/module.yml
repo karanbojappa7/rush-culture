@@ -1,0 +1,9 @@
+name: cart
+version: 1.0.0
+enabled: true
+prefix: /api/cart
+description: Shopping cart transactions in meta schema
+schema: meta
+
+security:
+  encrypt: true

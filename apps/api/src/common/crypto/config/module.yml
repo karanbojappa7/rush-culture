@@ -1,0 +1,26 @@
+name: crypto
+version: 1.0.0
+enabled: true
+prefix: /api/crypto
+description: API payload encryption using RSA-OAEP and AES-256-GCM
+
+routes:
+  - method: GET
+    path: /public-key
+    action: publicKey
+    auth: false
+    skip_encryption: true
+
+security:
+  encrypt: true
+  algorithm: RSA-OAEP-SHA256+AES-256-GCM
+  env_flag: ENABLE_ENCRYPTION
+  require_keys:
+    - ENCRYPTION_PRIVATE_KEY_B64
+    - ENCRYPTION_PUBLIC_KEY_B64
+
+features:
+  hybrid_encryption: true
+  session_header: x-enc-session
+  skip_paths:
+    - /api/crypto/public-key

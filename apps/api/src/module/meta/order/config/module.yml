@@ -1,0 +1,41 @@
+name: order
+version: 1.0.0
+enabled: true
+prefix: /api/orders
+description: Checkout orders with captured payment details
+
+routes:
+  - method: POST
+    path: /
+    action: create
+    auth: false
+  - method: GET
+    path: /
+    action: findAll
+    auth: true
+    roles: [STAFF, ADMIN]
+  - method: GET
+    path: /summary
+    action: summary
+    auth: true
+    roles: [STAFF, ADMIN]
+  - method: GET
+    path: /:id
+    action: findById
+    auth: true
+    roles: [STAFF, ADMIN]
+
+security:
+  encrypt: true
+  idempotency: true
+  rate_limit:
+    window_ms: 60000
+    max: 30
+
+features:
+  guest_checkout: true
+  payment_capture_only: true
+  free_shipping_over_paise: 199900
+  shipping_fee_paise: 9900
+
+schema: meta

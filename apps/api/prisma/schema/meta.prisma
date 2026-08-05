@@ -1,0 +1,157 @@
+enum OrderStatus {
+  PLACED
+  PACKED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  RETURNED
+
+  @@schema("meta")
+}
+
+enum PaymentStatus {
+  PENDING
+  AUTHORIZED
+  PAID
+  FAILED
+  REFUNDED
+
+  @@schema("meta")
+}
+
+model Cart {
+  id        String     @id @default(cuid())
+  userId    String?    @map("user_id")
+  user      User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessionId String?    @unique @map("session_id")
+  items     CartItem[]
+
+  createdAt DateTime @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt DateTime @updatedAt @db.Timestamptz(3) @map("updated_at")
+  createdBy String?  @map("created_by")
+  updatedBy String?  @map("updated_by")
+  isDeleted Boolean  @default(false) @map("is_deleted")
+
+  @@index([userId])
+  @@index([isDeleted])
+  @@map("cart")
+  @@schema("meta")
+}
+
+model CartItem {
+  id        String         @id @default(cuid())
+  cartId    String         @map("cart_id")
+  cart      Cart           @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  variantId String         @map("variant_id")
+  variant   ProductVariant @relation(fields: [variantId], references: [id])
+  quantity  Int            @default(1)
+
+  userId    String?  @map("user_id")
+  createdAt DateTime @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt DateTime @updatedAt @db.Timestamptz(3) @map("updated_at")
+  createdBy String?  @map("created_by")
+  updatedBy String?  @map("updated_by")
+  isDeleted Boolean  @default(false) @map("is_deleted")
+
+  @@unique([cartId, variantId])
+  @@index([isDeleted])
+  @@index([userId])
+  @@map("cart_item")
+  @@schema("meta")
+}
+
+model Order {
+  id                 String        @id @default(cuid())
+  orderNumber        String        @unique @map("order_number")
+  userId             String?       @map("user_id")
+  user               User?         @relation(fields: [userId], references: [id])
+  status             OrderStatus   @default(PLACED)
+  paymentStatus      PaymentStatus @default(PENDING) @map("payment_status")
+  subtotalInPaise    Int           @map("subtotal_in_paise")
+  discountInPaise    Int           @default(0) @map("discount_in_paise")
+  shippingInPaise    Int           @default(0) @map("shipping_in_paise")
+  taxInPaise         Int           @default(0) @map("tax_in_paise")
+  totalInPaise       Int           @map("total_in_paise")
+  currency           String        @default("INR")
+  razorpayOrderId    String?       @unique @map("razorpay_order_id")
+  razorpayPaymentId  String?       @map("razorpay_payment_id")
+  razorpaySignature  String?       @map("razorpay_signature")
+  paymentMethod      String?       @map("payment_method")
+  paymentDetails     String?       @db.Text @map("payment_details")
+  customerEmail      String?       @map("customer_email")
+  shippingFullName   String        @map("shipping_full_name")
+  shippingPhone      String        @map("shipping_phone")
+  shippingLine1      String        @map("shipping_line1")
+  shippingLine2      String?       @map("shipping_line2")
+  shippingCity       String        @map("shipping_city")
+  shippingState      String        @map("shipping_state")
+  shippingPostalCode String        @map("shipping_postal_code")
+  shippingCountry    String        @default("IN") @map("shipping_country")
+  discountCode       String?       @map("discount_code")
+  idempotencyKey     String?       @unique @map("idempotency_key")
+  items              OrderItem[]
+
+  createdAt DateTime @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt DateTime @updatedAt @db.Timestamptz(3) @map("updated_at")
+  createdBy String?  @map("created_by")
+  updatedBy String?  @map("updated_by")
+  isDeleted Boolean  @default(false) @map("is_deleted")
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([isDeleted])
+  @@map("order")
+  @@schema("meta")
+}
+
+model OrderItem {
+  id               String  @id @default(cuid())
+  orderId          String  @map("order_id")
+  order            Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  variantId        String? @map("variant_id")
+  productSlug      String? @map("product_slug")
+  productName      String  @map("product_name")
+  variantSku       String  @map("variant_sku")
+  size             String
+  color            String
+  unitPriceInPaise Int     @map("unit_price_in_paise")
+  quantity         Int
+  lineTotalInPaise Int     @map("line_total_in_paise")
+
+  userId    String?  @map("user_id")
+  createdAt DateTime @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt DateTime @updatedAt @db.Timestamptz(3) @map("updated_at")
+  createdBy String?  @map("created_by")
+  updatedBy String?  @map("updated_by")
+  isDeleted Boolean  @default(false) @map("is_deleted")
+
+  @@index([isDeleted])
+  @@index([userId])
+  @@map("order_item")
+  @@schema("meta")
+}
+
+model Review {
+  id         String  @id @default(cuid())
+  productId  String  @map("product_id")
+  product    Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId     String  @map("user_id")
+  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rating     Int
+  title      String?
+  body       String? @db.Text
+  isApproved Boolean @default(false) @map("is_approved")
+
+  createdAt DateTime @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt DateTime @updatedAt @db.Timestamptz(3) @map("updated_at")
+  createdBy String?  @map("created_by")
+  updatedBy String?  @map("updated_by")
+  isDeleted Boolean  @default(false) @map("is_deleted")
+
+  @@unique([productId, userId])
+  @@index([productId])
+  @@index([isDeleted])
+  @@map("review")
+  @@schema("meta")
+}

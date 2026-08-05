@@ -1,0 +1,9 @@
+name: discount
+version: 1.0.0
+enabled: true
+prefix: /api/discounts
+description: Discount and promo configuration in core schema
+schema: core
+
+security:
+  encrypt: true

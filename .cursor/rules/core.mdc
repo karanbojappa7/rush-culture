@@ -1,0 +1,15 @@
+---
+description: Core project conventions — DRY, no comments, white-label, monorepo
+alwaysApply: true
+---
+
+# E-commerce monorepo — core rules
+
+- Read `docs/WHAT_IS_DONE.md` before large changes; keep it accurate when scope changes.
+- **DRY**: one source of truth. Brand/copy/SKU/order prefix → `packages/site-config`. Shared dates/slug → `apps/api/src/common/utility`. Domain helpers → that module’s `utility/` folder. Do not duplicate catalogs, brand strings, or date logic.
+- **No comments** in application code (TS/TSX/JS). Prefer clear names over comments.
+- **White-label**: never hardcode brand name, legal name, cart storage key, order prefix, or SKU prefix. Import `brand` / `sku` / `withBrandName` from `@linq/site-config`.
+- Stack: NestJS + Prisma API, Next.js storefront/admin, Postgres multi-schema (`master` / `core` / `meta`).
+- Prefer editing existing modules over inventing parallel patterns.
+- Do not commit secrets (`.env`, keys). Do not add markdown docs unless asked (except updating `docs/` when architecture/status changes as part of that ask).
+- After changing `packages/site-config`, run `npm run build:site-config` before relying on the API build.

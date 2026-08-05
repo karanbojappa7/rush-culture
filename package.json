@@ -1,0 +1,26 @@
+{
+  "name": "e-commerce",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build:site-config": "npm run build -w @linq/site-config",
+    "dev:api": "npm run build:site-config && npm run start:dev -w apps/api",
+    "dev:storefront": "npm run dev -w apps/storefront",
+    "dev:admin": "npm run dev -w apps/admin",
+    "build:api": "npm run build:site-config && npm run build -w apps/api",
+    "build:storefront": "npm run build -w apps/storefront",
+    "build:admin": "npm run build -w apps/admin",
+    "prisma:generate": "npm run prisma:generate -w apps/api",
+    "prisma:migrate": "npm run prisma:migrate -w apps/api",
+    "docker:up": "docker compose up --build -d",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f"
+  },
+  "dependencies": {
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.15.1"
+  }
+}

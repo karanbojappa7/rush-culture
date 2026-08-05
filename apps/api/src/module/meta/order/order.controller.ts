@@ -1,0 +1,67 @@
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { BaseController } from '../../../common/base/base.controller';
+import { ResponseBuilder } from '../../../common/response/response.builder';
+import { ResponseVm } from '../../../common/response/response.vm';
+import { CreateOrderDto } from './dto/create-order.dto';
+import { UpdateOrderDto } from './dto/update-order.dto';
+import { OrderService } from './order.service';
+
+@Controller('api/orders')
+export class OrderController extends BaseController {
+  constructor(
+    private readonly orderService: OrderService,
+    responseBuilder: ResponseBuilder,
+  ) {
+    super(OrderController.name, responseBuilder);
+  }
+
+  @Post()
+  create(@Body() payload: CreateOrderDto): Promise<ResponseVm> {
+    return this.executeMethod(
+      (data) => this.orderService.create(data),
+      payload,
+      'Order placed',
+    );
+  }
+
+  @Get()
+  findAll(): Promise<ResponseVm> {
+    return this.executeMethod(
+      (_data: Record<string, never>) => this.orderService.findAll(),
+      {},
+      'Orders fetched',
+    );
+  }
+
+  @Get('summary')
+  summary(): Promise<ResponseVm> {
+    return this.executeMethod(
+      (_data: Record<string, never>) => this.orderService.summary(),
+      {},
+      'Summary fetched',
+    );
+  }
+
+  @Get(':id')
+  findById(@Param('id') id: string): Promise<ResponseVm> {
+    return this.executeMethod(
+      (data) => this.orderService.findById(data),
+      { id },
+      'Order fetched',
+    );
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() data: UpdateOrderDto): Promise<ResponseVm> {
+    return this.executeMethod(
+      (payload) => this.orderService.update(payload),
+      { id, data },
+      'Order updated',
+    );
+  }
+
+  @Delete(':id')
+  softDelete(@Param('id') id: string): Promise<ResponseVm> {
+    return this.executeMethod((data) => this.orderService.softDelete(data), { id }, 'Order deleted');
+  }
+}

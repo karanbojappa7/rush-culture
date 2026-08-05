@@ -1,0 +1,57 @@
+---
+description: NestJS API architecture — controller/service/repo, UTC, soft delete
+globs: apps/api/**/*
+alwaysApply: false
+---
+
+# API architecture
+
+Follow existing modules under `apps/api/src/module/{master|core|meta}/{domain}/`.
+
+## Layering
+
+```
+Controller → executeMethod → Service → Repo → Prisma
+                ↓
+         ResponseBuilder
+```
+
+- Controllers extend `BaseController` and return `ResponseVm` via `executeMethod`.
+- Services extend `BaseService`; business rules and NotFound/Conflict live here.
+- Repos extend `BaseRepo`; audit + soft delete live here. Do not query Prisma from controllers.
+- Wire `MODULE_CONFIG` with `loadModuleConfig(__dirname)` and keep `config/module.yml`.
+- DTOs: `create-*.dto.ts` + `update-*.dto.ts` (`PartialType` from `@nestjs/mapped-types`). Validate with `class-validator`.
+
+## CRUD
+
+- `POST /` create · `GET /` list · `GET /:id` (static routes like `slug/:slug`, `code/:code`, `summary` **before** `:id`) · `PATCH /:id` · `DELETE /:id` soft-delete (`isDeleted: true`).
+- No hard deletes for domain CRUD.
+
+## UTC dates
+
+- Use `utcNow` / `toUtcDate` / `optionalUtcDate` / `toUtcIso` / `isWithinUtcWindow` from `common/utility/date.utility.ts`.
+- Never invent local-timezone date helpers. Persist `DateTime` as timestamptz; assume UTC everywhere.
+- `BaseRepo` already stamps `createdAt` / `updatedAt`; use the same UTC helpers in nested creates.
+
+## Utilities placement
+
+- Cross-cutting → `apps/api/src/common/utility/`
+- Domain-only → `apps/api/src/module/.../{domain}/utility/`
+- Do not dump one-off helpers into services when they belong in `utility/`.
+
+## Responses
+
+Use `ResponseBuilder` statuses only: success `200`, warning `401`, authError `403`, codeError `1000`.
+
+## Example shape
+
+```
+module/master/address/
+  address.controller.ts
+  address.service.ts
+  address.repo.ts
+  address.module.ts
+  dto/
+  utility/
+  config/module.yml
+```

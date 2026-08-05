@@ -1,0 +1,35 @@
+name: product
+version: 1.0.0
+enabled: true
+prefix: /api/products
+description: Catalog products with size and color variants
+
+routes:
+  - method: GET
+    path: /
+    action: findAll
+    auth: false
+    query:
+      - q
+      - collection
+      - size
+      - color
+      - minPrice
+      - maxPrice
+  - method: GET
+    path: /:slug
+    action: findBySlug
+    auth: false
+
+security:
+  encrypt: true
+  rate_limit:
+    window_ms: 60000
+    max: 120
+
+features:
+  filters: true
+  variants: true
+  stock_check: true
+
+schema: master

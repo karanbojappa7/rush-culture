@@ -1,0 +1,9 @@
+name: address
+version: 1.0.0
+enabled: true
+prefix: /api/addresses
+description: User addresses in master schema
+schema: master
+
+security:
+  encrypt: true

@@ -1,0 +1,44 @@
+model AppConfig {
+  id          String  @id @default(cuid())
+  key         String  @unique
+  value       String  @db.Text
+  description String?
+  isActive    Boolean @default(true) @map("is_active")
+
+  userId    String?  @map("user_id")
+  createdAt DateTime @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt DateTime @updatedAt @db.Timestamptz(3) @map("updated_at")
+  createdBy String?  @map("created_by")
+  updatedBy String?  @map("updated_by")
+  isDeleted Boolean  @default(false) @map("is_deleted")
+
+  @@index([isDeleted])
+  @@map("app_config")
+  @@schema("core")
+}
+
+model Discount {
+  id               String    @id @default(cuid())
+  code             String    @unique
+  description      String?
+  percentOff       Int?      @map("percent_off")
+  amountOffInPaise Int?      @map("amount_off_in_paise")
+  minOrderInPaise  Int?      @map("min_order_in_paise")
+  maxUses          Int?      @map("max_uses")
+  usedCount        Int       @default(0) @map("used_count")
+  startsAt         DateTime? @db.Timestamptz(3) @map("starts_at")
+  endsAt           DateTime? @db.Timestamptz(3) @map("ends_at")
+  isActive         Boolean   @default(true) @map("is_active")
+
+  userId    String?  @map("user_id")
+  createdAt DateTime @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt DateTime @updatedAt @db.Timestamptz(3) @map("updated_at")
+  createdBy String?  @map("created_by")
+  updatedBy String?  @map("updated_by")
+  isDeleted Boolean  @default(false) @map("is_deleted")
+
+  @@index([isDeleted])
+  @@index([userId])
+  @@map("discount")
+  @@schema("core")
+}

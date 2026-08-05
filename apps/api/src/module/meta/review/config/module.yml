@@ -1,0 +1,9 @@
+name: review
+version: 1.0.0
+enabled: true
+prefix: /api/reviews
+description: Product reviews in meta schema
+schema: meta
+
+security:
+  encrypt: true

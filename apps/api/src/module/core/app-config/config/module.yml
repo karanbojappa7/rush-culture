@@ -1,0 +1,9 @@
+name: app-config
+version: 1.0.0
+enabled: true
+prefix: /api/app-configs
+description: Core application configuration
+schema: core
+
+security:
+  encrypt: true

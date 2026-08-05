@@ -1,0 +1,30 @@
+import { Global, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { MODULE_CONFIG } from '../config/module-config.types';
+import { loadModuleConfig } from '../config/load-module-config';
+import { CryptoController } from './crypto.controller';
+import { CryptoService } from './crypto.service';
+import { DecryptMiddleware } from './decrypt.middleware';
+import { EncryptInterceptor } from './encrypt.interceptor';
+
+@Global()
+@Module({
+  controllers: [CryptoController],
+  providers: [
+    {
+      provide: MODULE_CONFIG,
+      useFactory: () => loadModuleConfig(__dirname),
+    },
+    CryptoService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: EncryptInterceptor,
+    },
+  ],
+  exports: [CryptoService, MODULE_CONFIG],
+})
+export class CryptoModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(DecryptMiddleware).forRoutes('*');
+  }
+}

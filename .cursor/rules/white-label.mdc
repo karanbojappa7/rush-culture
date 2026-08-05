@@ -1,0 +1,13 @@
+---
+description: White-label site-config and shared catalog rules
+globs: packages/site-config/**/*,apps/storefront/**/*,apps/admin/**/*,apps/api/src/data/**/*
+alwaysApply: false
+---
+
+# White-label (`@linq/site-config`)
+
+- Brand fields live only in `packages/site-config/src/brand.ts`.
+- Catalog lives in `packages/site-config/src/catalog.ts`. Product `brand` must use `brand.name`; SKUs via `sku("CODE")`.
+- Apps re-export or import from `@linq/site-config` — do not maintain a second catalog of products or brand strings.
+- UI chrome (title, hero, footer, admin shell, cart storage key, order prefix) must read from `brand`.
+- To rebrand: edit `brand.ts` (and catalog content if needed), then `npm run build:site-config` for API consumers.

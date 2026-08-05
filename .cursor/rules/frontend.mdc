@@ -1,0 +1,14 @@
+---
+description: Storefront and admin UI conventions
+globs: apps/storefront/**/*,apps/admin/**/*
+alwaysApply: false
+---
+
+# Frontend conventions
+
+- Next.js App Router under `src/app`. Reuse existing components and tokens before adding new UI kits.
+- Call the API through `@/lib/api` / `@linq/secure-api` — do not fork ad-hoc fetch wrappers.
+- Brand text from `@linq/site-config` (`brand`), not hardcoded names.
+- Storefront design: one clear composition per viewport; brand-first hero; Syne + Figtree; paper/ink/volt atmosphere. Avoid purple-gradient / cream-serif AI clichés, card spam in heroes, and cluttered first viewports.
+- Prefer matching existing layout patterns in admin (shell + pages) over new dashboard frameworks.
+- `transpilePackages` must include `@linq/site-config` and `@linq/secure-api` when those packages are used.

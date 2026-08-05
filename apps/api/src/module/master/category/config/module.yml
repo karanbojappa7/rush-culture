@@ -1,0 +1,12 @@
+name: category
+version: 1.0.0
+enabled: true
+prefix: /api/categories
+description: Product categories in master schema
+schema: master
+
+security:
+  encrypt: true
+
+features:
+  tree: true
